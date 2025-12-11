@@ -1,0 +1,11 @@
+/* 
+ * 自定义响应头：Cloudflare Pages 配置
+ * 设置缓存和安全选项，防止缓存敏感数据
+ */
+/api/*
+  Cache-Control: no-store, no-cache, must-revalidate
+  Access-Control-Allow-Origin: *
+
+/admin/*
+  Cache-Control: no-store, no-cache, must-revalidate
+  Access-Control-Allow-Origin: *

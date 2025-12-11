@@ -1,0 +1,101 @@
+/* 
+ * 根变量定义：用于主题切换（亮模式/暗模式）
+ * --bg: 背景色；--text: 文本色；--card: 卡片背景
+ */
+:root { 
+  --bg: #f0f2f5; 
+  --text: #333; 
+  --card: #fff; 
+}
+[data-theme="dark"] { 
+  --bg: #1a1a1a; 
+  --text: #fff; 
+  --card: #2a2a2a; 
+}
+
+/* 
+ * 全局样式：应用主题变量，确保字体和布局一致
+ */
+body { 
+  background: var(--bg); 
+  color: var(--text); 
+  font-family: "Segoe UI", Arial, sans-serif; 
+  margin: 0; 
+  padding: 20px; 
+  line-height: 1.6; 
+}
+header { text-align: center; margin-bottom: 30px; }
+h1 { color: #2563eb; margin: 0; }
+h1 small { font-size: 0.6em; color: #64748b; }
+
+/* 
+ * 导航容器样式：网格布局，响应式最大宽度
+ */
+#navContainer { max-width: 900px; margin: 0 auto; display: grid; gap: 20px; }
+
+/* 
+ * 分类样式：卡片效果，阴影和圆角
+ */
+.category { 
+  background: var(--card); 
+  border-radius: 12px; 
+  padding: 20px; 
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+}
+.category h2 { 
+  margin: 0 0 15px; 
+  color: #1e40af; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+}
+.category h2 .btns button { font-size: 0.8rem; padding: 4px 8px; margin-left: 6px; }
+
+/* 
+ * 链接列表样式：无序列表，flex 布局
+ */
+.link-list { list-style: none; margin: 0; padding: 0; }
+.link-list li { 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  padding: 12px; 
+  background: #f8fafc; 
+  border-radius: 8px; 
+  margin-bottom: 8px; 
+}
+.link-list a { color: #2563eb; text-decoration: none; flex: 1; }
+.link-list a:hover { text-decoration: underline; }
+.link-list .desc { color: #64748b; font-size: 0.9em; margin-left: 12px; flex: 2; }
+.link-list .actions button { padding: 4px 10px; margin-left: 4px; font-size: 0.8rem; border: none; border-radius: 4px; cursor: pointer; }
+.link-list .actions .edit { background: #fbbf24; color: #000; }
+.link-list .actions .delete { background: #ef4444; color: #fff; }
+
+/* 
+ * 控制按钮样式：后台操作按钮
+ */
+.controls button { margin: 0 6px; padding: 10px 16px; background: #2563eb; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+.controls button:hover { background: #1d4ed8; }
+
+/* 
+ * 模态框样式：编辑/新增弹窗
+ */
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
+.modal-content { background: var(--card); padding: 25px; border-radius: 12px; width: 90%; max-width: 420px; }
+.close { float: right; font-size: 28px; cursor: pointer; color: #94a3b8; }
+#editForm { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+#editForm input, #editForm textarea, #editForm select { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; }
+#submitBtn { background: #16a34a; color: #fff; padding: 12px; border: none; border-radius: 6px; cursor: pointer; }
+
+/* 
+ * 主题切换按钮样式
+ */
+.theme-toggle { padding: 5px 10px; background: #64748b; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px; }
+
+/* 
+ * 响应式媒体查询：小屏幕调整布局
+ */
+@media (max-width: 600px) {
+  #navContainer { grid-template-columns: 1fr; }
+  .link-list li { flex-direction: column; align-items: flex-start; }
+}

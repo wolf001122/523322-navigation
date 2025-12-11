@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- 页面元信息：编码和标题 -->
+  <meta charset="UTF-8">
+  <title>管理后台 - 网址导航</title>
+  <!-- 引入共用样式 -->
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- 管理面板：Access 保护路径，直接显示（无前端登录，因为 Access 已验证） -->
+<div id="adminPanel">
+  <!-- 头部：标题、退出和保存按钮、主题切换 -->
+  <header style="text-align:center;margin-bottom:30px;">
+    <h1>网址导航管理后台</h1>
+    <button onclick="location.href='/'">退出登录</button>
+    <button onclick="navMgr.saveToKV()" style="background:#16a34a;margin-left:10px;">保存到 KV</button>
+    <button class="theme-toggle" onclick="toggleTheme()">切换主题</button>
+  </header>
+  <!-- 操作控制按钮：新增分类/链接 -->
+  <div class="controls" style="text-align:center;margin-bottom:20px;">
+    <button onclick="navMgr.showModal('category')">新增分类</button>
+    <button onclick="navMgr.showModal('link')">新增链接</button>
+  </div>
+  <!-- 主内容容器：渲染导航 -->
+  <main id="navContainer"></main>
+</div>
+
+<!-- 编辑/新增模态框：用于添加/修改分类或链接 -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <form id="editForm">
+      <div id="formFields"></div> <!-- 动态表单字段 -->
+      <button type="submit" id="submitBtn">保存</button>
+    </form>
+  </div>
+</div>
+
+<!-- 引入后台脚本 -->
+<script src="script.js"></script>
+<script>
+  // 主题切换函数：切换暗黑模式并保存到 localStorage
+  function toggleTheme() {
+    document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    localStorage.theme = document.documentElement.dataset.theme;
+  }
+
+  // 页面加载时初始化：应用保存的主题并启动管理器
+  if (localStorage.theme) document.documentElement.dataset.theme = localStorage.theme;
+  navMgr.init(); // 直接初始化（Access 已保护）
+</script>
+</body>
+</html>
