@@ -3,49 +3,73 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>网址导航 - 实用资源站</title>
+  <title>网址导航 - 实用的资源导航综合网站</title>
   <meta name="description" content="简洁实用的网址导航，收藏常用工具、学习资源、云服务等。">
   <link rel="stylesheet" href="style.css">
 
-  <!-- Google AdSense 自动广告代码（只需放一次） -->
+  <!-- Google AdSense 核心脚本（只需放一次） -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9474229114991789"
           crossorigin="anonymous"></script>
 </head>
 <body>
-
   <header>
-    <h1>网址导航 <small>— 实用资源站</small></h1>
+    <h1>网址导航 <small>— 实用的资源导航综合网站</small></h1>
 
-    <!-- 广告位 1：顶部横幅 728×90（电脑）/ 320×100（手机）自适应 -->
+    <!-- 广告位 1：顶部横幅 (728x90 电脑 / 320x100 手机，自适应) -->
     <div class="ad-top">
       <ins class="adsbygoogle"
            style="display:block"
            data-ad-client="ca-pub-9474229114991789"
-           data-ad-slot="1234567890"          <!-- 这里可以留空，自动广告无需填 -->
+           data-ad-slot=""  <!-- 自动广告留空，或填您的 slot ID -->
            data-ad-format="auto"
            data-full-width-responsive="true"></ins>
       <script>
-           (adsbygoogle = window.adsbygoogle || []).push({});
+        (adsbygoogle = window.adsbygoogle || []).push({});
       </script>
     </div>
 
-    <!-- 搜索框 -->
-    <input type="text" id="searchInput" placeholder="搜索网站名称或描述..." autocomplete="off">
+    <p style="text-align:center;margin:15px 0;">
+      <a href="/admin/admin.html" style="color:#64748b;font-size:0.9em;">管理员登录</a>
+    </p>
+
+    <!-- 搜索框：实时过滤链接 -->
+    <input type="text" id="searchInput" placeholder="搜索网站名称或描述..." autocomplete="off" style="width:300px;padding:8px;margin:10px auto;display:block;">
   </header>
 
-  <!-- 主要导航内容区域 -->
-  <main id="navContainer"></main>
+  <!-- 主要导航内容（基于当前页面分类，完整复制） -->
+  <main id="navContainer">
+    <div class="category">
+      <h2>常用工具</h2>
+      <ul class="link-list">
+        <li><a href="https://www.yuque.com" target="_blank">语雀</a><span class="desc">专业的云端知识库。</span></li>
+        <li><a href="https://mail.qq.com" target="_blank">QQ邮箱</a><span class="desc">腾讯 QQ 邮箱。</span></li>
+        <li><a href="https://www.oschina.net" target="_blank">开源中国</a><span class="desc">中国开源技术交流社区。</span></li>
+        <li><a href="https://github.com" target="_blank">GitHub</a><span class="desc">全球最大的开源代码托管平台。</span></li>
+        <!-- 更多链接... 当前页面有 10+ 个，完整复制到 GitHub -->
+      </ul>
+    </div>
+    <!-- 其他分类类似：生物信息、云服务器、影音视频 等（从工具分析完整添加） -->
+    <!-- 示例：生物信息 -->
+    <div class="category">
+      <h2>生物信息</h2>
+      <ul class="link-list">
+        <li><a href="https://www.ncbi.nlm.nih.gov" target="_blank">NCBI</a><span class="desc">国家生物技术信息中心。</span></li>
+        <!-- 更多... -->
+      </ul>
+    </div>
+    <!-- 继续添加所有分类... -->
+  </main>
 
-  <!-- 广告位 2：右侧矩形 300×250（电脑） / 底部横条（手机） -->
+  <!-- 广告位 2：侧边矩形 (300x250 电脑 / 底部横条 手机) -->
   <div class="ad-side">
     <ins class="adsbygoogle"
          style="display:block"
          data-ad-client="ca-pub-9474229114991789"
-         data-ad-slot="0987654321"          <!-- 自动广告可留空 -->
+         data-ad-slot=""  <!-- 自动广告留空 -->
          data-ad-format="auto"
          data-full-width-responsive="true"></ins>
     <script>
-         (adsbygoogle = window.adsbygoogle || []).push({});
+      (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
   </div>
 
@@ -53,60 +77,15 @@
     © 2025 网址导航站 | <a href="https://beian.miit.gov.cn" target="_blank" rel="noopener">ICP备案号</a>
   </footer>
 
-  <!-- 核心脚本：加载数据 + 渲染 + 搜索功能 -->
+  <!-- JavaScript：搜索功能 + 动态加载（如果用 KV，可扩展） -->
   <script>
-    // 从 Cloudflare KV 读取数据
-    async function loadData() {
-      try {
-        const res = await fetch('/api/data');
-        const xml = await res.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(xml, 'text/xml');
-        const categories = Array.from(doc.querySelectorAll('category'));
-        const container = document.getElementById('navContainer');
-        container.innerHTML = '';
-
-        categories.forEach(cat => {
-          const name = cat.getAttribute('name');
-          const div = document.createElement('div');
-          div.className = 'category';
-          div.innerHTML = `<h2>${name}</h2><ul class="link-list"></ul>`;
-          const ul = div.querySelector('.link-list');
-
-          cat.querySelectorAll('link').forEach(link => {
-            const a = document.createElement('a');
-            a.href = link.getAttribute('url');
-            a.target = '_blank';
-            a.textContent = link.getAttribute('name');
-            const li = document.createElement('li');
-            li.appendChild(a);
-            const desc = link.getAttribute('desc');
-            if (desc) {
-              const span = document.createElement('span');
-              span.className = 'desc';
-              span.textContent = desc;
-              li.appendChild(span);
-            }
-            ul.appendChild(li);
-          });
-
-          container.appendChild(div);
-        });
-
-        // 搜索功能
-        document.getElementById('searchInput').oninput = e => {
-          const term = e.target.value.toLowerCase();
-          document.querySelectorAll('.link-list li').forEach(li => {
-            li.style.display = li.textContent.toLowerCase().includes(term) ? 'flex' : 'none';
-          });
-        };
-
-      } catch (err) {
-        document.getElementById('navContainer').innerHTML = '<p style="text-align:center;color:red;">加载失败，请稍后重试</p>';
-      }
-    }
-
-    loadData();
+    // 搜索功能
+    document.getElementById('searchInput').oninput = e => {
+      const term = e.target.value.toLowerCase();
+      document.querySelectorAll('.link-list li').forEach(li => {
+        li.style.display = li.textContent.toLowerCase().includes(term) ? 'flex' : 'none';
+      });
+    };
   </script>
 </body>
 </html>
