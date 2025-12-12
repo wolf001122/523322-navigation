@@ -1,41 +1,112 @@
-
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>网址导航 - 资源站</title>
+  <title>网址导航 - 实用资源站</title>
+  <meta name="description" content="简洁实用的网址导航，收藏常用工具、学习资源、云服务等。">
   <link rel="stylesheet" href="style.css">
+
+  <!-- Google AdSense 自动广告代码（只需放一次） -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9474229114991789"
+          crossorigin="anonymous"></script>
 </head>
 <body>
+
   <header>
     <h1>网址导航 <small>— 实用资源站</small></h1>
-    <!-- 广告位 1: 顶部横幅广告（Google AdSense 占位） -->
-    <div class="ad-banner" id="ad-top">
-      <!-- AdSense 代码占位：替换为您的广告代码 -->
-      <p style="text-align:center; padding:10px; background:#f0f0f0;">
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9474229114991789"
-     crossorigin="anonymous"></script>
-      </p>
-    </div>
-    <p style="text-align:center;margin:20px;">
-      <a href="/admin/admin.html" style="color:#64748b;font-size:0.9em;">管理员登录</a>
-    </p>
-    <input type="text" id="searchInput" placeholder="搜索链接..." style="width:300px;padding:8px;margin:10px auto;display:block;">
-  </header>
-  <main id="navContainer"></main>
-  <!-- 广告位 2: 侧边或底部广告 -->
-  <div class="ad-sidebar" id="ad-side">
-    <p style="text-align:center; padding:10px; background:#f0f0f0;">广告位 - 侧边/底部 (300x250)</p>
-  </div>
-  <footer>© 2025 网址导航站</footer>
 
+    <!-- 广告位 1：顶部横幅 728×90（电脑）/ 320×100（手机）自适应 -->
+    <div class="ad-top">
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-9474229114991789"
+           data-ad-slot="1234567890"          <!-- 这里可以留空，自动广告无需填 -->
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>
+           (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+
+    <!-- 搜索框 -->
+    <input type="text" id="searchInput" placeholder="搜索网站名称或描述..." autocomplete="off">
+  </header>
+
+  <!-- 主要导航内容区域 -->
+  <main id="navContainer"></main>
+
+  <!-- 广告位 2：右侧矩形 300×250（电脑） / 底部横条（手机） -->
+  <div class="ad-side">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-9474229114991789"
+         data-ad-slot="0987654321"          <!-- 自动广告可留空 -->
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+
+  <footer>
+    © 2025 网址导航站 | <a href="https://beian.miit.gov.cn" target="_blank" rel="noopener">ICP备案号</a>
+  </footer>
+
+  <!-- 核心脚本：加载数据 + 渲染 + 搜索功能 -->
   <script>
-    // 数据加载和渲染逻辑（同前，省略以节省空间；复制之前完整代码）
-    async function loadData() { /* ... */ }
+    // 从 Cloudflare KV 读取数据
+    async function loadData() {
+      try {
+        const res = await fetch('/api/data');
+        const xml = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(xml, 'text/xml');
+        const categories = Array.from(doc.querySelectorAll('category'));
+        const container = document.getElementById('navContainer');
+        container.innerHTML = '';
+
+        categories.forEach(cat => {
+          const name = cat.getAttribute('name');
+          const div = document.createElement('div');
+          div.className = 'category';
+          div.innerHTML = `<h2>${name}</h2><ul class="link-list"></ul>`;
+          const ul = div.querySelector('.link-list');
+
+          cat.querySelectorAll('link').forEach(link => {
+            const a = document.createElement('a');
+            a.href = link.getAttribute('url');
+            a.target = '_blank';
+            a.textContent = link.getAttribute('name');
+            const li = document.createElement('li');
+            li.appendChild(a);
+            const desc = link.getAttribute('desc');
+            if (desc) {
+              const span = document.createElement('span');
+              span.className = 'desc';
+              span.textContent = desc;
+              li.appendChild(span);
+            }
+            ul.appendChild(li);
+          });
+
+          container.appendChild(div);
+        });
+
+        // 搜索功能
+        document.getElementById('searchInput').oninput = e => {
+          const term = e.target.value.toLowerCase();
+          document.querySelectorAll('.link-list li').forEach(li => {
+            li.style.display = li.textContent.toLowerCase().includes(term) ? 'flex' : 'none';
+          });
+        };
+
+      } catch (err) {
+        document.getElementById('navContainer').innerHTML = '<p style="text-align:center;color:red;">加载失败，请稍后重试</p>';
+      }
+    }
+
     loadData();
   </script>
 </body>
 </html>
-
