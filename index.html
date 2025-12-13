@@ -23,24 +23,30 @@
     .sidebar a { display:block; padding:15px; background:#f8f9fa; border-radius:10px; text-decoration:none; color:#333; font-size:16px; text-align:center; transition:0.3s; }
     .sidebar a:hover, .sidebar a.active { background:#e3f2fd; color:#1976d2; font-weight:bold; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
 
-    /* 主内容区 */
-    .main { margin-left:280px; flex:1; padding:40px; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; min-height:100vh; }
+    /* 主内容区 - 紧贴顶部广告 */
+    .main { margin-left:280px; flex:1; padding:0; min-height:100vh; background:#fff; }
 
-    /* 链接卡片网格 */
-    .links-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:30px; width:100%; max-width:1200px; margin-top:20px; }
+    /* 内容区域 */
+    #contentArea { padding:40px 40px 80px; } /* 上间距留给广告，下留页脚 */
+    #contentArea h2 { font-size:24px; color:#333; margin-bottom:30px; padding-bottom:10px; border-bottom:2px solid #eee; }
 
-    /* 链接卡片（添加图标显示） */
-    .link-card { background:white; padding:30px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.1); text-align:center; transition:0.3s; height:220px; display:flex; flex-direction:column; justify-content:center; align-items:center; }
-    .link-card:hover { transform:translateY(-5px); box-shadow:0 10px 30px rgba(0,0,0,0.15); }
-    .link-card img { width:60px; height:60px; margin-bottom:15px; object-fit:contain; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
-    .link-card a { font-size:18px; color:#1976d2; text-decoration:none; font-weight:bold; }
-    .link-card .desc { color:#666; font-size:14px; margin-top:8px; }
+    /* 链接卡片网格 - 水平左对齐，自动填充（每行约 5-6 个，根据屏幕宽度） */
+    .links-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:20px; }
+
+    /* 链接卡片 - 仿附件图片风格 */
+    .link-card { background:white; padding:20px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.08); text-align:left; transition:0.3s; height:100px; display:flex; align-items:center; gap:15px; }
+    .link-card:hover { transform:translateY(-4px); box-shadow:0 8px 25px rgba(0,0,0,0.12); }
+    .link-card img { width:50px; height:50px; object-fit:contain; border-radius:8px; }
+    .link-card .info { flex:1; }
+    .link-card a { font-size:17px; color:#333; text-decoration:none; font-weight:bold; display:block; margin-bottom:5px; }
+    .link-card a:hover { color:#1976d2; }
+    .link-card .desc { color:#666; font-size:14px; }
 
     /* 广告位 */
-    .ad-top { text-align:center; margin:30px 0; }
-    .ad-side { position:fixed; right:30px; top:100px; width:300px; }
+    .ad-top { text-align:center; padding:20px 0; background:#fff; box-shadow:0 2px 10px rgba(0,0,0,0.05); }
+    .ad-side { position:fixed; right:30px; top:100px; width:300px; box-shadow:0 4px 20px rgba(0,0,0,0.1); border-radius:12px; overflow:hidden; }
 
-    footer { text-align:center; padding:40px; color:#666; width:100%; margin-top:auto; }
+    footer { text-align:center; padding:40px; color:#666; width:100%; }
   </style>
 </head>
 <body>
@@ -68,23 +74,31 @@
         <div class="links-grid" id="defaultContent">
           <div class="link-card">
             <img src="https://cdn.freebiesupply.com/logos/thumbs/2x/baidu-icon-logo.png" alt="百度">
-            <a href="https://www.baidu.com" target="_blank">百度</a>
-            <div class="desc">百度一下，你就知道</div>
+            <div class="info">
+              <a href="https://www.baidu.com" target="_blank">百度</a>
+              <div class="desc">百度一下，你就知道</div>
+            </div>
           </div>
           <div class="link-card">
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/1024px-Google_%22G%22_Logo.svg.png" alt="Google">
-            <a href="https://www.google.com" target="_blank">Google</a>
-            <div class="desc">全球最强搜索引擎</div>
+            <div class="info">
+              <a href="https://www.google.com" target="_blank">Google</a>
+              <div class="desc">全球最强搜索引擎</div>
+            </div>
           </div>
           <div class="link-card">
             <img src="https://assets.stickpng.com/images/623afb0d27d4946aceae2faa.png" alt="Bing">
-            <a href="https://www.bing.com" target="_blank">Bing</a>
-            <div class="desc">微软必应搜索</div>
+            <div class="info">
+              <a href="https://www.bing.com" target="_blank">Bing</a>
+              <div class="desc">微软必应搜索</div>
+            </div>
           </div>
           <div class="link-card">
             <img src="https://img.88icon.com/download/jpg/201912/d1694c5b671f8f7e6e2ea7ec1f67c82e.jpg!bg" alt="360搜索">
-            <a href="https://www.so.com" target="_blank">360搜索</a>
-            <div class="desc">安全搜索</div>
+            <div class="info">
+              <a href="https://www.so.com" target="_blank">360搜索</a>
+              <div class="desc">安全搜索</div>
+            </div>
           </div>
         </div>
       </div>
@@ -117,7 +131,7 @@
             name: l.getAttribute('name'),
             url: l.getAttribute('url'),
             desc: l.getAttribute('desc') || '',
-            icon: l.getAttribute('icon') || ''  // 支持 icon
+            icon: l.getAttribute('icon') || ''
           }))
         }));
 
@@ -143,7 +157,42 @@
     }
 
     function showDefaultSearchEngines() {
-      // 同前默认搜索引擎代码...
+      const area = document.getElementById('contentArea');
+      area.innerHTML = `
+        <h2>百度一下，你就知道</h2>
+        <div class="links-grid">
+          <div class="link-card">
+            <img src="https://cdn.freebiesupply.com/logos/thumbs/2x/baidu-icon-logo.png" alt="百度">
+            <div class="info">
+              <a href="https://www.baidu.com" target="_blank">百度</a>
+              <div class="desc">百度一下，你就知道</div>
+            </div>
+          </div>
+          <div class="link-card">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/1024px-Google_%22G%22_Logo.svg.png" alt="Google">
+            <div class="info">
+              <a href="https://www.google.com" target="_blank">Google</a>
+              <div class="desc">全球最强搜索引擎</div>
+            </div>
+          </div>
+          <div class="link-card">
+            <img src="https://assets.stickpng.com/images/623afb0d27d4946aceae2faa.png" alt="Bing">
+            <div class="info">
+              <a href="https://www.bing.com" target="_blank">Bing</a>
+              <div class="desc">微软必应搜索</div>
+            </div>
+          </div>
+          <div class="link-card">
+            <img src="https://img.88icon.com/download/jpg/201912/d1694c5b671f8f7e6e2ea7ec1f67c82e.jpg!bg" alt="360搜索">
+            <div class="info">
+              <a href="https://www.so.com" target="_blank">360搜索</a>
+              <div class="desc">安全搜索</div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
     }
 
     function selectCategory(name) {
@@ -158,14 +207,15 @@
         const card = document.createElement('div');
         card.className = 'link-card';
         card.innerHTML = `
-          ${link.icon ? `<img src="${link.icon}" alt="${link.name}">` : '<img src="https://via.placeholder.com/60?text=ICON" alt="默认图标">'}
-          <a href="${link.url}" target="_blank">${link.name}</a>
-          <div class="desc">${link.desc}</div>
+          ${link.icon ? `<img src="${link.icon}" alt="${link.name}">` : '<img src="https://via.placeholder.com/50?text=ICON" alt="默认图标">'}
+          <div class="info">
+            <a href="${link.url}" target="_blank">${link.name}</a>
+            <div class="desc">${link.desc}</div>
+          </div>
         `;
         grid.appendChild(card);
       });
 
-      // 高亮
       document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
       document.querySelector(`.sidebar a[onclick="selectCategory('${name}')"]`)?.classList.add('active');
     }
