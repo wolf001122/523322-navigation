@@ -230,26 +230,25 @@
         const name = document.getElementById('linkName').value.trim();
         const url = document.getElementById('linkUrl').value.trim();
         const desc = document.getElementById('linkDesc').value.trim();
-        let icon = document.getElementById('linkIcon').value.trim();
+        let icon = document.getElementById('linkIcon').value.trim(); // 手动 URL 默认
 
-        // 处理文件上传
         const fileInput = document.getElementById('linkIconFile');
         if (fileInput.files && fileInput.files[0]) {
           const file = fileInput.files[0];
           const formData = new FormData();
           formData.append('file', file);
           try {
-            const uploadRes = await fetch('/api/upload', {
-              method: 'POST',
-              body: formData
-            });
+            const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
             if (uploadRes.ok) {
               icon = await uploadRes.text();
+              alert('图标上传成功，URL：' + icon); // 调试提示
             } else {
-              alert('图标上传失败，使用手动输入的 URL');
+              alert('上传失败，状态：' + await uploadRes.text());
+              return;
             }
           } catch (e) {
-            alert('上传错误，使用手动输入的 URL');
+            alert('上传异常：' + e.message);
+            return;
           }
         }
 
@@ -298,8 +297,8 @@
         xml += `  <category name="${this.escapeXml(cat.name)}">\n`;
         cat.links.forEach(link => {
           const desc = link.desc ? ` desc="${this.escapeXml(link.desc)}"` : '';
-          const icon = link.icon ? ` icon="${this.escapeXml(link.icon)}"` : '';
-          xml += `    <link name="${this.escapeXml(link.name)}" url="${this.escapeXml(link.url)}"${desc}${icon}/>\n`;
+          const iconAttr = link.icon ? ` icon="${this.escapeXml(link.icon)}"` : '';
+          xml += `    <link name="${this.escapeXml(link.name)}" url="${this.escapeXml(link.url)}"${desc}${iconAttr}/>\n`;
         });
         xml += '  </category>\n';
       });
