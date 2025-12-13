@@ -5,56 +5,327 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>管理后台 - 网址导航</title>
   <link rel="stylesheet" href="../style.css">
+
+  <!-- Sortable.js 用于拖拽排序 -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+
   <style>
-    /* 同前样式... */
+    body { background:#f8f9fa; padding:20px; font-family:Arial, sans-serif; }
+    .container { max-width:1100px; margin:0 auto; background:white; padding:30px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1); }
+    .header { text-align:center; margin-bottom:30px; }
+    .header button { margin:0 10px; padding:10px 20px; background:#007bff; color:white; border:none; border-radius:6px; cursor:pointer; }
+    .header button:hover { background:#28a745; }
+    .category { background:#f1f3f5; padding:20px; margin-bottom:20px; border-radius:8px; cursor:move; }
+    .category h2 { margin:0 0 15px; display:flex; justify-content:space-between; align-items:center; cursor:move; }
+    .link-item { display:flex; justify-content:space-between; align-items:center; padding:12px; background:white; margin:8px 0; border-radius:6px; cursor:move; }
+    .link-item.dragging { opacity:0.5; }
+    .actions button { margin-left:5px; padding:5px 10px; font-size:12px; }
+    .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:999; }
+    .modal-content { background:white; padding:30px; border-radius:12px; width:90%; max-width:500px; }
+    .form-group { margin-bottom:15px; }
+    .form-group label { display:block; margin-bottom:5px; font-weight:bold; }
+    .form-group input, .form-group select, .form-group textarea { width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; }
+    .close { float:right; font-size:28px; cursor:pointer; }
   </style>
 </head>
 <body>
-  <!-- 同前 HTML 结构... -->
+<div class="container">
+  <div class="header">
+    <h1>网址导航 - 管理后台</h1>
+    <button onclick="location.href='/'">返回首页</button>
+    <button onclick="navMgr.saveToKV()">保存到 KV（永久生效）</button>
+  </div>
 
-  <script>
-    class NavigationManager {
-      // 同前代码...
+  <div class="controls" style="text-align:center; margin:30px 0;">
+    <button onclick="navMgr.showModal('category')">+ 新增分类</button>
+    <button onclick="navMgr.showModal('link')">+ 新增链接</button>
+  </div>
 
-      showModal(type, catIdx = -1, linkIdx = -1) {
-        // 同前...
+  <div id="navContainer"></div>
+</div>
 
-        if (type === 'link') {
-          // 同前...
-          this.formFields.innerHTML += `
-            <div class="form-group">
-              <label>图标上传（可选，建议 60x60 PNG）</label>
-              <input type="file" id="linkIconFile" accept="image/png,image/jpeg">
-              <p style="font-size:12px; color:#666;">或输入 URL： <input type="url" id="linkIcon" value="${link.icon || ''}" placeholder="https://example.com/logo.png"></p>
-            </div>
-          `;
-        }
-      }
+<!-- 模态框 -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="navMgr.closeModal()">&times;</span>
+    <h2 id="modalTitle">新增分类</h2>
+    <form id="editForm">
+      <div id="formFields"></div>
+      <button type="submit" style="width:100%; padding:12px; background:#28a745; color:white; border:none; border-radius:6px; margin-top:20px;">
+        确认保存
+      </button>
+    </form>
+  </div>
+</div>
 
-      async saveItem(type) {
-        if (type === 'link') {
-          // 同前...
-          let icon = document.getElementById('linkIcon').value.trim();
-          const file = document.getElementById('linkIconFile').files[0];
-          if (file) {
-            const formData = new FormData();
-            formData.append('file', file);
-            const res = await fetch('/api/upload', { method: 'POST', body: formData });
-            if (res.ok) icon = await res.text();
-            else return alert('图标上传失败');
-          }
-          const link = { name, url, desc, icon };
-          // 同前...
-        }
-        // 同前...
-      }
-
-      // 同前 saveToKV 添加 icon 到 XML...
-      xml += `    <link name="${this.escapeXml(link.name)}" url="${this.escapeXml(link.url)}"${desc} icon="${this.escapeXml(link.icon)}"/>\n`;
+<script>
+  class NavigationManager {
+    constructor() {
+      this.categories = [];
+      this.currentCatIndex = -1;
+      this.currentLinkIndex = -1;
+      this.modal = document.getElementById('modal');
+      this.form = document.getElementById('editForm');
+      this.formFields = document.getElementById('formFields');
+      this.navContainer = document.getElementById('navContainer');
+      this.modalTitle = document.getElementById('modalTitle');
     }
 
-    const navMgr = new NavigationManager();
-    navMgr.init();
-  </script>
+    init() { this.loadData(); }
+
+    async loadData() {
+      try {
+        const res = await fetch('/api/data');
+        const xml = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(xml, 'text/xml');
+        this.categories = Array.from(doc.querySelectorAll('category')).map(cat => ({
+          name: cat.getAttribute('name'),
+          links: Array.from(cat.querySelectorAll('link')).map(l => ({
+            name: l.getAttribute('name'),
+            url: l.getAttribute('url'),
+            desc: l.getAttribute('desc') || '',
+            icon: l.getAttribute('icon') || ''
+          }))
+        }));
+        this.render();
+        this.initSortable();
+      } catch (e) {
+        alert('加载失败：' + e.message);
+      }
+    }
+
+    render() {
+      this.navContainer.innerHTML = '';
+      this.categories.forEach((cat, cIdx) => {
+        const div = document.createElement('div');
+        div.className = 'category';
+        div.dataset.catIndex = cIdx;
+        div.innerHTML = `
+          <h2>
+            ${cat.name}
+            <span>
+              <button onclick="navMgr.editCategory(${cIdx})">编辑</button>
+              <button onclick="navMgr.deleteCategory(${cIdx})" style="background:#dc3545;color:white;">删除</button>
+            </span>
+          </h2>
+          <ul class="link-list" data-cat-index="${cIdx}">
+            ${cat.links.map((link, lIdx) => `
+              <li class="link-item" data-link-index="${lIdx}">
+                <div>
+                  ${link.icon ? `<img src="${link.icon}" style="width:30px;height:30px;vertical-align:middle;margin-right:10px;">` : ''}
+                  <strong><a href="${link.url}" target="_blank">${link.name}</a></strong>
+                  <span style="color:#666;margin-left:10px;">${link.desc}</span>
+                </div>
+                <div class="actions">
+                  <button onclick="navMgr.editLink(${cIdx},${lIdx})">编辑</button>
+                  <button onclick="navMgr.deleteLink(${cIdx},${lIdx})" style="background:#dc3545;color:white;">删除</button>
+                </div>
+              </li>
+            `).join('')}
+            <li style="list-style:none; margin-top:10px;">
+              <button onclick="navMgr.showModal('link', ${cIdx})" style="width:100%; padding:10px; background:#e9ecef;">
+                + 在【${cat.name}】添加链接
+              </button>
+            </li>
+          </ul>
+        `;
+        this.navContainer.appendChild(div);
+      });
+      this.initSortable();
+    }
+
+    initSortable() {
+      new Sortable(this.navContainer, {
+        animation: 150,
+        handle: 'h2',
+        onEnd: () => {
+          const newOrder = Array.from(this.navContainer.children).map(div => parseInt(div.dataset.catIndex));
+          const newCategories = newOrder.map(idx => this.categories[idx]);
+          this.categories = newCategories;
+          this.render();
+        }
+      });
+
+      document.querySelectorAll('.link-list').forEach(list => {
+        new Sortable(list, {
+          animation: 150,
+          filter: 'li[style]',
+          onEnd: evt => {
+            const catIdx = parseInt(evt.to.dataset.catIndex);
+            const links = Array.from(evt.to.children).filter(li => li.classList.contains('link-item'));
+            const newLinks = links.map(li => this.categories[catIdx].links[parseInt(li.dataset.linkIndex)]);
+            this.categories[catIdx].links = newLinks;
+            this.render();
+          }
+        });
+      });
+    }
+
+    showModal(type, catIdx = -1, linkIdx = -1) {
+      this.currentCatIndex = catIdx;
+      this.currentLinkIndex = linkIdx;
+      this.formFields.innerHTML = '';
+      this.modalTitle.textContent = (linkIdx >= 0 ? '编辑' : '新增') + (type === 'category' ? '分类' : '链接');
+
+      if (type === 'category') {
+        this.formFields.innerHTML = `
+          <div class="form-group">
+            <label>分类名称</label>
+            <input type="text" id="catName" value="${catIdx >= 0 ? this.categories[catIdx].name : ''}" required>
+          </div>
+        `;
+      } else {
+        const select = this.categories.map((c, i) => 
+          `<option value="${i}" ${i===catIdx?'selected':''}>${c.name}</option>`
+        ).join('');
+        const link = catIdx >= 0 && linkIdx >= 0 ? this.categories[catIdx].links[linkIdx] : {name:'',url:'',desc:'',icon:''};
+        this.formFields.innerHTML = `
+          <div class="form-group">
+            <label>所属分类</label>
+            <select id="catSelect">${select}</select>
+          </div>
+          <div class="form-group">
+            <label>链接名称</label>
+            <input type="text" id="linkName" value="${link.name}" required>
+          </div>
+          <div class="form-group">
+            <label>链接地址</label>
+            <input type="url" id="linkUrl" value="${link.url}" required>
+          </div>
+          <div class="form-group">
+            <label>描述（可选）</label>
+            <textarea id="linkDesc" rows="2">${link.desc}</textarea>
+          </div>
+          <div class="form-group">
+            <label>图标上传（可选，建议 60x60 PNG）</label>
+            <input type="file" id="linkIconFile" accept="image/png,image/jpeg,image/webp">
+            <p style="font-size:12px;color:#666;margin-top:5px;">或手动输入图标 URL：</p>
+            <input type="url" id="linkIcon" value="${link.icon}" placeholder="https://example.com/logo.png">
+          </div>
+        `;
+      }
+
+      this.form.onsubmit = (e) => {
+        e.preventDefault();
+        this.saveItem(type);
+      };
+
+      this.modal.style.display = 'flex';
+    }
+
+    closeModal() { this.modal.style.display = 'none'; }
+
+    async saveItem(type) {
+      if (type === 'category') {
+        const name = document.getElementById('catName').value.trim();
+        if (!name) return alert('分类名称不能为空');
+        if (this.currentCatIndex >= 0) {
+          this.categories[this.currentCatIndex].name = name;
+        } else {
+          this.categories.push({ name, links: [] });
+        }
+      } else {
+        const catIdx = parseInt(document.getElementById('catSelect').value);
+        const name = document.getElementById('linkName').value.trim();
+        const url = document.getElementById('linkUrl').value.trim();
+        const desc = document.getElementById('linkDesc').value.trim();
+        let icon = document.getElementById('linkIcon').value.trim();
+
+        // 处理文件上传
+        const fileInput = document.getElementById('linkIconFile');
+        if (fileInput.files && fileInput.files[0]) {
+          const file = fileInput.files[0];
+          const formData = new FormData();
+          formData.append('file', file);
+          try {
+            const uploadRes = await fetch('/api/upload', {
+              method: 'POST',
+              body: formData
+            });
+            if (uploadRes.ok) {
+              icon = await uploadRes.text();
+            } else {
+              alert('图标上传失败，使用手动输入的 URL');
+            }
+          } catch (e) {
+            alert('上传错误，使用手动输入的 URL');
+          }
+        }
+
+        if (!name || !url) return alert('名称和地址不能为空');
+        const link = { name, url, desc, icon };
+        if (this.currentLinkIndex >= 0) {
+          this.categories[catIdx].links[this.currentLinkIndex] = link;
+        } else {
+          this.categories[catIdx].links.push(link);
+        }
+      }
+      this.render();
+      this.closeModal();
+    }
+
+    editCategory(idx) { this.showModal('category', idx); }
+
+    deleteCategory(idx) {
+      if (confirm(`删除分类「${this.categories[idx].name}」？`)) {
+        this.categories.splice(idx, 1);
+        this.render();
+      }
+    }
+
+    editLink(cIdx, lIdx) { this.showModal('link', cIdx, lIdx); }
+
+    deleteLink(cIdx, lIdx) {
+      if (confirm('删除此链接？')) {
+        this.categories[cIdx].links.splice(lIdx, 1);
+        this.render();
+      }
+    }
+
+    async saveToKV() {
+      if (!confirm('确认保存所有改动（包括顺序和图标）到云端？')) return;
+
+      let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n';
+      const res = await fetch('/api/data');
+      const original = await res.text();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(original, 'text/xml');
+      const admin = doc.querySelector('admin');
+      if (admin) xml += `  <admin username="${admin.getAttribute('username')}" password="${admin.getAttribute('password')}" />\n`;
+
+      this.categories.forEach(cat => {
+        xml += `  <category name="${this.escapeXml(cat.name)}">\n`;
+        cat.links.forEach(link => {
+          const desc = link.desc ? ` desc="${this.escapeXml(link.desc)}"` : '';
+          const icon = link.icon ? ` icon="${this.escapeXml(link.icon)}"` : '';
+          xml += `    <link name="${this.escapeXml(link.name)}" url="${this.escapeXml(link.url)}"${desc}${icon}/>\n`;
+        });
+        xml += '  </category>\n';
+      });
+      xml += '</navigation>';
+
+      const r = await fetch('/api/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/xml' },
+        body: xml
+      });
+
+      if (r.ok) {
+        alert('保存成功！刷新首页查看变化');
+        this.loadData();
+      } else {
+        alert('保存失败：' + await r.text());
+      }
+    }
+
+    escapeXml(s) {
+      return s.replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'''":'&apos;'})[c]);
+    }
+  }
+
+  const navMgr = new NavigationManager();
+  navMgr.init();
+</script>
 </body>
 </html>
