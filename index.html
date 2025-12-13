@@ -16,32 +16,35 @@
 
     /* 左侧菜单 */
     .sidebar { width:280px; background:#fff; border-right:1px solid #eee; padding:30px 20px; position:fixed; height:100%; overflow-y:auto; box-shadow:2px 0 10px rgba(0,0,0,0.05); }
-    .sidebar h3 { margin:0 0 30px; text-align:center; font-size:24px; color:#333; }
+    .sidebar h3 { margin:0 0 30px; text-align:center; font-size:24px; color:#333; cursor:pointer; transition:0.3s; }
+    .sidebar h3:hover { color:#1976d2; }
     .sidebar ul { list-style:none; padding:0; }
     .sidebar li { margin:10px 0; }
     .sidebar a { display:block; padding:15px; background:#f8f9fa; border-radius:10px; text-decoration:none; color:#333; font-size:16px; text-align:center; transition:0.3s; }
     .sidebar a:hover, .sidebar a.active { background:#e3f2fd; color:#1976d2; font-weight:bold; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+    .sidebar .bottom-links { margin-top:30px; border-top:1px solid #eee; padding-top:20px; }
 
     /* 主内容区 */
-    .main { margin-left:280px; flex:1; padding:40px; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; }
+    .main { margin-left:280px; flex:1; padding:0; min-height:100vh; }
 
-    /* 默认搜索引擎居中显示 */
-    #contentArea { display:flex; flex-direction:column; align-items:center; justify-content:center; height:80vh; width:100%; }
-    #contentArea h2 { font-size:28px; margin-bottom:40px; color:#333; }
+    /* 内容区域（紧贴顶部，无垂直居中） */
+    #contentArea { padding:40px; background:#fff; min-height:calc(100vh - 80px); } /* 调整为紧贴顶部 */
+    #contentArea h2 { font-size:28px; margin-bottom:40px; color:#1976d2; text-align:left; border-bottom:2px solid #eee; padding-bottom:10px; } /* 标题样式像图片 */
+
     .links-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:30px; width:100%; max-width:1200px; }
 
-    /* 链接卡片（像图片中样式：圆角、白底、图标居中、名称蓝、描述灰） */
-    .link-card { background:white; padding:30px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.1); text-align:center; transition:0.3s; width:200px; height:200px; display:flex; flex-direction:column; justify-content:center; align-items:center; }
+    /* 链接卡片 */
+    .link-card { background:white; padding:30px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.1); text-align:center; transition:0.3s; height:200px; display:flex; flex-direction:column; justify-content:center; align-items:center; }
     .link-card:hover { transform:translateY(-5px); box-shadow:0 10px 30px rgba(0,0,0,0.15); }
     .link-card img { width:60px; height:60px; margin-bottom:15px; object-fit:contain; }
     .link-card a { font-size:18px; color:#1976d2; text-decoration:none; font-weight:bold; }
     .link-card .desc { color:#666; font-size:14px; margin-top:8px; }
 
     /* 广告位 */
-    .ad-top { text-align:center; margin:30px 0; }
+    .ad-top { text-align:center; margin:0; padding:20px 0; background:#fff; }
     .ad-side { position:fixed; right:30px; top:100px; width:300px; }
 
-    footer { text-align:center; padding:40px; color:#666; width:100%; margin-top:auto; }
+    footer { text-align:center; padding:40px; color:#666; width:100%; }
   </style>
 </head>
 <body>
@@ -57,21 +60,23 @@
   <div class="container">
     <!-- 左侧菜单 -->
     <div class="sidebar">
-      <h3>导航</h3>
+      <h3 onclick="showDefaultSearchEngines()">导航</h3> <!-- 点击返回搜索引擎 -->
       <ul id="categoriesList">
         <!-- 动态生成分类 -->
       </ul>
-      <!-- 返回搜索引擎链接 -->
-      <ul style="margin-top:30px; border-top:1px solid #eee; padding-top:20px;">
-        <li><a href="javascript:void(0)" onclick="showDefaultSearchEngines()" style="background:#fff; color:#999;">返回搜索引擎</a></li>
-      </ul>
+      <!-- 底部固定链接 -->
+      <div class="bottom-links">
+        <a href="javascript:void(0)" onclick="showSiteSubmission()">网站提交事务</a>
+        <a href="javascript:void(0)" onclick="showFriendlyLinks()">友情链接</a>
+        <a href="javascript:void(0)" onclick="showAboutNavigation()">关于导航</a>
+      </div>
     </div>
 
     <!-- 右侧主内容 -->
     <div class="main">
       <div id="contentArea">
-        <!-- 默认显示搜索引擎（垂直水平居中，不加载分类） -->
-        <h2 style="font-size:28px; margin-bottom:40px; color:#333;">百度一下，你就知道</h2>
+        <!-- 默认显示搜索引擎（水平 4 列，不垂直居中） -->
+        <h2>百度一下，你就知道</h2>
         <div class="links-grid" id="defaultContent">
           <div class="link-card">
             <img src="https://cdn.freebiesupply.com/logos/thumbs/2x/baidu-icon-logo.png" alt="百度">
@@ -112,7 +117,6 @@
   <script>
     let categories = [];
 
-    // 加载 KV 数据
     async function loadData() {
       try {
         const res = await fetch('/api/data');
@@ -125,7 +129,7 @@
             name: l.getAttribute('name'),
             url: l.getAttribute('url'),
             desc: l.getAttribute('desc') || '',
-            icon: l.getAttribute('icon') || 'https://via.placeholder.com/60?text=ICON' // 默认占位
+            icon: l.getAttribute('icon') || 'https://via.placeholder.com/60?text=ICON'
           }))
         }));
 
@@ -136,7 +140,7 @@
       }
     }
 
-    // 渲染左侧导航
+    // 渲染左侧分类
     function renderSidebar() {
       const list = document.getElementById('categoriesList');
       list.innerHTML = '';
@@ -151,12 +155,12 @@
       });
     }
 
-    // 显示默认搜索引擎（居中，不加载分类）
+    // 显示默认搜索引擎（4 列水平）
     function showDefaultSearchEngines() {
       const area = document.getElementById('contentArea');
       area.innerHTML = `
-        <h2 style="font-size:28px; margin-bottom:40px; color:#333;">百度一下，你就知道</h2>
-        <div class="links-grid">
+        <h2>百度一下，你就知道</h2>
+        <div class="links-grid" id="defaultContent">
           <div class="link-card">
             <img src="https://cdn.freebiesupply.com/logos/thumbs/2x/baidu-icon-logo.png" alt="百度">
             <a href="https://www.baidu.com" target="_blank">百度</a>
@@ -189,25 +193,62 @@
       if (!cat) return;
 
       const area = document.getElementById('contentArea');
-      area.innerHTML = `<h2 style="font-size:28px; margin-bottom:40px; color:#333;">${cat.name}</h2>`;
-      const grid = document.createElement('div');
-      grid.className = 'links-grid';
-
-      cat.links.forEach(link => {
-        const card = document.createElement('div');
-        card.className = 'link-card';
-        card.innerHTML = `
-          <img src="${link.icon}" alt="${link.name}">
-          <a href="${link.url}" target="_blank">${link.name}</a>
-          <div class="desc">${link.desc}</div>
-        `;
-        grid.appendChild(card);
-      });
-
-      area.appendChild(grid);
+      area.innerHTML = `
+        <h2>${cat.name}</h2>
+        <div class="links-grid">
+          ${cat.links.map(link => `
+            <div class="link-card">
+              <img src="${link.icon}" alt="${link.name}">
+              <a href="${link.url}" target="_blank">${link.name}</a>
+              <div class="desc">${link.desc}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
 
       document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
       document.querySelector(`.sidebar a[onclick="selectCategory('${name}')"]`)?.classList.add('active');
+    }
+
+    // 网站提交事务内容
+    function showSiteSubmission() {
+      const area = document.getElementById('contentArea');
+      area.innerHTML = `
+        <h2>网站提交事务</h2>
+        <p>欢迎提交您的网站！请发送邮箱到 abc88620@gmail.com，提供网站名称、URL、描述和分类。</p>
+        <form style="max-width:600px; margin:0 auto;">
+          <input placeholder="网站名称" style="width:100%; padding:10px; margin:10px 0;">
+          <input placeholder="URL" style="width:100%; padding:10px; margin:10px 0;">
+          <textarea placeholder="描述" rows="5" style="width:100%; padding:10px; margin:10px 0;"></textarea>
+          <button type="submit" style="padding:10px 20px; background:#1976d2; color:white; border:none; border-radius:6px;">提交</button>
+        </form>
+      `;
+    }
+
+    // 友情链接内容
+    function showFriendlyLinks() {
+      const area = document.getElementById('contentArea');
+      area.innerHTML = `
+        <h2>友情链接</h2>
+        <div class="links-grid">
+          <div class="link-card">
+            <img src="https://via.placeholder.com/60?text=Link1" alt="链接1">
+            <a href="https://example.com" target="_blank">友情链接1</a>
+            <div class="desc">描述1</div>
+          </div>
+          <!-- 添加更多友情链接 -->
+        </div>
+      `;
+    }
+
+    // 关于导航内容
+    function showAboutNavigation() {
+      const area = document.getElementById('contentArea');
+      area.innerHTML = `
+        <h2>关于导航</h2>
+        <p>吾爱三三两两导航站是一个实用资源导航网站，提供常用工具、生物信息、云服务器等分类，方便用户快速访问。</p>
+        <p>版本：1.0 | 更新日期: 2025-12-12 | 联系: abc88620@gmail.com</p>
+      `;
     }
 
     // 启动
