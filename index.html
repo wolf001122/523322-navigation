@@ -22,15 +22,15 @@
     .sidebar li { margin:10px 0; }
     .sidebar a { display:block; padding:15px; background:#f8f9fa; border-radius:10px; text-decoration:none; color:#333; font-size:16px; text-align:center; transition:0.3s; }
     .sidebar a:hover, .sidebar a.active { background:#e3f2fd; color:#1976d2; font-weight:bold; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+    .sidebar .bottom-links { margin-top:auto; padding-top:20px; border-top:1px solid #eee; }
 
     /* 主内容区 - 紧贴顶部广告 */
     .main { margin-left:280px; flex:1; padding:0; min-height:100vh; background:#fff; }
 
     /* 内容区域 */
-    #contentArea { padding:40px 40px 80px; } /* 上间距留给广告，下留页脚 */
+    #contentArea { padding:40px; min-height:calc(100vh - 80px); }
     #contentArea h2 { font-size:24px; color:#333; margin-bottom:30px; padding-bottom:10px; border-bottom:2px solid #eee; }
 
-    /* 链接卡片网格 - 水平左对齐，自动填充（每行约 5-6 个，根据屏幕宽度） */
     .links-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:20px; }
 
     /* 链接卡片 - 仿附件图片风格 */
@@ -64,6 +64,12 @@
     <div class="sidebar">
       <h3 onclick="showDefaultSearchEngines()">导航</h3>
       <ul id="categoriesList"></ul>
+      <!-- 底部链接 -->
+      <div class="bottom-links">
+        <a href="javascript:void(0)" onclick="showSiteSubmission()">网站提交事务</a>
+        <a href="javascript:void(0)" onclick="showFriendlyLinks()">友情链接</a>
+        <a href="javascript:void(0)" onclick="showAboutNavigation()">关于导航</a>
+      </div>
     </div>
 
     <!-- 主内容 -->
@@ -218,6 +224,46 @@
 
       document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
       document.querySelector(`.sidebar a[onclick="selectCategory('${name}')"]`)?.classList.add('active');
+    }
+
+    // 网站提交事务
+    function showSiteSubmission() {
+      const area = document.getElementById('contentArea');
+      area.innerHTML = `
+        <h2>网站提交事务</h2>
+        <p style="max-width:800px; line-height:1.8;">欢迎提交您的网站！请通过后台管理或联系管理员提供网站名称、URL、描述和分类，审核后添加。</p>
+      `;
+      document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+    }
+
+    // 友情链接
+    function showFriendlyLinks() {
+      const area = document.getElementById('contentArea');
+      area.innerHTML = `
+        <h2>友情链接</h2>
+        <div class="links-grid">
+          <!-- 示例，可后台添加 -->
+          <div class="link-card">
+            <img src="https://via.placeholder.com/50?text=F1" alt="友情链接1">
+            <div class="info">
+              <a href="https://example.com" target="_blank">友情链接1</a>
+              <div class="desc">示例友情链接描述</div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+    }
+
+    // 关于导航
+    function showAboutNavigation() {
+      const area = document.getElementById('contentArea');
+      area.innerHTML = `
+        <h2>关于导航</h2>
+        <p style="max-width:800px; line-height:1.8;">吾爱三三两两导航站是一个实用资源导航网站，致力于收集常用工具、学习资源、云服务等优质网站，方便用户快速访问。</p>
+        <p>版本：1.0 | 更新日期: 2025-12-13</p>
+      `;
+      document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
     }
 
     loadData();
