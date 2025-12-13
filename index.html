@@ -14,35 +14,36 @@
     body { margin:0; font-family:Arial,sans-serif; background:#f5f5f5; }
     .container { display:flex; max-width:1800px; margin:0 auto; min-height:100vh; }
 
-    /* 左侧菜单 */
+    /* 左侧菜单（美化：圆角、阴影、图标） */
     .sidebar { width:280px; background:#fff; border-right:1px solid #eee; padding:30px 20px; position:fixed; height:100%; overflow-y:auto; box-shadow:2px 0 10px rgba(0,0,0,0.05); }
     .sidebar h3 { margin:0 0 30px; text-align:center; font-size:24px; color:#333; cursor:pointer; transition:0.3s; }
     .sidebar h3:hover { color:#1976d2; }
     .sidebar ul { list-style:none; padding:0; }
     .sidebar li { margin:10px 0; }
-    .sidebar a { display:block; padding:15px; background:#f8f9fa; border-radius:10px; text-decoration:none; color:#333; font-size:16px; text-align:center; transition:0.3s; }
+    .sidebar a { display:flex; align-items:center; padding:15px; background:#f8f9fa; border-radius:10px; text-decoration:none; color:#333; font-size:16px; text-align:left; transition:0.3s; gap:10px; }
+    .sidebar a img { width:30px; height:30px; object-fit:contain; }
     .sidebar a:hover, .sidebar a.active { background:#e3f2fd; color:#1976d2; font-weight:bold; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
-    .sidebar .bottom-links { margin-top:30px; border-top:1px solid #eee; padding-top:20px; }
+    .sidebar .bottom-links { position:absolute; bottom:50px; width:calc(100% - 40px); border-top:1px solid #eee; padding-top:20px; }
 
     /* 主内容区 */
     .main { margin-left:280px; flex:1; padding:0; min-height:100vh; }
 
-    /* 内容区域（紧贴顶部，无垂直居中） */
-    #contentArea { padding:40px; background:#fff; min-height:calc(100vh - 80px); } /* 调整为紧贴顶部 */
+    /* 内容区域（紧贴顶部） */
+    #contentArea { padding:40px; background:#fff; min-height:calc(100vh - 80px); }
     #contentArea h2 { font-size:28px; margin-bottom:40px; color:#1976d2; text-align:left; border-bottom:2px solid #eee; padding-bottom:10px; } /* 标题样式像图片 */
 
     .links-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:30px; width:100%; max-width:1200px; }
 
-    /* 链接卡片 */
-    .link-card { background:white; padding:30px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.1); text-align:center; transition:0.3s; height:200px; display:flex; flex-direction:column; justify-content:center; align-items:center; }
-    .link-card:hover { transform:translateY(-5px); box-shadow:0 10px 30px rgba(0,0,0,0.15); }
-    .link-card img { width:60px; height:60px; margin-bottom:15px; object-fit:contain; }
+    /* 链接卡片（美化：更大圆角、渐变阴影、图标居中） */
+    .link-card { background:linear-gradient(to bottom, #fff, #f9f9f9); padding:30px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.1); text-align:center; transition:0.3s; height:200px; display:flex; flex-direction:column; justify-content:center; align-items:center; }
+    .link-card:hover { transform:translateY(-5px); box-shadow:0 10px 30px rgba(0,0,0,0.15); background:linear-gradient(to bottom, #f0f8ff, #e3f2fd); }
+    .link-card img { width:60px; height:60px; margin-bottom:15px; object-fit:contain; border-radius:50%; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
     .link-card a { font-size:18px; color:#1976d2; text-decoration:none; font-weight:bold; }
     .link-card .desc { color:#666; font-size:14px; margin-top:8px; }
 
-    /* 广告位 */
-    .ad-top { text-align:center; margin:0; padding:20px 0; background:#fff; }
-    .ad-side { position:fixed; right:30px; top:100px; width:300px; }
+    /* 广告位（美化：阴影、边框） */
+    .ad-top { text-align:center; margin:0; padding:20px 0; background:#fff; box-shadow:0 2px 10px rgba(0,0,0,0.05); }
+    .ad-side { position:fixed; right:30px; top:100px; width:300px; box-shadow:0 4px 20px rgba(0,0,0,0.1); border-radius:12px; overflow:hidden; }
 
     footer { text-align:center; padding:40px; color:#666; width:100%; }
   </style>
@@ -62,9 +63,9 @@
     <div class="sidebar">
       <h3 onclick="showDefaultSearchEngines()">导航</h3> <!-- 点击返回搜索引擎 -->
       <ul id="categoriesList">
-        <!-- 动态生成分类 -->
+        <!-- 动态生成分类 + 图标 -->
       </ul>
-      <!-- 底部固定链接 -->
+      <!-- 底部链接（最下部，独立） -->
       <div class="bottom-links">
         <a href="javascript:void(0)" onclick="showSiteSubmission()">网站提交事务</a>
         <a href="javascript:void(0)" onclick="showFriendlyLinks()">友情链接</a>
@@ -75,7 +76,7 @@
     <!-- 右侧主内容 -->
     <div class="main">
       <div id="contentArea">
-        <!-- 默认显示搜索引擎（水平 4 列，不垂直居中） -->
+        <!-- 默认显示搜索引擎（水平 4 列） -->
         <h2>百度一下，你就知道</h2>
         <div class="links-grid" id="defaultContent">
           <div class="link-card">
@@ -129,7 +130,7 @@
             name: l.getAttribute('name'),
             url: l.getAttribute('url'),
             desc: l.getAttribute('desc') || '',
-            icon: l.getAttribute('icon') || 'https://via.placeholder.com/60?text=ICON'
+            icon: l.getAttribute('icon') || 'https://via.placeholder.com/30?text=ICON' // 默认小图标
           }))
         }));
 
@@ -140,14 +141,17 @@
       }
     }
 
-    // 渲染左侧分类
+    // 渲染左侧分类（带图标）
     function renderSidebar() {
       const list = document.getElementById('categoriesList');
       list.innerHTML = '';
       categories.forEach(cat => {
         const li = document.createElement('li');
         const a = document.createElement('a');
-        a.textContent = cat.name;
+        a.innerHTML = `
+          <img src="${cat.icon || 'https://via.placeholder.com/30?text=CAT'}">
+          ${cat.name}
+        `;
         a.href = 'javascript:void(0)';
         a.onclick = () => selectCategory(cat.name);
         li.appendChild(a);
@@ -155,7 +159,7 @@
       });
     }
 
-    // 显示默认搜索引擎（4 列水平）
+    // 默认显示搜索引擎
     function showDefaultSearchEngines() {
       const area = document.getElementById('contentArea');
       area.innerHTML = `
@@ -210,12 +214,12 @@
       document.querySelector(`.sidebar a[onclick="selectCategory('${name}')"]`)?.classList.add('active');
     }
 
-    // 网站提交事务内容
+    // 网站提交事务
     function showSiteSubmission() {
       const area = document.getElementById('contentArea');
       area.innerHTML = `
         <h2>网站提交事务</h2>
-        <p>欢迎提交您的网站！请发送邮箱到 abc88620@gmail.com，提供网站名称、URL、描述和分类。</p>
+        <p>欢迎提交您的网站！请通过以下表单提交，管理员审核后添加。</p>
         <form style="max-width:600px; margin:0 auto;">
           <input placeholder="网站名称" style="width:100%; padding:10px; margin:10px 0;">
           <input placeholder="URL" style="width:100%; padding:10px; margin:10px 0;">
@@ -225,7 +229,7 @@
       `;
     }
 
-    // 友情链接内容
+    // 友情链接
     function showFriendlyLinks() {
       const area = document.getElementById('contentArea');
       area.innerHTML = `
@@ -236,18 +240,18 @@
             <a href="https://example.com" target="_blank">友情链接1</a>
             <div class="desc">描述1</div>
           </div>
-          <!-- 添加更多友情链接 -->
+          <!-- 添加更多 -->
         </div>
       `;
     }
 
-    // 关于导航内容
+    // 关于导航
     function showAboutNavigation() {
       const area = document.getElementById('contentArea');
       area.innerHTML = `
         <h2>关于导航</h2>
         <p>吾爱三三两两导航站是一个实用资源导航网站，提供常用工具、生物信息、云服务器等分类，方便用户快速访问。</p>
-        <p>版本：1.0 | 更新日期: 2025-12-12 | 联系: abc88620@gmail.com</p>
+        <p>版本：1.0 | 更新日期: 2025-12-12 | 联系管理员提交反馈。</p>
       `;
     }
 
