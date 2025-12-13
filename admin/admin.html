@@ -198,7 +198,7 @@
             <textarea id="linkDesc" rows="2">${link.desc}</textarea>
           </div>
           <div class="form-group">
-            <label>图标上传（可选，建议 60x60 PNG）</label>
+            <label>图标上传（可选，建议 60x60 PNG/JPG）</label>
             <input type="file" id="linkIconFile" accept="image/png,image/jpeg,image/webp">
             <p style="font-size:12px;color:#666;margin-top:5px;">或手动输入图标 URL：</p>
             <input type="url" id="linkIcon" value="${link.icon}" placeholder="https://example.com/logo.png">
@@ -216,51 +216,53 @@
 
     closeModal() { this.modal.style.display = 'none'; }
 
-async saveItem(type) {
-  if (type === 'category') {
-    const name = document.getElementById('catName').value.trim();
-    if (!name) return alert('分类名称不能为空');
-    if (this.currentCatIndex >= 0) {
-      this.categories[this.currentCatIndex].name = name;
-    } else {
-      this.categories.push({ name, links: [] });
-    }
-  } else {
-    const catIdx = parseInt(document.getElementById('catSelect').value);
-    const name = document.getElementById('linkName').value.trim();
-    const url = document.getElementById('linkUrl').value.trim();
-    const desc = document.getElementById('linkDesc').value.trim();
-    let icon = document.getElementById('linkIcon').value.trim(); // 手动 URL
-
-    const fileInput = document.getElementById('linkIconFile');
-    if (fileInput.files && fileInput.files[0]) {
-      const file = fileInput.files[0];
-      const formData = new FormData();
-      formData.append('file', file);
-      try {
-        const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
-        if (uploadRes.ok) {
-          icon = await uploadRes.text().trim();
-          alert('图标上传成功！URL: ' + icon); // 调试：确认 URL
+    async saveItem(type) {
+      if (type === 'category') {
+        const name = document.getElementById('catName').value.trim();
+        if (!name) return alert('分类名称不能为空');
+        if (this.currentCatIndex >= 0) {
+          this.categories[this.currentCatIndex].name = name;
         } else {
-          alert('上传失败，使用手动 URL：' + await uploadRes.text());
+          this.categories.push({ name, links: [] });
         }
-      } catch (e) {
-        alert('上传异常，使用手动 URL：' + e.message);
-      }
-    }
+      } else {
+        const catIdx = parseInt(document.getElementById('catSelect').value);
+        const name = document.getElementById('linkName').value.trim();
+        const url = document.getElementById('linkUrl').value.trim();
+        const desc = document.getElementById('linkDesc').value.trim();
+        let icon = document.getElementById('linkIcon').value.trim(); // 手动 URL
 
-    if (!name || !url) return alert('名称和地址不能为空');
-    const link = { name, url, desc, icon }; // 关键：保存 icon
-    if (this.currentLinkIndex >= 0) {
-      this.categories[catIdx].links[this.currentLinkIndex] = link;
-    } else {
-      this.categories[catIdx].links.push(link);
+        const fileInput = document.getElementById('linkIconFile');
+        if (fileInput.files && fileInput.files[0]) {
+          const file = fileInput.files[0];
+          const formData = new FormData();
+          formData.append('file', file);
+          try {
+            const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
+            if (uploadRes.ok) {
+              const uploadedUrl = await uploadRes.text();
+              icon = uploadedUrl.trim();
+              alert('图标上传成功！URL: ' + icon);
+            } else {
+              const errorText = await uploadRes.text();
+              alert('上传失败，使用手动 URL。错误：' + errorText);
+            }
+          } catch (e) {
+            alert('上传异常，使用手动 URL。错误：' + e.message);
+          }
+        }
+
+        if (!name || !url) return alert('名称和地址不能为空');
+        const link = { name, url, desc, icon };
+        if (this.currentLinkIndex >= 0) {
+          this.categories[catIdx].links[this.currentLinkIndex] = link;
+        } else {
+          this.categories[catIdx].links.push(link);
+        }
+      }
+      this.render();
+      this.closeModal();
     }
-  }
-  this.render();
-  this.closeModal();
-}
 
     editCategory(idx) { this.showModal('category', idx); }
 
@@ -326,5 +328,3 @@ async saveItem(type) {
 </script>
 </body>
 </html>
-
-
