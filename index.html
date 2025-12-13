@@ -14,7 +14,7 @@
     body { margin:0; font-family:Arial,sans-serif; background:#f5f5f5; }
     .container { display:flex; max-width:1800px; margin:0 auto; min-height:100vh; }
 
-    /* 左侧分类菜单 */
+    /* 左侧菜单 */
     .sidebar { width:280px; background:#fff; border-right:1px solid #eee; padding:30px 20px; position:fixed; height:100%; overflow-y:auto; box-shadow:2px 0 10px rgba(0,0,0,0.05); }
     .sidebar h3 { margin:0 0 30px; text-align:center; font-size:24px; color:#333; }
     .sidebar ul { list-style:none; padding:0; }
@@ -26,12 +26,14 @@
     .main { margin-left:280px; flex:1; padding:40px; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; }
 
     /* 默认搜索引擎居中显示 */
-    #defaultContent { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:30px; width:100%; max-width:1200px; }
+    #contentArea { display:flex; flex-direction:column; align-items:center; justify-content:center; height:80vh; width:100%; }
+    #contentArea h2 { font-size:28px; margin-bottom:40px; color:#333; }
+    .links-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:30px; width:100%; max-width:1200px; }
 
-    /* 链接卡片 */
-    .link-card { background:white; padding:30px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.1); text-align:center; transition:0.3s; height:180px; display:flex; flex-direction:column; justify-content:center; }
+    /* 链接卡片（像图片中样式：圆角、白底、图标居中、名称蓝、描述灰） */
+    .link-card { background:white; padding:30px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.1); text-align:center; transition:0.3s; width:200px; height:200px; display:flex; flex-direction:column; justify-content:center; align-items:center; }
     .link-card:hover { transform:translateY(-5px); box-shadow:0 10px 30px rgba(0,0,0,0.15); }
-    .link-card img { width:80px; height:80px; margin:0 auto 15px; object-fit:contain; }
+    .link-card img { width:60px; height:60px; margin-bottom:15px; object-fit:contain; }
     .link-card a { font-size:18px; color:#1976d2; text-decoration:none; font-weight:bold; }
     .link-card .desc { color:#666; font-size:14px; margin-top:8px; }
 
@@ -53,21 +55,24 @@
   </div>
 
   <div class="container">
-    <!-- 左侧分类菜单 -->
+    <!-- 左侧菜单 -->
     <div class="sidebar">
-      <h3>分类导航</h3>
+      <h3>导航</h3>
       <ul id="categoriesList">
-        <!-- 动态生成 -->
+        <!-- 动态生成分类 -->
+      </ul>
+      <!-- 返回搜索引擎链接 -->
+      <ul style="margin-top:30px; border-top:1px solid #eee; padding-top:20px;">
+        <li><a href="javascript:void(0)" onclick="showDefaultSearchEngines()" style="background:#fff; color:#999;">返回搜索引擎</a></li>
       </ul>
     </div>
 
     <!-- 右侧主内容 -->
     <div class="main">
       <div id="contentArea">
-        <!-- 默认只显示搜索引擎，垂直+水平居中 -->
+        <!-- 默认显示搜索引擎（垂直水平居中，不加载分类） -->
         <h2 style="font-size:28px; margin-bottom:40px; color:#333;">百度一下，你就知道</h2>
         <div class="links-grid" id="defaultContent">
-          <!-- 搜索引擎卡片（带真实 logo） -->
           <div class="link-card">
             <img src="https://cdn.freebiesupply.com/logos/thumbs/2x/baidu-icon-logo.png" alt="百度">
             <a href="https://www.baidu.com" target="_blank">百度</a>
@@ -102,12 +107,12 @@
     </div>
   </div>
 
-  <footer>© 2025 网址导航站</footer>
+  <footer>© 2025 吾爱三三两两导航站</footer>
 
   <script>
     let categories = [];
-    let currentCategory = null;
 
+    // 加载 KV 数据
     async function loadData() {
       try {
         const res = await fetch('/api/data');
@@ -120,19 +125,18 @@
             name: l.getAttribute('name'),
             url: l.getAttribute('url'),
             desc: l.getAttribute('desc') || '',
-            // 可扩展：后台添加 icon 属性
-            icon: l.getAttribute('icon') || 'https://via.placeholder.com/80?text=LOGO' // 默认占位
+            icon: l.getAttribute('icon') || 'https://via.placeholder.com/60?text=ICON' // 默认占位
           }))
         }));
 
         renderSidebar();
         showDefaultSearchEngines(); // 首次只显示搜索引擎
       } catch (e) {
-        document.getElementById('contentArea').innerHTML = '<p style="text-align:center;color:red;">加载失败</p>';
+        console.error(e);
       }
     }
 
-    // 渲染左侧分类
+    // 渲染左侧导航
     function renderSidebar() {
       const list = document.getElementById('categoriesList');
       list.innerHTML = '';
@@ -147,12 +151,12 @@
       });
     }
 
-    // 默认只显示搜索引擎（居中）
+    // 显示默认搜索引擎（居中，不加载分类）
     function showDefaultSearchEngines() {
       const area = document.getElementById('contentArea');
       area.innerHTML = `
         <h2 style="font-size:28px; margin-bottom:40px; color:#333;">百度一下，你就知道</h2>
-        <div class="links-grid" id="defaultContent">
+        <div class="links-grid">
           <div class="link-card">
             <img src="https://cdn.freebiesupply.com/logos/thumbs/2x/baidu-icon-logo.png" alt="百度">
             <a href="https://www.baidu.com" target="_blank">百度</a>
@@ -176,7 +180,6 @@
         </div>
       `;
 
-      // 高亮无分类（默认状态）
       document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
     }
 
@@ -203,7 +206,6 @@
 
       area.appendChild(grid);
 
-      // 高亮当前分类
       document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
       document.querySelector(`.sidebar a[onclick="selectCategory('${name}')"]`)?.classList.add('active');
     }
