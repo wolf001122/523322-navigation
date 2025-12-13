@@ -14,15 +14,31 @@
     body { margin:0; font-family:Arial,sans-serif; background:#f5f5f5; }
     .container { display:flex; max-width:1800px; margin:0 auto; min-height:100vh; }
 
-    /* 左侧菜单 */
-    .sidebar { width:280px; background:#fff; border-right:1px solid #eee; padding:30px 20px; position:fixed; height:100%; overflow-y:auto; box-shadow:2px 0 10px rgba(0,0,0,0.05); }
+    /* 左侧菜单 - 固定 + 底部链接固定 */
+    .sidebar { 
+      width:280px; 
+      background:#fff; 
+      border-right:1px solid #eee; 
+      padding:30px 20px; 
+      position:fixed; 
+      height:100%; 
+      display:flex; 
+      flex-direction:column; 
+      box-shadow:2px 0 10px rgba(0,0,0,0.05); 
+    }
     .sidebar h3 { margin:0 0 30px; text-align:center; font-size:24px; color:#333; cursor:pointer; transition:0.3s; }
     .sidebar h3:hover { color:#1976d2; }
-    .sidebar ul { list-style:none; padding:0; }
+    .sidebar ul { list-style:none; padding:0; flex:1; overflow-y:auto; }
     .sidebar li { margin:10px 0; }
     .sidebar a { display:block; padding:15px; background:#f8f9fa; border-radius:10px; text-decoration:none; color:#333; font-size:16px; text-align:center; transition:0.3s; }
     .sidebar a:hover, .sidebar a.active { background:#e3f2fd; color:#1976d2; font-weight:bold; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
-    .sidebar .bottom-links { margin-top:auto; padding-top:20px; border-top:1px solid #eee; }
+
+    /* 底部链接固定在最下 */
+    .sidebar .bottom-links { 
+      margin-top:auto; 
+      padding-top:20px; 
+      border-top:1px solid #eee; 
+    }
 
     /* 主内容区 - 紧贴顶部广告 */
     .main { margin-left:280px; flex:1; padding:0; min-height:100vh; background:#fff; }
@@ -33,7 +49,7 @@
 
     .links-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:20px; }
 
-    /* 链接卡片 - 仿附件图片风格 */
+    /* 链接卡片 */
     .link-card { background:white; padding:20px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.08); text-align:left; transition:0.3s; height:100px; display:flex; align-items:center; gap:15px; }
     .link-card:hover { transform:translateY(-4px); box-shadow:0 8px 25px rgba(0,0,0,0.12); }
     .link-card img { width:50px; height:50px; object-fit:contain; border-radius:8px; }
@@ -64,7 +80,8 @@
     <div class="sidebar">
       <h3 onclick="showDefaultSearchEngines()">导航</h3>
       <ul id="categoriesList"></ul>
-      <!-- 底部链接 -->
+
+      <!-- 底部固定链接 -->
       <div class="bottom-links">
         <a href="javascript:void(0)" onclick="showSiteSubmission()">网站提交事务</a>
         <a href="javascript:void(0)" onclick="showFriendlyLinks()">友情链接</a>
@@ -226,7 +243,6 @@
       document.querySelector(`.sidebar a[onclick="selectCategory('${name}')"]`)?.classList.add('active');
     }
 
-    // 网站提交事务
     function showSiteSubmission() {
       const area = document.getElementById('contentArea');
       area.innerHTML = `
@@ -236,13 +252,11 @@
       document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
     }
 
-    // 友情链接
     function showFriendlyLinks() {
       const area = document.getElementById('contentArea');
       area.innerHTML = `
         <h2>友情链接</h2>
         <div class="links-grid">
-          <!-- 示例，可后台添加 -->
           <div class="link-card">
             <img src="https://via.placeholder.com/50?text=F1" alt="友情链接1">
             <div class="info">
@@ -255,7 +269,6 @@
       document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
     }
 
-    // 关于导航
     function showAboutNavigation() {
       const area = document.getElementById('contentArea');
       area.innerHTML = `
