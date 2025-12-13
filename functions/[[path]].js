@@ -43,7 +43,7 @@ export async function onRequest(context) {
       });
 
       // 返回公共 URL（替换为您的 R2 公共域名）
-      const publicUrl = `https://pub-您的R2子域.r2.dev/${key}`; // e.g., pub-abc123.r2.dev
+      const publicUrl = `https://pub-0bb15820dbcd4d9a9c46bffea3806e50.r2.dev/${key}`; // e.g., pub-abc123.r2.dev
       return new Response(publicUrl, { status: 200 });
     } catch (e) {
       return new Response('上传失败: ' + e.message, { status: 500 });
@@ -52,3 +52,4 @@ export async function onRequest(context) {
 
   return next();
 }
+
