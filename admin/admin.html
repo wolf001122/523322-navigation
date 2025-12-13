@@ -216,53 +216,51 @@
 
     closeModal() { this.modal.style.display = 'none'; }
 
-    async saveItem(type) {
-      if (type === 'category') {
-        const name = document.getElementById('catName').value.trim();
-        if (!name) return alert('分类名称不能为空');
-        if (this.currentCatIndex >= 0) {
-          this.categories[this.currentCatIndex].name = name;
-        } else {
-          this.categories.push({ name, links: [] });
-        }
-      } else {
-        const catIdx = parseInt(document.getElementById('catSelect').value);
-        const name = document.getElementById('linkName').value.trim();
-        const url = document.getElementById('linkUrl').value.trim();
-        const desc = document.getElementById('linkDesc').value.trim();
-        let icon = document.getElementById('linkIcon').value.trim(); // 手动 URL 默认
-
-        const fileInput = document.getElementById('linkIconFile');
-        if (fileInput.files && fileInput.files[0]) {
-          const file = fileInput.files[0];
-          const formData = new FormData();
-          formData.append('file', file);
-          try {
-            const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
-            if (uploadRes.ok) {
-              icon = await uploadRes.text();
-              alert('图标上传成功，URL：' + icon); // 调试提示
-            } else {
-              alert('上传失败，状态：' + await uploadRes.text());
-              return;
-            }
-          } catch (e) {
-            alert('上传异常：' + e.message);
-            return;
-          }
-        }
-
-        if (!name || !url) return alert('名称和地址不能为空');
-        const link = { name, url, desc, icon };
-        if (this.currentLinkIndex >= 0) {
-          this.categories[catIdx].links[this.currentLinkIndex] = link;
-        } else {
-          this.categories[catIdx].links.push(link);
-        }
-      }
-      this.render();
-      this.closeModal();
+async saveItem(type) {
+  if (type === 'category') {
+    const name = document.getElementById('catName').value.trim();
+    if (!name) return alert('分类名称不能为空');
+    if (this.currentCatIndex >= 0) {
+      this.categories[this.currentCatIndex].name = name;
+    } else {
+      this.categories.push({ name, links: [] });
     }
+  } else {
+    const catIdx = parseInt(document.getElementById('catSelect').value);
+    const name = document.getElementById('linkName').value.trim();
+    const url = document.getElementById('linkUrl').value.trim();
+    const desc = document.getElementById('linkDesc').value.trim();
+    let icon = document.getElementById('linkIcon').value.trim(); // 手动 URL
+
+    const fileInput = document.getElementById('linkIconFile');
+    if (fileInput.files && fileInput.files[0]) {
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
+        if (uploadRes.ok) {
+          icon = await uploadRes.text();
+          alert('图标上传成功：' + icon); // 调试提示
+        } else {
+          alert('上传失败，使用手动 URL');
+        }
+      } catch (e) {
+        alert('上传异常，使用手动 URL');
+      }
+    }
+
+    if (!name || !url) return alert('名称和地址不能为空');
+    const link = { name, url, desc, icon }; // 保存 icon
+    if (this.currentLinkIndex >= 0) {
+      this.categories[catIdx].links[this.currentLinkIndex] = link;
+    } else {
+      this.categories[catIdx].links.push(link);
+    }
+  }
+  this.render();
+  this.closeModal();
+}
 
     editCategory(idx) { this.showModal('category', idx); }
 
@@ -328,3 +326,4 @@
 </script>
 </body>
 </html>
+
