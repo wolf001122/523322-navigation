@@ -2,107 +2,189 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>网址导航 - 实用的资源导航综合网站</title>
+  <meta name="viewport" content="width=1400"> <!-- 电脑专用宽度 -->
+  <title>网址导航 - 实用资源站</title>
   <link rel="stylesheet" href="style.css">
 
   <!-- Google AdSense 核心脚本 -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9474229114991789"
           crossorigin="anonymous"></script>
+
+  <style>
+    body { margin:0; font-family:Arial,sans-serif; background:#f5f5f5; }
+    .container { display:flex; max-width:1600px; margin:0 auto; min-height:100vh; }
+    
+    /* 左侧分类菜单 */
+    .sidebar { width:250px; background:#fff; border-right:1px solid #eee; padding:20px; position:fixed; height:100%; overflow-y:auto; }
+    .sidebar h3 { margin:0 0 20px; text-align:center; color:#333; }
+    .sidebar ul { list-style:none; padding:0; }
+    .sidebar li { margin:8px 0; }
+    .sidebar a { display:block; padding:12px; background:#f8f9fa; border-radius:8px; text-decoration:none; color:#333; }
+    .sidebar a:hover, .sidebar a.active { background:#e3f2fd; color:#1976d2; font-weight:bold; }
+
+    /* 主内容区 */
+    .main { margin-left:250px; flex:1; padding:20px; }
+    .search-bar { text-align:center; margin:30px 0; }
+    .search-bar input { width:600px; padding:15px; font-size:18px; border:1px solid #ddd; border-radius:30px; }
+
+    /* 链接卡片网格 */
+    .links-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:20px; }
+    .link-card { background:white; padding:20px; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.1); text-align:center; }
+    .link-card a { font-size:16px; color:#1976d2; text-decoration:none; font-weight:bold; }
+    .link-card .desc { color:#666; font-size:14px; margin-top:8px; }
+
+    /* 广告位 */
+    .ad-top { text-align:center; margin:20px 0; }
+    .ad-side { position:fixed; right:20px; top:100px; width:300px; }
+
+    footer { text-align:center; padding:30px; color:#666; margin-top:50px; }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>网址导航 <small>— 实用的资源导航综合网站</small></h1>
-
-    <!-- 广告位 1：顶部横幅 -->
-    <div class="ad-top">
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-9474229114991789"
-           data-ad-format="auto"></ins>
-      <script>
-        (adsbygoogle = window.adsbygoogle || []).push({});
-      </script>
-    </div>
-
-    <!-- 搜索框 -->
-    <input type="text" id="searchInput" placeholder="搜索网站名称或描述..." autocomplete="off" style="width:300px;padding:8px;margin:10px auto;display:block;">
-  </header>
-
-  <main id="navContainer">
-    <!-- 动态加载占位 -->
-    <p style="text-align:center; color:#666;">加载中...</p>
-  </main>
-
-  <!-- 广告位 2：侧边矩形 -->
-  <div class="ad-side">
+  <!-- 顶部广告 728x90 -->
+  <div class="ad-top">
     <ins class="adsbygoogle"
-         style="display:block"
+         style="display:inline-block;width:728px;height:90px"
          data-ad-client="ca-pub-9474229114991789"
          data-ad-format="auto"></ins>
-    <script>
-      (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
   </div>
 
-  <footer>
-    © 2025 网址导航站
-  </footer>
+  <div class="container">
+    <!-- 左侧分类菜单 -->
+    <div class="sidebar">
+      <h3>分类导航</h3>
+      <ul id="categoriesList">
+        <!-- 动态生成分类 -->
+      </ul>
+    </div>
+
+    <!-- 右侧主内容 -->
+    <div class="main">
+      <div class="search-bar">
+        <input type="text" id="globalSearch" placeholder="全局搜索网站名称或描述...">
+      </div>
+
+      <div id="contentArea">
+        <!-- 默认显示搜索引擎分类 -->
+        <h2 style="text-align:center;">搜索引擎</h2>
+        <div class="links-grid" id="defaultContent">
+          <div class="link-card">
+            <a href="https://www.baidu.com" target="_blank">百度</a>
+            <div class="desc">百度一下，你就知道</div>
+          </div>
+          <div class="link-card">
+            <a href="https://www.google.com" target="_blank">Google</a>
+            <div class="desc">全球最强搜索引擎</div>
+          </div>
+          <div class="link-card">
+            <a href="https://www.bing.com" target="_blank">Bing</a>
+            <div class="desc">微软必应搜索</div>
+          </div>
+          <div class="link-card">
+            <a href="https://www.so.com" target="_blank">360搜索</a>
+            <div class="desc">安全搜索</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右侧大广告 300x600 -->
+    <div class="ad-side">
+      <ins class="adsbygoogle"
+           style="display:inline-block;width:300px;height:600px"
+           data-ad-client="ca-pub-9474229114991789"
+           data-ad-format="auto"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+  </div>
+
+  <footer>© 2025 网址导航站</footer>
 
   <script>
-    // 动态从 KV 加载数据
+    let categories = [];
+    let currentCategory = null;
+
+    // 从 KV 加载数据
     async function loadData() {
       try {
         const res = await fetch('/api/data');
         const xml = await res.text();
         const parser = new DOMParser();
         const doc = parser.parseFromString(xml, 'text/xml');
-        const categories = Array.from(doc.querySelectorAll('category'));
-        const container = document.getElementById('navContainer');
-        container.innerHTML = '';
+        categories = Array.from(doc.querySelectorAll('category')).map(cat => ({
+          name: cat.getAttribute('name'),
+          links: Array.from(cat.querySelectorAll('link')).map(l => ({
+            name: l.getAttribute('name'),
+            url: l.getAttribute('url'),
+            desc: l.getAttribute('desc') || ''
+          }))
+        }));
 
-        categories.forEach(cat => {
-          const name = cat.getAttribute('name');
-          const div = document.createElement('div');
-          div.className = 'category';
-          div.innerHTML = `<h2>${name}</h2><ul class="link-list"></ul>`;
-          const ul = div.querySelector('.link-list');
-
-          cat.querySelectorAll('link').forEach(link => {
-            const a = document.createElement('a');
-            a.href = link.getAttribute('url');
-            a.target = '_blank';
-            a.textContent = link.getAttribute('name');
-            const li = document.createElement('li');
-            li.appendChild(a);
-            const desc = link.getAttribute('desc');
-            if (desc) {
-              const span = document.createElement('span');
-              span.className = 'desc';
-              span.textContent = desc;
-              li.appendChild(span);
-            }
-            ul.appendChild(li);
-          });
-
-          container.appendChild(div);
-        });
-
-        // 搜索功能
-        document.getElementById('searchInput').oninput = e => {
-          const term = e.target.value.toLowerCase();
-          document.querySelectorAll('.link-list li').forEach(li => {
-            li.style.display = li.textContent.toLowerCase().includes(term) ? 'flex' : 'none';
-          });
-        };
-
+        renderSidebar();
+        // 默认选中第一个分类或搜索引擎
+        if (categories.length > 0) {
+          selectCategory(categories[0].name);
+        }
       } catch (e) {
-        document.getElementById('navContainer').innerHTML = '<p style="text-align:center;color:red;">加载失败，请稍后重试</p>';
-        console.error(e);
+        document.getElementById('contentArea').innerHTML = '<p style="text-align:center;color:red;">加载失败</p>';
       }
     }
 
-    // 页面加载时执行
+    // 渲染左侧分类菜单
+    function renderSidebar() {
+      const list = document.getElementById('categoriesList');
+      list.innerHTML = '';
+      categories.forEach(cat => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.textContent = cat.name;
+        a.href = 'javascript:void(0)';
+        a.onclick = () => selectCategory(cat.name);
+        li.appendChild(a);
+        list.appendChild(li);
+      });
+    }
+
+    // 点击分类显示内容
+    function selectCategory(name) {
+      currentCategory = categories.find(c => c.name === name);
+      const area = document.getElementById('contentArea');
+      if (!currentCategory) {
+        area.innerHTML = '<h2 style="text-align:center;">搜索引擎</h2><div class="links-grid" id="defaultContent">...</div>';
+        return;
+      }
+
+      area.innerHTML = `<h2 style="text-align:center;">${currentCategory.name}</h2>`;
+      const grid = document.createElement('div');
+      grid.className = 'links-grid';
+
+      currentCategory.links.forEach(link => {
+        const card = document.createElement('div');
+        card.className = 'link-card';
+        card.innerHTML = `
+          <a href="${link.url}" target="_blank">${link.name}</a>
+          <div class="desc">${link.desc}</div>
+        `;
+        grid.appendChild(card);
+      });
+
+      area.appendChild(grid);
+
+      // 高亮当前分类
+      document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+      document.querySelector(`.sidebar a[onclick="selectCategory('${name}')"]`)?.classList.add('active');
+    }
+
+    // 全局搜索
+    document.getElementById('globalSearch').oninput = e => {
+      const term = e.target.value.toLowerCase();
+      document.querySelectorAll('.link-card').forEach(card => {
+        card.style.display = card.textContent.toLowerCase().includes(term) ? 'block' : 'none';
+      });
+    };
+
+    // 启动
     loadData();
   </script>
 </body>
