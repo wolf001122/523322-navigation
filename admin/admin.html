@@ -113,7 +113,7 @@
             ${cat.links.map((link, lIdx) => `
               <li class="link-item" data-link-index="${lIdx}">
                 <div>
-                  ${link.icon ? `<img src="${link.icon}" style="width:30px;height:30px;vertical-align:middle;margin-right:10px;">` : ''}
+                  ${link.icon ? `<img src="${link.icon}" style="width:30px;height:30px;vertical-align:middle;margin-right:10px;object-fit:contain;">` : ''}
                   <strong><a href="${link.url}" target="_blank">${link.name}</a></strong>
                   <span style="color:#666;margin-left:10px;">${link.desc}</span>
                 </div>
@@ -240,8 +240,8 @@
           try {
             const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
             if (uploadRes.ok) {
-              const uploadedUrl = await uploadRes.text();
-              icon = uploadedUrl.trim();
+              const uploadedText = await uploadRes.text();
+              icon = uploadedText.trim();
               alert('图标上传成功！URL: ' + icon);
             } else {
               const errorText = await uploadRes.text();
