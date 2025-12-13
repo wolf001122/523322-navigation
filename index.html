@@ -2,91 +2,108 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=1200"> <!-- 强制宽度适合电脑 -->
-  <title>网址导航 - 实用资源站</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>网址导航 - 实用的资源导航综合网站</title>
   <link rel="stylesheet" href="style.css">
 
-  <!-- 您的 Google AdSense 核心代码（已确认正确） -->
+  <!-- Google AdSense 核心脚本 -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9474229114991789"
           crossorigin="anonymous"></script>
 </head>
 <body>
+  <header>
+    <h1>网址导航 <small>— 实用的资源导航综合网站</small></h1>
 
-<!-- 顶部大横幅广告 728x90（电脑最贵位置） -->
-<div style="text-align:center; margin:20px auto; width:728px;">
-  <ins class="adsbygoogle"
-       style="display:inline-block;width:728px;height:90px"
-       data-ad-client="ca-pub-9474229114991789"
-       data-ad-slot="YOUR_SLOT_ID_IF_ANY"></ins>
-  <script>
-       (adsbygoogle = window.adsbygoogle || []).push({});
-  </script>
-</div>
-
-<header>
-  <h1>网址导航 <small>— 实用资源站</small></h1>
-
-  <!-- 搜索框（电脑居中） -->
-  <div style="text-align:center; margin:20px 0;">
-    <input type="text" id="searchInput" placeholder="搜索网站名称或描述..." 
-           style="width:500px; padding:10px; font-size:16px;">
-  </div>
-</header>
-
-<!-- 主内容 + 右侧大矩形广告 300x600（最赚钱尺寸） -->
-<div style="max-width:1400px; margin:0 auto; display:flex; gap:30px; justify-content:center;">
-
-  <!-- 左侧导航区 -->
-  <main id="navContainer" style="flex:1; max-width:900px;">
-    <!-- 所有分类直接写死在这里，保证不丢数据 -->
-    <div class="category">
-      <h2>常用工具</h2>
-      <ul class="link-list">
-        <li><a href="https://www.yuque.com" target="_blank">语雀</a><span class="desc">专业的云端知识库</span></li>
-        <li><a href="https://mail.qq.com" target="_blank">QQ邮箱</a><span class="desc">腾讯 QQ 邮箱</span></li>
-        <li><a href="https://github.com" target="_blank">GitHub</a><span class="desc">全球最大开源社区</span></li>
-        <!-- 继续添加您现有的所有链接 -->
-      </ul>
+    <!-- 广告位 1：顶部横幅 -->
+    <div class="ad-top">
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-9474229114991789"
+           data-ad-format="auto"></ins>
+      <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
     </div>
 
-    <div class="category">
-      <h2>生物信息</h2>
-      <ul class="link-list">
-        <li><a href="https://www.ncbi.nlm.nih.gov" target="_blank">NCBI</a><span class="desc">国家生物技术信息中心</span></li>
-        <!-- 更多... -->
-      </ul>
-    </div>
+    <!-- 搜索框 -->
+    <input type="text" id="searchInput" placeholder="搜索网站名称或描述..." autocomplete="off" style="width:300px;padding:8px;margin:10px auto;display:block;">
+  </header>
 
-    <!-- 您当前网站的所有分类全部复制粘贴到这里即可 -->
-    <!-- 我就不占篇幅了，您直接从现在网站“查看源代码”复制 <main id="navContainer"> 里面的全部内容粘贴进来即可 -->
+  <main id="navContainer">
+    <!-- 动态加载占位 -->
+    <p style="text-align:center; color:#666;">加载中...</p>
   </main>
 
-  <!-- 右侧固定大广告 300x600（电脑最贵尺寸） -->
-  <div style="width:300px; flex-shrink:0; position:sticky; top:20px; align-self:flex-start;">
+  <!-- 广告位 2：侧边矩形 -->
+  <div class="ad-side">
     <ins class="adsbygoogle"
-         style="display:inline-block;width:300px;height:600px"
+         style="display:block"
          data-ad-client="ca-pub-9474229114991789"
-         data-ad-slot="YOUR_SLOT_ID_IF_ANY"></ins>
+         data-ad-format="auto"></ins>
     <script>
-         (adsbygoogle = window.adsbygoogle || []).push({});
+      (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
   </div>
 
-</div>
+  <footer>
+    © 2025 网址导航站
+  </footer>
 
-<footer style="text-align:center; margin:40px 0; color:#666;">
-  © 2025 网址导航站
-</footer>
+  <script>
+    // 动态从 KV 加载数据
+    async function loadData() {
+      try {
+        const res = await fetch('/api/data');
+        const xml = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(xml, 'text/xml');
+        const categories = Array.from(doc.querySelectorAll('category'));
+        const container = document.getElementById('navContainer');
+        container.innerHTML = '';
 
-<!-- 搜索功能 -->
-<script>
-  document.getElementById('searchInput').oninput = function() {
-    let term = this.value.toLowerCase();
-    document.querySelectorAll('.link-list li').forEach(function(li) {
-      li.style.display = li.textContent.toLowerCase() ? 'flex' : 'none';
-    });
-  };
-</script>
+        categories.forEach(cat => {
+          const name = cat.getAttribute('name');
+          const div = document.createElement('div');
+          div.className = 'category';
+          div.innerHTML = `<h2>${name}</h2><ul class="link-list"></ul>`;
+          const ul = div.querySelector('.link-list');
 
+          cat.querySelectorAll('link').forEach(link => {
+            const a = document.createElement('a');
+            a.href = link.getAttribute('url');
+            a.target = '_blank';
+            a.textContent = link.getAttribute('name');
+            const li = document.createElement('li');
+            li.appendChild(a);
+            const desc = link.getAttribute('desc');
+            if (desc) {
+              const span = document.createElement('span');
+              span.className = 'desc';
+              span.textContent = desc;
+              li.appendChild(span);
+            }
+            ul.appendChild(li);
+          });
+
+          container.appendChild(div);
+        });
+
+        // 搜索功能
+        document.getElementById('searchInput').oninput = e => {
+          const term = e.target.value.toLowerCase();
+          document.querySelectorAll('.link-list li').forEach(li => {
+            li.style.display = li.textContent.toLowerCase().includes(term) ? 'flex' : 'none';
+          });
+        };
+
+      } catch (e) {
+        document.getElementById('navContainer').innerHTML = '<p style="text-align:center;color:red;">加载失败，请稍后重试</p>';
+        console.error(e);
+      }
+    }
+
+    // 页面加载时执行
+    loadData();
+  </script>
 </body>
 </html>
