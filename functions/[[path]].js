@@ -46,10 +46,12 @@ export async function onRequest(context) {
       const publicUrl = `https://pub-0bb15820dbcd4d9a9c46bffea3806e50.r2.dev/${key}`; // e.g., pub-abc123.r2.dev
       return new Response(publicUrl, { status: 200 });
     } catch (e) {
-      return new Response('上传失败: ' + e.message, { status: 500 });
+    console.error(e);
+    return new Response('上传失败: ' + e.message, { status: 500 });
     }
   }
 
   return next();
 }
+
 
