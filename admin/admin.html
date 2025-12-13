@@ -240,18 +240,18 @@ async saveItem(type) {
       try {
         const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
         if (uploadRes.ok) {
-          icon = await uploadRes.text();
-          alert('图标上传成功：' + icon); // 调试提示
+          icon = await uploadRes.text().trim();
+          alert('图标上传成功！URL: ' + icon); // 调试：确认 URL
         } else {
-          alert('上传失败，使用手动 URL');
+          alert('上传失败，使用手动 URL：' + await uploadRes.text());
         }
       } catch (e) {
-        alert('上传异常，使用手动 URL');
+        alert('上传异常，使用手动 URL：' + e.message);
       }
     }
 
     if (!name || !url) return alert('名称和地址不能为空');
-    const link = { name, url, desc, icon }; // 保存 icon
+    const link = { name, url, desc, icon }; // 关键：保存 icon
     if (this.currentLinkIndex >= 0) {
       this.categories[catIdx].links[this.currentLinkIndex] = link;
     } else {
@@ -326,4 +326,5 @@ async saveItem(type) {
 </script>
 </body>
 </html>
+
 
