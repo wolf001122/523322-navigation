@@ -1,33 +1,25 @@
-// functions/[[path]].js — 必须这个名字！处理 /api/data (GET 读 KV) 和 /api/save (POST 写 KV)
-
+// functions/[[path]].js — 添加图片上传接口
 export async function onRequest(context) {
   const { request, next, env } = context;
   const url = new URL(request.url);
 
-  // GET /api/data：从 KV 读数据
+  // GET /api/data：读 KV
   if (url.pathname === '/api/data' && request.method === 'GET') {
     let xml = await env.NAV_DATA.get('nav_data');
     if (!xml) {
-      // 首次初始化数据
       xml = `<?xml version="1.0" encoding="UTF-8"?>
 <navigation>
   <admin username="admin" password="pbkdf2:sha256:600000:example:example" />
   <category name="常用工具">
-    <link name="语雀" url="https://www.yuque.com" desc="专业的云端知识库"/>
-    <link name="GitHub" url="https://github.com" desc="全球最大开源社区"/>
-  </category>
-  <category name="生物信息">
-    <link name="NCBI" url="https://www.ncbi.nlm.nih.gov" desc="国家生物技术信息中心"/>
+    <link name="语雀" url="https://www.yuque.com" desc="专业的云端知识库" icon=""/>
   </category>
 </navigation>`;
       await env.NAV_DATA.put('nav_data', xml);
     }
-    return new Response(xml, {
-      headers: { 'Content-Type': 'text/xml;charset=utf-8' }
-    });
+    return new Response(xml, { headers: { 'Content-Type': 'text/xml;charset=utf-8' } });
   }
 
-  // POST /api/save：写入 KV
+  // POST /api/save：写 KV
   if (url.pathname === '/api/save' && request.method === 'POST') {
     try {
       const body = await request.text();
@@ -38,6 +30,21 @@ export async function onRequest(context) {
     }
   }
 
-  // 其他路径：静态文件
+  // POST /api/upload：上传图片到 R2，返回 URL
+  if (url.pathname === '/api/upload' && request.method === 'POST') {
+    try {
+      const formData = await request.formData();
+      const file = formData.get('file');
+      if (!file) return new Response('无文件', { status: 400 });
+      const key = `${Date.now()}-${file.name}`; // 唯一文件名
+      await env.ICON_BUCKET.put(key, file.stream(), { contentType: file.type });
+      const url = `https://pub-您的R2域名.r2.dev/${key}`; // R2 公共 URL（替换您的 R2 域名）
+      return new Response(url, { status: 200 });
+    } catch (e) {
+      return new Response('上传失败: ' + e.message, { status: 500 });
+    }
+  }
+
+  // 其他路径静态文件
   return next();
 }
