@@ -19,29 +19,70 @@
 </head>
 <body>
   <div class="card">
+    <h2>保存到云端</h2>
+    <p style="color:#5f6368;">所有修改已实时保存到内存，点击下方按钮永久写入 KV。</p>
+    <button class="success" onclick="saveToKV()">保存到 KV（永久生效）</button>
+  </div>
+
+  <div class="card">
     <h2>管理员设置</h2>
     <div class="form-group">
       <label>用户名</label>
-      <input type="text" value="admin">
+      <input type="text" value="admin" readonly>
     </div>
     <div class="form-group">
       <label>新密码（留空不修改）</label>
-      <input type="password">
+      <input type="password" id="newPassword">
     </div>
-    <button>更新管理员信息</button>
+    <button onclick="changePassword()">更新密码</button>
   </div>
 
-  <div class="card">
-    <h2>系统操作</h2>
-    <p style="color:#5f6368;">所有修改已实时保存到内存，点击下方按钮永久写入云端 KV。</p>
-    <button class="success" onclick="alert('保存成功！')">保存到 KV（永久生效）</button>
-  </div>
+  <script>
+    async function saveToKV() {
+      if (!confirm('确认保存所有数据到云端 KV？')) return;
 
-  <div class="card">
-    <h2>关于</h2>
-    <p>版本：1.0</p>
-    <p>更新日期：2025-12-14</p>
-    <p>基于 Cloudflare Pages + KV + R2 构建</p>
-  </div>
+      const categories = window.parent.categoriesData || [];
+      let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n';
+      const res = await fetch('/api/data');
+      const original = await res.text();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(original, 'text/xml');
+      const admin = doc.querySelector('admin');
+      if (admin) xml += `  <admin username="${admin.getAttribute('username')}" password="${admin.getAttribute('password')}" />\n`;
+
+      categories.forEach(cat => {
+        xml += `  <category name="${escapeXml(cat.name)}">\n`;
+        cat.subcategories.forEach(sub => {
+          xml += `    <subcategory name="${escapeXml(sub.name)}">\n`;
+          sub.links.forEach(link => {
+            const desc = link.desc ? ` desc="${escapeXml(link.desc)}"` : '';
+            const icon = link.icon ? ` icon="${escapeXml(link.icon)}"` : '';
+            xml += `      <link name="${escapeXml(link.name)}" url="${escapeXml(link.url)}"${desc}${icon}/>\n`;
+          });
+          xml += '    </subcategory>\n';
+        });
+        xml += '  </category>\n';
+      });
+      xml += '</navigation>';
+
+      const r = await fetch('/api/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/xml' },
+        body: xml
+      });
+
+      if (r.ok) alert('保存成功！');
+      else alert('保存失败：' + await r.text());
+    }
+
+    function escapeXml(s) {
+      return s.replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'''":'&apos;'})[c]);
+    }
+
+    function changePassword() {
+      const pwd = document.getElementById('newPassword').value;
+      if (pwd) alert('密码修改功能需后台支持（当前模拟）');
+    }
+  </script>
 </body>
 </html>
