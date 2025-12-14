@@ -28,17 +28,16 @@
     .main { margin-left:15%; flex:1; padding:0; min-height:100vh; background:#fff; } /* 与左侧对齐，避免重叠 */
 
     /* 内容区域 */
-    #contentArea { padding:40px; min-height:calc(100vh - 80px); display:flex; flex-direction:column; align-items:center; justify-content:center; } /* 居中内容 */
+    #contentArea { padding:40px; min-height:calc(100vh - 80px); display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-start; } /* 分类内容左对齐 */
 
     #contentArea h2 { font-size:24px; color:#333; margin-bottom:30px; padding-bottom:10px; border-bottom:2px solid #eee; }
 
     .links-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:20px; }
 
-    /* 链接卡片 - 仿附件图片风格 */
-    .link-card { background:white; padding:20px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.08); text-align:left; transition:0.3s; height:100px; display:flex; align-items:center; gap:15px; }
+    /* 链接卡片 - 较小图标靠上靠左 */
+    .link-card { background:white; padding:20px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.08); text-align:left; transition:0.3s; height:100px; display:flex; flex-direction:column; justify-content:flex-start; align-items:flex-start; gap:5px; }
     .link-card:hover { transform:translateY(-4px); box-shadow:0 8px 25px rgba(0,0,0,0.12); }
-    .link-card img { width:50px; height:50px; object-fit:contain; border-radius:8px; }
-    .link-card .info { flex:1; }
+    .link-card img { width:40px; height:40px; object-fit:contain; border-radius:8px; margin-bottom:5px; } /* 较小图标 */
     .link-card a { font-size:17px; color:#333; text-decoration:none; font-weight:bold; display:block; margin-bottom:5px; }
     .link-card a:hover { color:#1976d2; }
     .link-card .desc { color:#666; font-size:14px; }
@@ -48,7 +47,7 @@
     .ad-side { position:fixed; right:2%; top:100px; width:15%; max-width:300px; box-shadow:0 4px 20px rgba(0,0,0,0.1); border-radius:12px; overflow:hidden; } /* 右侧广告自适应 */
 
     /* 搜索引擎输入框 - 水平垂直居中 */
-    .search-container { width:60%; max-width:800px; display:flex; align-items:center; gap:0; } /* 无 margin，居中 */
+    .search-container { width:60%; max-width:800px; display:flex; align-items:center; gap:0; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); } /* 居中 */
     .search-container input { flex:1; padding:15px; font-size:16px; border:1px solid #ddd; border-radius:30px 0 0 30px; }
     .search-container select { padding:15px; font-size:16px; border:1px solid #ddd; border-left:none; border-radius:0; }
     .search-container button { padding:15px 30px; background:#1976d2; color:white; border:none; border-radius:0 30px 30px 0; cursor:pointer; }
@@ -83,7 +82,7 @@
     <!-- 主内容 -->
     <div class="main">
       <div id="contentArea">
-        <!-- 默认搜索引擎输入框 - 居中 -->
+        <!-- 默认搜索引擎输入框 - 水平垂直居中 -->
         <div class="search-container">
           <input type="text" id="searchInput" placeholder="请输入搜索内容...">
           <select id="searchEngine">
@@ -103,7 +102,7 @@
            style="display:inline-block;width:300px;height:600px"
            data-ad-client="ca-pub-9474229114991789"
            data-ad-format="auto"></ins>
-      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
   </div>
 </div>
 
