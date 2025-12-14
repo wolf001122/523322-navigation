@@ -14,9 +14,13 @@
     input, select, textarea { width:100%; padding:14px; border:1px solid #dadce0; border-radius:8px; font-size:16px; }
     button { width:100%; padding:16px; background:#4285f4; color:white; border:none; border-radius:8px; font-size:18px; cursor:pointer; margin-top:20px; }
     button:hover { background:#3367d6; }
+    button.upload-btn { background:#34a853; margin-top:8px; }
+    button.upload-btn:hover { background:#2d8e44; }
     .status { margin-top:20px; padding:16px; border-radius:8px; text-align:center; font-size:16px; }
     .success { background:#e6f4ea; color:#137333; border:1px solid #34a853; }
     .error { background:#fce8e6; color:#c5221f; border:1px solid #ea4335; }
+    .icon-preview { margin-top:10px; text-align:center; }
+    .icon-preview img { width:80px; height:80px; object-fit:contain; border-radius:8px; border:1px solid #ddd; }
   </style>
 </head>
 <body>
@@ -48,7 +52,11 @@
         <textarea id="desc" rows="4"></textarea>
       </div>
       <div class="form-group">
-        <label>图标 URL（可选，建议 60x60 PNG）</label>
+        <label>图标（可选，建议 60x60 PNG）</label>
+        <input type="file" id="iconFile" accept="image/*">
+        <button type="button" class="upload-btn" onclick="uploadIcon()">上传图标</button>
+        <div class="icon-preview" id="iconPreview"></div>
+        <p style="font-size:12px;color:#5f6368;margin-top:8px;">或手动输入图标 URL：</p>
         <input type="url" id="icon" placeholder="https://example.com/logo.png">
       </div>
       <div class="cf-turnstile" data-sitekey="0x4AAAAAACGkz4X0J8Vxw1wl" data-theme="light"></div>
@@ -60,7 +68,7 @@
   <script>
     let categories = [];
 
-    // 加载分类数据
+    // 加载分类
     async function loadCategories() {
       try {
         const res = await fetch('/api/data');
@@ -76,16 +84,14 @@
 
         populateCategorySelect();
       } catch (e) {
-        console.error('加载分类失败，使用空选项', e);
-        populateCategorySelect(); // 即使失败也允许手动输入
+        console.error('加载分类失败', e);
       }
     }
 
-    // 填充一级分类
     function populateCategorySelect() {
       const catSelect = document.getElementById('categorySelect');
       catSelect.innerHTML = '<option value="">-- 选择一级分类（可选）--</option>';
-      categories.forEach((cat, idx) => {
+      categories.forEach(cat => {
         const option = document.createElement('option');
         option.value = cat.name;
         option.textContent = cat.name;
@@ -94,7 +100,6 @@
       catSelect.addEventListener('change', updateSubcategorySelect);
     }
 
-    // 更新二级分类
     function updateSubcategorySelect() {
       const catName = document.getElementById('categorySelect').value;
       const subSelect = document.getElementById('subcategorySelect');
@@ -110,6 +115,30 @@
             subSelect.appendChild(option);
           });
         }
+      }
+    }
+
+    // 上传图标
+    async function uploadIcon() {
+      const fileInput = document.getElementById('iconFile');
+      const file = fileInput.files[0];
+      if (!file) return showStatus('请先选择图片文件', false);
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      showStatus('正在上传图标...', false);
+
+      try {
+        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        if (!res.ok) throw new Error('上传失败');
+        const url = (await res.text()).trim();
+
+        document.getElementById('icon').value = url;
+        document.getElementById('iconPreview').innerHTML = `<img src="${url}" alt="图标预览">`;
+        showStatus('图标上传成功！URL 已自动填充。', true);
+      } catch (e) {
+        showStatus('上传失败：' + e.message, false);
       }
     }
 
@@ -133,16 +162,17 @@
       if (!data.name || !data.url) return showStatus('网站名称和地址必填', false);
 
       try {
-        // 保存到待审核 KV
+        const currentPending = await getCurrentPending();
         const res = await fetch('/api/pending', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify([...(await getCurrentPending()), data])
+          body: JSON.stringify([...currentPending, data])
         });
 
         if (res.ok) {
           showStatus('提交成功！管理员会尽快审核。', true);
           document.getElementById('submitForm').reset();
+          document.getElementById('iconPreview').innerHTML = '';
           turnstile.reset();
         } else {
           throw new Error(await res.text());
@@ -152,7 +182,6 @@
       }
     };
 
-    // 获取当前待审核数据（辅助函数）
     async function getCurrentPending() {
       try {
         const res = await fetch('/api/pending');
@@ -168,7 +197,6 @@
       div.className = 'status ' + (success ? 'success' : 'error');
     }
 
-    // 页面加载时初始化
     loadCategories();
   </script>
 </body>
