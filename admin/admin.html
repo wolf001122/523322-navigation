@@ -17,7 +17,7 @@
     .sidebar-menu li a .material-icons { margin-right:24px; font-size:24px; color:#5f6368; }
     .sidebar-menu li a.active .material-icons { color:#4285f4; }
 
-    /* 主内容区 */
+    /* 主内容 */
     .main-content { margin-left:256px; flex:1; background:#f1f3f4; }
     .top-bar { background:#fff; height:64px; box-shadow:0 2px 4px rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:space-between; padding:0 24px; }
     .top-bar h1 { font-size:20px; color:#3c4043; }
@@ -38,7 +38,7 @@
     <ul class="sidebar-menu">
       <li><a href="categories.html" target="contentFrame" class="active"><span class="material-icons">dashboard</span><span>分类管理</span></a></li>
       <li><a href="links.html" target="contentFrame"><span class="material-icons">link</span><span>链接管理</span></a></li>
-      <li><a href="settings.html" target="contentFrame"><span class="material-icons">settings</span><span>系统设置</span></a></li>
+      <li><a href="review.html" target="contentFrame"><span class="material-icons">verified</span><span>提交审核</span></a></li>
       <li><a href="/" target="_top"><span class="material-icons">home</span><span>返回首页</span></a></li>
     </ul>
   </div>
@@ -53,12 +53,13 @@
   </div>
 
   <script>
-    // 更新标题
+    // 更新标题 & 高亮
     document.querySelectorAll('.sidebar-menu a').forEach(link => {
       link.addEventListener('click', () => {
         document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
         link.classList.add('active');
-        document.getElementById('pageTitle').textContent = link.querySelector('span:nth-child(2)').textContent;
+        const text = link.querySelector('span:nth-child(2)');
+        document.getElementById('pageTitle').textContent = text ? text.textContent : '管理后台';
       });
     });
   </script>
