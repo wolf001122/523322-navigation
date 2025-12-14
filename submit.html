@@ -33,59 +33,143 @@
       </div>
       <div class="form-group">
         <label>建议一级分类</label>
-        <input type="text" id="category" placeholder="如：常用工具">
+        <select id="categorySelect">
+          <option value="">-- 选择一级分类（可选）--</option>
+        </select>
       </div>
       <div class="form-group">
         <label>建议二级分类</label>
-        <input type="text" id="subcategory" placeholder="如：在线转换">
+        <select id="subcategorySelect">
+          <option value="">-- 先选择一级分类 --</option>
+        </select>
       </div>
       <div class="form-group">
         <label>网站描述</label>
         <textarea id="desc" rows="4"></textarea>
       </div>
       <div class="form-group">
-        <label>图标 URL（可选，建议 60x60）</label>
+        <label>图标 URL（可选，建议 60x60 PNG）</label>
         <input type="url" id="icon" placeholder="https://example.com/logo.png">
       </div>
-      <div class="cf-turnstile" data-sitekey="0x4AAAAAACGkz4X0J8Vxw1wl" data-theme="light"></div> <!-- 替换为您的 Turnstile sitekey -->
+      <div class="cf-turnstile" data-sitekey="0x4AAAAAACGkz4X0J8Vxw1wl" data-theme="light"></div>
       <button type="submit">提交网站</button>
     </form>
     <div id="status"></div>
   </div>
 
   <script>
+    let categories = [];
+
+    // 加载分类数据
+    async function loadCategories() {
+      try {
+        const res = await fetch('/api/data');
+        if (!res.ok) throw new Error('加载失败');
+        const xml = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(xml, 'text/xml');
+
+        categories = Array.from(doc.querySelectorAll('category')).map(cat => ({
+          name: cat.getAttribute('name'),
+          subcategories: Array.from(cat.querySelectorAll('subcategory')).map(sub => sub.getAttribute('name')) || ['默认子分类']
+        }));
+
+        populateCategorySelect();
+      } catch (e) {
+        console.error('加载分类失败，使用空选项', e);
+        populateCategorySelect(); // 即使失败也允许手动输入
+      }
+    }
+
+    // 填充一级分类
+    function populateCategorySelect() {
+      const catSelect = document.getElementById('categorySelect');
+      catSelect.innerHTML = '<option value="">-- 选择一级分类（可选）--</option>';
+      categories.forEach((cat, idx) => {
+        const option = document.createElement('option');
+        option.value = cat.name;
+        option.textContent = cat.name;
+        catSelect.appendChild(option);
+      });
+      catSelect.addEventListener('change', updateSubcategorySelect);
+    }
+
+    // 更新二级分类
+    function updateSubcategorySelect() {
+      const catName = document.getElementById('categorySelect').value;
+      const subSelect = document.getElementById('subcategorySelect');
+      subSelect.innerHTML = '<option value="">-- 选择二级分类（可选）--</option>';
+
+      if (catName) {
+        const cat = categories.find(c => c.name === catName);
+        if (cat) {
+          cat.subcategories.forEach(sub => {
+            const option = document.createElement('option');
+            option.value = sub;
+            option.textContent = sub;
+            subSelect.appendChild(option);
+          });
+        }
+      }
+    }
+
+    // 提交表单
     document.getElementById('submitForm').onsubmit = async (e) => {
       e.preventDefault();
+
       const token = turnstile.getResponse();
       if (!token) return showStatus('请完成验证码验证', false);
 
       const data = {
         name: document.getElementById('name').value.trim(),
         url: document.getElementById('url').value.trim(),
-        category: document.getElementById('category').value.trim(),
-        subcategory: document.getElementById('subcategory').value.trim(),
+        category: document.getElementById('categorySelect').value || '',
+        subcategory: document.getElementById('subcategorySelect').value || '',
         desc: document.getElementById('desc').value.trim(),
         icon: document.getElementById('icon').value.trim(),
-        timestamp: Date.now(),
-        turnstileToken: token
+        timestamp: Date.now()
       };
 
+      if (!data.name || !data.url) return showStatus('网站名称和地址必填', false);
+
       try {
-        // 这里实际应由 Functions 验证 token 并保存
-        // 模拟成功
-        showStatus('提交成功！管理员审核后将添加至导航。', true);
-        document.getElementById('submitForm').reset();
-        turnstile.reset();
+        // 保存到待审核 KV
+        const res = await fetch('/api/pending', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify([...(await getCurrentPending()), data])
+        });
+
+        if (res.ok) {
+          showStatus('提交成功！管理员会尽快审核。', true);
+          document.getElementById('submitForm').reset();
+          turnstile.reset();
+        } else {
+          throw new Error(await res.text());
+        }
       } catch (e) {
-        showStatus('提交失败，请重试', false);
+        showStatus('提交失败：' + e.message, false);
       }
     };
+
+    // 获取当前待审核数据（辅助函数）
+    async function getCurrentPending() {
+      try {
+        const res = await fetch('/api/pending');
+        return res.ok ? await res.json() : [];
+      } catch {
+        return [];
+      }
+    }
 
     function showStatus(msg, success = true) {
       const div = document.getElementById('status');
       div.textContent = msg;
       div.className = 'status ' + (success ? 'success' : 'error');
     }
+
+    // 页面加载时初始化
+    loadCategories();
   </script>
 </body>
 </html>
