@@ -40,7 +40,7 @@ export async function onRequest(context) {
         httpMetadata: { contentType: file.type }
       });
 
-      const publicUrl = `https://pub-您的r2-dev子域.r2.dev/${key}`; // 替换为您的实际 r2.dev 子域
+      const publicUrl = `https://pub-0bb15820dbcd4d9a9c46bffea3806e50.r2.dev/${key}`; // 替换为您的实际 r2.dev 子域
       return new Response(publicUrl, { status: 200 });
     } catch (e) {
       return new Response('上传失败: ' + e.message, { status: 500 });
@@ -102,3 +102,4 @@ export async function onRequest(context) {
   // 其他路径交给静态文件
   return next();
 }
+
