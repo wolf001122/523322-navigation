@@ -13,13 +13,18 @@
     input, textarea, select { width:100%; padding:12px; border:1px solid #dadce0; border-radius:4px; font-size:16px; }
     button { background:#4285f4; color:white; border:none; padding:12px 24px; border-radius:4px; cursor:pointer; font-size:16px; }
     button:hover { background:#3367d6; }
+    button.success { background:#34a853; }
+    button.success:hover { background:#2d8e44; }
     .link-list { margin-top:20px; }
     .link-item { display:flex; align-items:center; justify-content:space-between; padding:12px; background:#f8f9fa; border-radius:4px; margin-bottom:8px; }
   </style>
 </head>
 <body>
   <div class="card">
-    <h2>新增链接</h2>
+    <h2>链接管理</h2>
+    <div style="margin-bottom:20px;">
+      <button class="success" onclick="parent.saveToKVFromChild()">保存到 KV（永久生效）</button>
+    </div>
     <form id="linkForm" onsubmit="event.preventDefault(); saveLink();">
       <div class="form-group">
         <label>一级分类</label>
@@ -47,22 +52,21 @@
         <p style="font-size:12px;color:#5f6368;margin-top:8px;">或手动输入图标 URL：</p>
         <input type="url" id="linkIcon" placeholder="https://example.com/logo.png">
       </div>
-      <button type="submit">保存链接</button>
+      <button type="submit">添加链接到内存</button>
     </form>
   </div>
 
   <div class="card">
     <h2>提示</h2>
     <p style="color:#5f6368;line-height:1.6;">
-      链接已保存到内存。<br>
-      请切换到“系统设置”页面，点击“保存到 KV”按钮永久写入云端。
+      新增链接已保存到浏览器内存。<br>
+      点击上方绿色按钮“保存到 KV”即可永久生效。
     </p>
   </div>
 
   <script>
     let categories = [];
 
-    // 从 KV 加载数据并填充下拉框
     async function loadCategories() {
       try {
         const res = await fetch('/api/data');
@@ -73,9 +77,8 @@
         categories = Array.from(doc.querySelectorAll('category')).map(cat => ({
           name: cat.getAttribute('name'),
           subcategories: Array.from(cat.querySelectorAll('subcategory')).map(sub => ({
-            name: sub.getAttribute('name'),
-            links: [] // 不需要加载链接，只需分类结构
-          })) || [{ name: '默认子分类', links: [] }]
+            name: sub.getAttribute('name')
+          })) || [{ name: '默认子分类' }]
         }));
 
         populateSelects();
@@ -93,15 +96,13 @@
         option.textContent = cat.name;
         catSelect.appendChild(option);
       });
-
-      updateSubSelect(); // 初始化二级
+      updateSubSelect();
     }
 
     function updateSubSelect() {
       const catIdx = document.getElementById('catSelect').value;
       const subSelect = document.getElementById('subSelect');
       subSelect.innerHTML = '<option value="">-- 选择二级分类 --</option>';
-
       if (catIdx !== '') {
         categories[catIdx].subcategories.forEach((sub, sIdx) => {
           const option = document.createElement('option');
@@ -112,11 +113,10 @@
       }
     }
 
-    // 保存链接到内存（通过 parent 传递给 settings 保存）
     async function saveLink() {
       const catIdx = document.getElementById('catSelect').value;
       const subIdx = document.getElementById('subSelect').value;
-      if (catIdx === '' || subIdx === '') return alert('请选择一级和二级分类');
+      if (catIdx === '' || subIdx === '') return alert('请选择分类');
 
       const name = document.getElementById('linkName').value.trim();
       const url = document.getElementById('linkUrl').value.trim();
@@ -131,18 +131,16 @@
           const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
           if (uploadRes.ok) {
             icon = (await uploadRes.text()).trim();
-            alert('图标上传成功！URL: ' + icon);
-          } else {
-            alert('上传失败，使用手动输入的 URL');
+            alert('图标上传成功！');
           }
         } catch (e) {
-          alert('上传异常，使用手动输入的 URL');
+          alert('上传失败，使用手动 URL');
         }
       }
 
-      if (!name || !url) return alert('链接名称和地址不能为空');
+      if (!name || !url) return alert('名称和地址必填');
 
-      // 将新链接添加到内存结构（供 settings 保存）
+      // 保存到 parent 临时数组
       if (!window.parent.tempLinks) window.parent.tempLinks = [];
       window.parent.tempLinks.push({
         catIdx: parseInt(catIdx),
@@ -150,14 +148,12 @@
         link: { name, url, desc, icon }
       });
 
-      alert('链接已保存到内存！请到“系统设置”页面点击“保存到 KV”永久生效。');
+      alert('链接已添加到内存！点击“保存到 KV”永久生效。');
 
-      // 清空表单
       document.getElementById('linkForm').reset();
       document.getElementById('linkIconFile').value = '';
     }
 
-    // 页面加载时初始化
     loadCategories();
   </script>
 </body>
