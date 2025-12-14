@@ -18,7 +18,7 @@
     body { margin: 0; font-family: 'Roboto', sans-serif; background: #f1f3f4; display: flex; height: 100vh; overflow: hidden; }
     a { text-decoration: none; }
 
-    /* 左侧导航栏 - 完全参考 AdSense */
+    /* 左侧导航栏 */
     .sidebar {
       width: 256px;
       background: #fff;
@@ -169,7 +169,9 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      height: 160px; /* 固定高度，确保布局统一 */
       transition: transform 0.3s, box-shadow 0.3s;
+      overflow: hidden;
     }
     .link-card:hover {
       transform: translateY(-8px);
@@ -180,11 +182,13 @@
       height: 48px;
       object-fit: contain;
       border-radius: 8px;
+      flex-shrink: 0;
     }
     .link-card a {
       font-size: 18px;
       font-weight: 500;
       color: #333;
+      flex-shrink: 0;
     }
     .link-card a:hover {
       color: #4285f4;
@@ -192,6 +196,12 @@
     .link-card .desc {
       font-size: 14px;
       color: #666;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2; /* 最多显示 2 行 */
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* 右侧广告 */
@@ -374,9 +384,9 @@
           html += `<div class="subcategory-title">${sub.name}</div><div class="links-grid">`;
           sub.links.forEach(link => {
             html += `<div class="link-card">
-              ${link.icon ? `<img src="${link.icon}" alt="${link.name}">` : '<img src="https://via.placeholder.com/48?text=ICON" alt="图标">'}
+              ${link.icon ? `<img src="${link.icon}" alt="${link.name}">` : '<img src="https://via.placeholder.com/48?text=ICON" alt="默认图标">'}
               <a href="${link.url}" target="_blank">${link.name}</a>
-              <div class="desc">${link.desc}</div>
+              <div class="desc">${link.desc || '暂无描述'}</div>
             </div>`;
           });
           html += `</div>`;
