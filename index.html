@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>网址导航 - 实用资源站</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Material+Icons&display=optional" rel="stylesheet">
-  <!-- Cloudflare Turnstile（可选，用于提交页） -->
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9474229114991789"
@@ -104,7 +102,7 @@
         renderSidebar();
         loadDefault();
       } catch (e) {
-        console.error('加载失败', e);
+        console.error('加载数据失败', e);
       }
     }
 
@@ -123,7 +121,7 @@
     }
 
     function loadDefault() {
-      highlightMenu(this);
+      highlightMenu(event.target);
       const frame = document.querySelector('iframe');
       frame.contentDocument.open();
       frame.contentDocument.write(`
@@ -153,7 +151,7 @@
               if (!q) return;
               const engine = document.getElementById('engine').value;
               let url = '';
-              switch(engine) {
+              switch(engine){
                 case 'baidu': url = 'https://www.baidu.com/s?wd=' + encodeURIComponent(q); break;
                 case 'google': url = 'https://www.google.com/search?q=' + encodeURIComponent(q); break;
                 case 'bing': url = 'https://www.bing.com/search?q=' + encodeURIComponent(q); break;
@@ -168,7 +166,7 @@
     }
 
     function loadCategory(idx) {
-      highlightMenu(this);
+      highlightMenu(event.target);
       const cat = categories[idx];
       let html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
         body { margin:0; background:#f1f3f4; padding:40px; font-family:'Roboto',Arial,sans-serif; }
@@ -211,7 +209,7 @@
     }
 
     function loadFriendlyLinks() {
-      highlightMenu(this);
+      highlightMenu(event.target);
       const frame = document.querySelector('iframe');
       frame.contentDocument.open();
       frame.contentDocument.write(`
@@ -228,7 +226,7 @@
     }
 
     function loadAbout() {
-      highlightMenu(this);
+      highlightMenu(event.target);
       const frame = document.querySelector('iframe');
       frame.contentDocument.open();
       frame.contentDocument.write(`
