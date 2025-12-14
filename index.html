@@ -4,124 +4,100 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>网址导航 - 实用资源站</title>
-  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Material+Icons&display=optional" rel="stylesheet">
 
   <!-- Google AdSense 核心脚本 -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9474229114991789"
           crossorigin="anonymous"></script>
 
   <style>
-    body { margin:0; font-family:Arial,sans-serif; background:#f5f5f5; }
-    .container { display:flex; max-width:100%; margin:0 auto; min-height:100vh; }
-
-    /* 左侧菜单 */
-    .sidebar { width:15%; max-width:280px; background:#fff; border-right:1px solid #eee; padding:2% 1.5%; position:fixed; height:100vh; overflow-y:auto; box-shadow:2px 0 10px rgba(0,0,0,0.05); margin-left:2%; z-index:10; }
-    .sidebar h3 { margin:0 0 30px; text-align:center; font-size:24px; color:#333; cursor:pointer; transition:0.3s; }
-    .sidebar h3:hover { color:#1976d2; }
-    .sidebar ul { list-style:none; padding:0; }
-    .sidebar li { margin:10px 0; }
-    .sidebar a { display:block; padding:15px; background:#f8f9fa; border-radius:10px; text-decoration:none; color:#333; font-size:16px; text-align:center; transition:0.3s; }
-    .sidebar a:hover, .sidebar a.active { background:#e3f2fd; color:#1976d2; font-weight:bold; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
-    .sidebar .bottom-links { position:absolute; bottom:50px; width:calc(100% - 40px); border-top:1px solid #eee; padding-top:20px; }
+    body { margin:0; font-family:'Roboto',Arial,sans-serif; background:#f1f3f4; display:flex; height:100vh; overflow:hidden; }
+    /* 左侧菜单栏 - AdSense 风格 */
+    .sidebar { width:256px; background:#fff; box-shadow:2px 0 8px rgba(0,0,0,0.12); position:fixed; height:100%; overflow-y:auto; z-index:10; }
+    .sidebar-header { padding:24px 16px; font-size:20px; color:#5f6368; border-bottom:1px solid #e0e0e0; text-align:center; font-weight:500; }
+    .sidebar-menu { list-style:none; padding:0; margin:0; }
+    .sidebar-menu li a { display:flex; align-items:center; padding:12px 24px; color:#5f6368; text-decoration:none; font-size:14px; transition:0.2s; }
+    .sidebar-menu li a:hover { background:#f1f3f4; }
+    .sidebar-menu li a.active { background:#e8f0fe; color:#4285f4; font-weight:500; }
+    .sidebar-menu li a .material-icons { margin-right:24px; font-size:24px; color:#5f6368; }
+    .sidebar-menu li a.active .material-icons { color:#4285f4; }
 
     /* 主内容区 */
-    .main { margin-left:calc(15% + 40px); flex:1; padding:40px; min-height:100vh; background:#fff; }
+    .main-content { margin-left:256px; flex:1; display:flex; flex-direction:column; }
+    .top-bar { background:#fff; height:64px; box-shadow:0 2px 4px rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; padding:0 24px; position:relative; z-index:5; }
+    .top-bar .ad-container { width:728px; height:90px; display:flex; align-items:center; justify-content:center; }
 
-    /* 内容区域 */
-    #contentArea { min-height:calc(100vh - 80px); }
+    /* 内容框架 */
+    .content-frame { flex:1; width:100%; border:none; background:#f1f3f4; }
 
-    /* 一级分类标题 */
-    #contentArea h2 { font-size:24px; color:#333; margin-bottom:30px; padding-bottom:10px; border-bottom:2px solid #eee; }
+    /* 右侧广告（可选） */
+    .ad-side { position:fixed; right:24px; top:100px; width:300px; height:600px; box-shadow:0 4px 20px rgba(0,0,0,0.1); border-radius:12px; overflow:hidden; z-index:5; }
 
-    /* 二级分类标题 */
-    .subcategory-title { font-size:20px; color:#1976d2; margin:40px 0 15px; padding-bottom:8px; border-bottom:1px solid #ddd; }
-
-    /* 链接网格 - 每行5个（自动调整） */
-    .links-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(20%, 1fr)); gap:20px; }
-
-    /* 链接卡片 - 较小图标靠上靠左 */
-    .link-card { background:white; padding:20px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.08); text-align:left; transition:0.3s; display:flex; flex-direction:column; justify-content:flex-start; align-items:flex-start; gap:8px; }
-    .link-card:hover { transform:translateY(-4px); box-shadow:0 8px 25px rgba(0,0,0,0.12); }
-    .link-card img { width:40px; height:40px; object-fit:contain; border-radius:8px; }
-    .link-card a { font-size:17px; color:#333; text-decoration:none; font-weight:bold; }
-    .link-card a:hover { color:#1976d2; }
-    .link-card .desc { color:#666; font-size:14px; }
-
-    /* 广告位 */
-    .ad-top { text-align:center; padding:20px 0; background:#fff; box-shadow:0 2px 10px rgba(0,0,0,0.05); }
-    .ad-side { position:fixed; right:2%; top:100px; width:15%; max-width:300px; box-shadow:0 4px 20px rgba(0,0,0,0.1); border-radius:12px; overflow:hidden; }
-
-    /* 搜索引擎输入框 - 水平垂直居中 */
-    .search-container { width:60%; max-width:800px; display:flex; align-items:center; gap:0; margin:auto; }
-    .search-container input { flex:1; padding:15px; font-size:16px; border:1px solid #ddd; border-radius:30px 0 0 30px; }
-    .search-container select { padding:15px; font-size:16px; border:1px solid #ddd; border-left:none; border-radius:0; }
-    .search-container button { padding:15px 30px; background:#1976d2; color:white; border:none; border-radius:0 30px 30px 0; cursor:pointer; }
-    .search-container button:hover { background:#0d47a1; }
-
-    footer { text-align:center; padding:20px 0; color:#666; font-size:14px; border-top:1px solid #eee; background:#fff; }
+    @media (max-width:1200px) {
+      .sidebar { width:72px; }
+      .sidebar-header { font-size:0; }
+      .sidebar-menu li a span { display:none; }
+      .sidebar-menu li a .material-icons { margin-right:0; margin-left:auto; margin-right:auto; }
+      .main-content { margin-left:72px; }
+      .ad-side { display:none; }
+    }
+    @media (max-width:800px) {
+      .top-bar .ad-container { width:100%; height:90px; }
+    }
   </style>
 </head>
 <body>
-  <!-- 顶部广告 728x90 -->
-  <div class="ad-top">
+  <!-- 左侧菜单 -->
+  <div class="sidebar">
+    <div class="sidebar-header">网址导航</div>
+    <ul class="sidebar-menu">
+      <li><a href="javascript:void(0)" onclick="loadDefault()" class="active"><span class="material-icons">search</span><span>搜索首页</span></a></li>
+      <!-- 动态一级分类将插入这里 -->
+      <li id="dynamicCategories"></li>
+      <li><a href="submit.html" target="contentFrame"><span class="material-icons">add_box</span><span>网站提交</span></a></li>
+      <li><a href="javascript:void(0)" onclick="loadFriendlyLinks()"><span class="material-icons">link</span><span>友情链接</span></a></li>
+      <li><a href="javascript:void(0)" onclick="loadAbout()"><span class="material-icons">info</span><span>关于导航</span></a></li>
+    </ul>
+  </div>
+
+  <!-- 主内容区 -->
+  <div class="main-content">
+    <!-- 顶部广告栏 -->
+    <div class="top-bar">
+      <div class="ad-container">
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:728px;height:90px"
+             data-ad-client="ca-pub-9474229114991789"
+             data-ad-format="auto"
+             data-ad-slot=""></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+      </div>
+    </div>
+
+    <!-- 内容 iframe -->
+    <iframe name="contentFrame" class="content-frame" src="about:blank"></iframe>
+  </div>
+
+  <!-- 右侧广告（可选） -->
+  <div class="ad-side">
     <ins class="adsbygoogle"
-         style="display:inline-block;width:90%; max-width:728px;height:90px"
+         style="display:inline-block;width:300px;height:600px"
          data-ad-client="ca-pub-9474229114991789"
          data-ad-format="auto"></ins>
     <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
   </div>
 
-  <div class="container">
-    <!-- 左侧导航 -->
-    <div class="sidebar">
-      <h3 onclick="showDefaultSearchEngines()">导航</h3>
-      <ul id="categoriesList"></ul>
-      <!-- 底部固定链接 -->
-      <div class="bottom-links">
-        <a href="submit.html" target="_blank">网站提交事务</a>
-        <a href="javascript:void(0)" onclick="showFriendlyLinks()">友情链接</a>
-        <a href="javascript:void(0)" onclick="showAboutNavigation()">关于导航</a>
-      </div>
-    </div>
-
-    <!-- 主内容 -->
-    <div class="main">
-      <div id="contentArea">
-        <!-- 默认搜索引擎输入框 - 水平垂直居中 -->
-        <div class="search-container">
-          <input type="text" id="searchInput" placeholder="请输入搜索内容...">
-          <select id="searchEngine">
-            <option value="baidu">百度</option>
-            <option value="google">Google</option>
-            <option value="bing">Bing</option>
-            <option value="so">360搜索</option>
-          </select>
-          <button onclick="performSearch()">搜索</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 右侧广告 300x600 -->
-    <div class="ad-side">
-      <ins class="adsbygoogle"
-           style="display:inline-block;width:300px;height:600px"
-           data-ad-client="ca-pub-9474229114991789"
-           data-ad-format="auto"></ins>
-      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    </div>
-  </div>
-
-  <footer>© 2025 吾爱三三两两导航站</footer>
-
   <script>
     let categories = [];
 
+    // 加载 KV 数据并渲染左侧菜单 + 默认搜索页
     async function loadData() {
       try {
         const res = await fetch('/api/data');
         const xml = await res.text();
         const parser = new DOMParser();
         const doc = parser.parseFromString(xml, 'text/xml');
+
         categories = Array.from(doc.querySelectorAll('category')).map(cat => ({
           name: cat.getAttribute('name'),
           subcategories: Array.from(cat.querySelectorAll('subcategory')).map(sub => ({
@@ -132,125 +108,164 @@
               desc: l.getAttribute('desc') || '',
               icon: l.getAttribute('icon') || ''
             }))
-          }))
+          })) || [{ name: '默认子分类', links: [] }]
         }));
 
         renderSidebar();
-        showDefaultSearchEngines();
+        loadDefault(); // 默认加载搜索首页
       } catch (e) {
-        console.error(e);
+        console.error('加载数据失败', e);
       }
     }
 
+    // 渲染左侧一级分类菜单
     function renderSidebar() {
-      const list = document.getElementById('categoriesList');
+      const list = document.getElementById('dynamicCategories');
       list.innerHTML = '';
-      categories.forEach(cat => {
+      categories.forEach((cat, idx) => {
         const li = document.createElement('li');
         const a = document.createElement('a');
-        a.textContent = cat.name;
         a.href = 'javascript:void(0)';
-        a.onclick = () => selectCategory(cat.name);
+        a.innerHTML = `<span class="material-icons">folder</span><span>${cat.name}</span>`;
+        a.onclick = () => loadCategory(idx);
         li.appendChild(a);
         list.appendChild(li);
       });
     }
 
-    function showDefaultSearchEngines() {
-      const area = document.getElementById('contentArea');
-      area.innerHTML = `
-        <div class="search-container">
-          <input type="text" id="searchInput" placeholder="请输入搜索内容...">
-          <select id="searchEngine">
-            <option value="baidu">百度</option>
-            <option value="google">Google</option>
-            <option value="bing">Bing</option>
-            <option value="so">360搜索</option>
-          </select>
-          <button onclick="performSearch()">搜索</button>
-        </div>
-      `;
+    // 默认搜索首页（居中搜索框）
+    function loadDefault() {
+      document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+      document.querySelector('.sidebar-menu a:first-child').classList.add('active');
 
-      document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+      const frame = document.querySelector('iframe');
+      frame.contentDocument.open();
+      frame.contentDocument.write(`
+        <!DOCTYPE html>
+        <html><head><meta charset="UTF-8"><style>
+          body { margin:0; background:#f1f3f4; font-family:'Roboto',Arial,sans-serif; display:flex; align-items:center; justify-content:center; height:100%; }
+          .search-container { width:60%; max-width:800px; display:flex; box-shadow:0 8px 25px rgba(0,0,0,0.15); border-radius:30px; overflow:hidden; }
+          input { flex:1; padding:20px; font-size:20px; border:none; outline:none; }
+          select { padding:20px; font-size:18px; border:none; border-left:1px solid #ddd; background:#fff; }
+          button { padding:20px 40px; background:#4285f4; color:white; font-size:18px; border:none; cursor:pointer; }
+          button:hover { background:#3367d6; }
+        </style></head>
+        <body>
+          <div class="search-container">
+            <input type="text" id="searchInput" placeholder="请输入搜索内容..." onkeydown="if(event.keyCode==13) performSearch()">
+            <select id="searchEngine">
+              <option value="baidu">百度</option>
+              <option value="google">Google</option>
+              <option value="bing">Bing</option>
+              <option value="so">360搜索</option>
+            </select>
+            <button onclick="performSearch()">搜索</button>
+          </div>
+          <script>
+            function performSearch() {
+              const query = document.getElementById('searchInput').value.trim();
+              if (!query) return;
+              const engine = document.getElementById('searchEngine').value;
+              let url;
+              switch(engine){
+                case 'baidu': url = 'https://www.baidu.com/s?wd=' + encodeURIComponent(query); break;
+                case 'google': url = 'https://www.google.com/search?q=' + encodeURIComponent(query); break;
+                case 'bing': url = 'https://www.bing.com/search?q=' + encodeURIComponent(query); break;
+                case 'so': url = 'https://www.so.com/s?q=' + encodeURIComponent(query); break;
+              }
+              window.open(url, '_blank');
+            }
+          </script>
+        </body></html>
+      `);
+      frame.contentDocument.close();
     }
 
-    function selectCategory(name) {
-      const cat = categories.find(c => c.name === name);
-      if (!cat) return;
+    // 加载分类内容
+    function loadCategory(catIdx) {
+      document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+      event.target.closest('a').classList.add('active');
 
-      const area = document.getElementById('contentArea');
-      area.innerHTML = `<h2>${cat.name}</h2>`;
+      const cat = categories[catIdx];
+      let html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+        body { margin:0; background:#f1f3f4; padding:40px; font-family:'Roboto',Arial,sans-serif; }
+        h2 { font-size:24px; color:#333; margin-bottom:30px; padding-bottom:10px; border-bottom:2px solid #eee; }
+        .subcategory-title { font-size:20px; color:#4285f4; margin:40px 0 15px; padding-bottom:8px; border-bottom:1px solid #ddd; }
+        .links-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:20px; }
+        .link-card { background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.08); display:flex; flex-direction:column; gap:8px; height:120px; }
+        .link-card:hover { transform:translateY(-4px); box-shadow:0 8px 25px rgba(0,0,0,0.12); }
+        .link-card img { width:40px; height:40px; object-fit:contain; border-radius:8px; }
+        .link-card a { font-size:17px; color:#333; font-weight:bold; text-decoration:none; }
+        .link-card a:hover { color:#4285f4; }
+        .link-card .desc { font-size:14px; color:#666; }
+      </style></head><body>`;
+
+      html += `<h2>${cat.name}</h2>`;
 
       cat.subcategories.forEach(sub => {
-        const subTitle = document.createElement('div');
-        subTitle.className = 'subcategory-title';
-        subTitle.textContent = sub.name;
-        area.appendChild(subTitle);
-
-        const grid = document.createElement('div');
-        grid.className = 'links-grid';
-
-        sub.links.forEach(link => {
-          const card = document.createElement('div');
-          card.className = 'link-card';
-          card.innerHTML = `
-            ${link.icon ? `<img src="${link.icon}" alt="${link.name}">` : '<img src="https://via.placeholder.com/40?text=ICON" alt="默认图标">'}
-            <a href="${link.url}" target="_blank">${link.name}</a>
-            <div class="desc">${link.desc}</div>
-          `;
-          grid.appendChild(card);
-        });
-
-        area.appendChild(grid);
+        if (sub.links.length > 0) {
+          html += `<div class="subcategory-title">${sub.name}</div><div class="links-grid">`;
+          sub.links.forEach(link => {
+            html += `<div class="link-card">
+              ${link.icon ? `<img src="${link.icon}" alt="${link.name}">` : '<img src="https://via.placeholder.com/40?text=ICON" alt="默认">'}
+              <a href="${link.url}" target="_blank">${link.name}</a>
+              <div class="desc">${link.desc}</div>
+            </div>`;
+          });
+          html += `</div>`;
+        }
       });
 
-      document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
-      document.querySelector(`.sidebar a[onclick="selectCategory('${name}')"]`)?.classList.add('active');
+      html += `</body></html>`;
+
+      const frame = document.querySelector('iframe');
+      frame.contentDocument.open();
+      frame.contentDocument.write(html);
+      frame.contentDocument.close();
     }
 
-    function performSearch() {
-      const query = document.getElementById('searchInput').value.trim();
-      if (!query) return alert('请输入搜索内容');
-      const engine = document.getElementById('searchEngine').value;
-      let searchUrl;
-      switch (engine) {
-        case 'baidu': searchUrl = `https://www.baidu.com/s?wd=${encodeURIComponent(query)}`; break;
-        case 'google': searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`; break;
-        case 'bing': searchUrl = `https://www.bing.com/search?q=${encodeURIComponent(query)}`; break;
-        case 'so': searchUrl = `https://www.so.com/s?q=${encodeURIComponent(query)}`; break;
-      }
-      window.open(searchUrl, '_blank');
+    // 友情链接（示例）
+    function loadFriendlyLinks() {
+      document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+      event.target.closest('a').classList.add('active');
+
+      const frame = document.querySelector('iframe');
+      frame.contentDocument.open();
+      frame.contentDocument.write(`
+        <!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+          body { margin:0; background:#f1f3f4; padding:40px; font-family:'Roboto',Arial,sans-serif; text-align:center; }
+          h2 { font-size:24px; color:#333; }
+          p { max-width:800px; margin:20px auto; color:#5f6368; line-height:1.8; }
+        </style></head><body>
+          <h2>友情链接</h2>
+          <p>暂无友情链接，可在后台添加。</p>
+        </body></html>
+      `);
+      frame.contentDocument.close();
     }
 
-    function showSiteSubmission() {
-      window.open('submit.html', '_blank');
+    // 关于导航
+    function loadAbout() {
+      document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+      event.target.closest('a').classList.add('active');
+
+      const frame = document.querySelector('iframe');
+      frame.contentDocument.open();
+      frame.contentDocument.write(`
+        <!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+          body { margin:0; background:#f1f3f4; padding:40px; font-family:'Roboto',Arial,sans-serif; text-align:center; }
+          h2 { font-size:24px; color:#333; }
+          p { max-width:800px; margin:20px auto; color:#5f6368; line-height:1.8; }
+        </style></head><body>
+          <h2>关于导航</h2>
+          <p>吾爱三三两两导航站是一个实用资源集合网站，致力于提供常用工具、学习资源等优质链接。</p>
+          <p>版本：1.0 | 更新：2025-12-14</p>
+        </body></html>
+      `);
+      frame.contentDocument.close();
     }
 
-    function showFriendlyLinks() {
-      const area = document.getElementById('contentArea');
-      area.innerHTML = `
-        <h2>友情链接</h2>
-        <div class="links-grid">
-          <div class="link-card">
-            <img src="https://via.placeholder.com/40?text=F1" alt="友情链接1">
-            <a href="https://example.com" target="_blank">友情链接1</a>
-            <div class="desc">示例友情链接描述</div>
-          </div>
-        </div>
-      `;
-      document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
-    }
-
-    function showAboutNavigation() {
-      const area = document.getElementById('contentArea');
-      area.innerHTML = `
-        <h2>关于导航</h2>
-        <p style="max-width:800px; line-height:1.8;">吾爱三三两两导航站是一个实用资源导航网站，致力于收集常用工具、学习资源、云服务等优质网站，方便用户快速访问。</p>
-        <p>版本：1.0 | 更新日期: 2025-12-14</p>
-      `;
-      document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
-    }
-
+    // 初始化
     loadData();
   </script>
 </body>
