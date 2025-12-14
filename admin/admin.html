@@ -62,6 +62,23 @@
         document.getElementById('pageTitle').textContent = text ? text.textContent : '管理后台';
       });
     });
+
+    // 子页面调用：通知所有 iframe 刷新数据
+function notifyAllFramesToReload() {
+  const frame = document.querySelector('iframe');
+  if (frame && frame.contentWindow && frame.contentWindow.loadData) {
+    frame.contentWindow.loadData();
+  }
+  // 如果有其他 iframe（如未来扩展），可循环
+}
+
+// 保存成功后调用（由子页面触发）
+window.addEventListener('message', (event) => {
+  if (event.data === 'kvSaved') {
+    notifyAllFramesToReload();
+  }
+});
   </script>
 </body>
 </html>
+
