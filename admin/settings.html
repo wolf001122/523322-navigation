@@ -1,88 +1,82 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>系统设置</title>
-  <style>
-    body { background:#f1f3f4; padding:24px; font-family:'Roboto',Arial,sans-serif; }
-    .card { background:#fff; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.12); padding:24px; margin-bottom:24px; }
-    h2 { font-size:20px; color:#3c4043; margin:0 0 16px; }
-    .form-group { margin-bottom:20px; }
-    label { display:block; margin-bottom:8px; color:#5f6368; font-size:14px; }
-    input { width:100%; padding:12px; border:1px solid #dadce0; border-radius:4px; font-size:16px; }
-    button { background:#4285f4; color:white; border:none; padding:12px 24px; border-radius:4px; cursor:pointer; font-size:16px; }
-    button:hover { background:#3367d6; }
-    button.success { background:#34a853; }
-    button.success:hover { background:#2d8e44; }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <h2>保存到云端</h2>
-    <p style="color:#5f6368;">所有修改已实时保存到内存，点击下方按钮永久写入 KV。</p>
-    <button class="success" onclick="saveToKV()">保存到 KV（永久生效）</button>
-  </div>
+async function saveToKV() {
+  if (!confirm('确认保存所有数据到云端 KV？')) return;
 
-  <div class="card">
-    <h2>管理员设置</h2>
-    <div class="form-group">
-      <label>用户名</label>
-      <input type="text" value="admin" readonly>
-    </div>
-    <div class="form-group">
-      <label>新密码（留空不修改）</label>
-      <input type="password" id="newPassword">
-    </div>
-    <button onclick="changePassword()">更新密码</button>
-  </div>
+  let categories = [];
+  try {
+    const res = await fetch('/api/data');
+    const xml = await res.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(xml, 'text/xml');
+    categories = Array.from(doc.querySelectorAll('category')).map(cat => ({
+      name: cat.getAttribute('name'),
+      subcategories: Array.from(cat.querySelectorAll('subcategory')).map(sub => ({
+        name: sub.getAttribute('name'),
+        links: Array.from(sub.querySelectorAll('link')).map(l => ({
+          name: l.getAttribute('name'),
+          url: l.getAttribute('url'),
+          desc: l.getAttribute('desc') || '',
+          icon: l.getAttribute('icon') || ''
+        }))
+      })) || [{ name: '默认子分类', links: Array.from(cat.querySelectorAll('link')).map(l => ({
+        name: l.getAttribute('name'),
+        url: l.getAttribute('url'),
+        desc: l.getAttribute('desc') || '',
+        icon: l.getAttribute('icon') || ''
+      }))} ]
+    }));
+  } catch (e) {
+    alert('读取当前数据失败');
+    return;
+  }
 
-  <script>
-    async function saveToKV() {
-      if (!confirm('确认保存所有数据到云端 KV？')) return;
+  // 应用临时新增的链接
+  if (window.tempLinks) {
+    window.tempLinks.forEach(item => {
+      const link = item.link;
+      if (!categories[item.catIdx].subcategories[item.subIdx]) {
+        categories[item.catIdx].subcategories[item.subIdx] = { name: '临时子分类', links: [] };
+      }
+      categories[item.catIdx].subcategories[item.subIdx].links.push(link);
+    });
+    window.tempLinks = []; // 清空
+  }
 
-      const categories = window.parent.categoriesData || [];
-      let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n';
-      const res = await fetch('/api/data');
-      const original = await res.text();
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(original, 'text/xml');
-      const admin = doc.querySelector('admin');
-      if (admin) xml += `  <admin username="${admin.getAttribute('username')}" password="${admin.getAttribute('password')}" />\n`;
+  // 生成新 XML
+  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n';
+  const adminRes = await fetch('/api/data');
+  const original = await adminRes.text();
+  const adminDoc = new DOMParser().parseFromString(original, 'text/xml');
+  const admin = adminDoc.querySelector('admin');
+  if (admin) xml += `  <admin username="${admin.getAttribute('username')}" password="${admin.getAttribute('password')}" />\n`;
 
-      categories.forEach(cat => {
-        xml += `  <category name="${escapeXml(cat.name)}">\n`;
-        cat.subcategories.forEach(sub => {
-          xml += `    <subcategory name="${escapeXml(sub.name)}">\n`;
-          sub.links.forEach(link => {
-            const desc = link.desc ? ` desc="${escapeXml(link.desc)}"` : '';
-            const icon = link.icon ? ` icon="${escapeXml(link.icon)}"` : '';
-            xml += `      <link name="${escapeXml(link.name)}" url="${escapeXml(link.url)}"${desc}${icon}/>\n`;
-          });
-          xml += '    </subcategory>\n';
-        });
-        xml += '  </category>\n';
+  categories.forEach(cat => {
+    xml += `  <category name="${escapeXml(cat.name)}">\n`;
+    cat.subcategories.forEach(sub => {
+      xml += `    <subcategory name="${escapeXml(sub.name)}">\n`;
+      sub.links.forEach(link => {
+        const desc = link.desc ? ` desc="${escapeXml(link.desc)}"` : '';
+        const icon = link.icon ? ` icon="${escapeXml(link.icon)}"` : '';
+        xml += `      <link name="${escapeXml(link.name)}" url="${escapeXml(link.url)}"${desc}${icon}/>\n`;
       });
-      xml += '</navigation>';
+      xml += '    </subcategory>\n';
+    });
+    xml += '  </category>\n';
+  });
+  xml += '</navigation>';
 
-      const r = await fetch('/api/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/xml' },
-        body: xml
-      });
+  const r = await fetch('/api/save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/xml' },
+    body: xml
+  });
 
-      if (r.ok) alert('保存成功！');
-      else alert('保存失败：' + await r.text());
-    }
+  if (r.ok) {
+    alert('保存成功！所有新增链接已永久写入 KV');
+  } else {
+    alert('保存失败：' + await r.text());
+  }
+}
 
-    function escapeXml(s) {
-      return s.replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'''":'&apos;'})[c]);
-    }
-
-    function changePassword() {
-      const pwd = document.getElementById('newPassword').value;
-      if (pwd) alert('密码修改功能需后台支持（当前模拟）');
-    }
-  </script>
-</body>
-</html>
+function escapeXml(s) {
+  return s.replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'''":'&apos;'})[c]);
+}
