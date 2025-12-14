@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>前端预览页面 - 网址导航</title>
+  <link rel="stylesheet" href="../style.css"> <!-- 可复用主站样式 -->
+
+  <!-- Google AdSense 核心脚本 -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9474229114991789"
+          crossorigin="anonymous"></script>
+
+  <style>
+    body { margin:0; font-family:Arial,sans-serif; background:#f5f5f5; }
+    .preview-container { max-width:1400px; margin:40px auto; background:#fff; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.12); overflow:hidden; }
+    .preview-header { background:#4285f4; color:white; padding:20px; text-align:center; font-size:24px; }
+    .preview-header small { display:block; font-size:14px; margin-top:8px; opacity:0.9; }
+
+    .preview-content { padding:40px; min-height:80vh; }
+    .preview-content h2 { font-size:24px; color:#333; margin-bottom:30px; padding-bottom:10px; border-bottom:2px solid #eee; }
+
+    .links-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:20px; }
+
+    .link-card { background:white; padding:20px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.08); text-align:left; transition:0.3s; display:flex; flex-direction:column; justify-content:flex-start; align-items:flex-start; gap:8px; height:120px; }
+    .link-card:hover { transform:translateY(-4px); box-shadow:0 8px 25px rgba(0,0,0,0.12); }
+    .link-card img { width:40px; height:40px; object-fit:contain; border-radius:8px; }
+    .link-card a { font-size:17px; color:#333; text-decoration:none; font-weight:bold; }
+    .link-card a:hover { color:#4285f4; }
+    .link-card .desc { color:#666; font-size:14px; }
+
+    .search-preview { text-align:center; margin-bottom:60px; }
+    .search-container { width:60%; max-width:800px; display:flex; align-items:center; gap:0; margin:30px auto; box-shadow:0 4px 12px rgba(0,0,0,0.1); border-radius:30px; overflow:hidden; }
+    .search-container input { flex:1; padding:18px; font-size:18px; border:none; outline:none; }
+    .search-container select { padding:18px; font-size:16px; border:none; border-left:1px solid #ddd; background:#fff; }
+    .search-container button { padding:18px 40px; background:#4285f4; color:white; border:none; font-size:18px; cursor:pointer; }
+    .search-container button:hover { background:#3367d6; }
+
+    .preview-footer { text-align:center; padding:30px; color:#666; font-size:14px; background:#f8f9fa; border-top:1px solid #eee; }
+  </style>
+</head>
+<body>
+  <div class="preview-container">
+    <div class="preview-header">
+      前端预览页面
+      <small>实时展示当前 KV 数据在首页的渲染效果（仅预览，不影响实际站点）</small>
+    </div>
+
+    <div class="preview-content" id="previewArea">
+      <!-- 默认搜索引擎居中 -->
+      <div class="search-preview">
+        <div class="search-container">
+          <input type="text" placeholder="请输入搜索内容...">
+          <select>
+            <option>百度</option>
+            <option>Google</option>
+            <option>Bing</option>
+            <option>360搜索</option>
+          </select>
+          <button>搜索</button>
+        </div>
+      </div>
+
+      <!-- 动态加载分类内容 -->
+      <div id="content"></div>
+    </div>
+
+    <div class="preview-footer">
+      © 2025 吾爱三三两两导航站 - 前端预览模式<br>
+      数据来源：当前 KV 内容 | 最后更新：实时
+    </div>
+  </div>
+
+  <script>
+    async function loadPreview() {
+      try {
+        const res = await fetch('/api/data');
+        const xml = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(xml, 'text/xml');
+
+        const categories = Array.from(doc.querySelectorAll('category')).map(cat => ({
+          name: cat.getAttribute('name'),
+          subcategories: Array.from(cat.querySelectorAll('subcategory')).map(sub => ({
+            name: sub.getAttribute('name'),
+            links: Array.from(sub.querySelectorAll('link')).map(l => ({
+              name: l.getAttribute('name'),
+              url: l.getAttribute('url'),
+              desc: l.getAttribute('desc') || '',
+              icon: l.getAttribute('icon') || ''
+            }))
+          })) || [{ name: '默认子分类', links: Array.from(cat.querySelectorAll('link')).map(l => ({
+            name: l.getAttribute('name'),
+            url: l.getAttribute('url'),
+            desc: l.getAttribute('desc') || '',
+            icon: l.getAttribute('icon') || ''
+          }))} ]
+        }));
+
+        const content = document.getElementById('content');
+        content.innerHTML = '';
+
+        categories.forEach(cat => {
+          const catTitle = document.createElement('h2');
+          catTitle.textContent = cat.name;
+          content.appendChild(catTitle);
+
+          cat.subcategories.forEach(sub => {
+            if (sub.links.length > 0) {
+              const subTitle = document.createElement('div');
+              subTitle.style.fontSize = '20px';
+              subTitle.style.color = '#4285f4';
+              subTitle.style.margin = '40px 0 15px';
+              subTitle.style.paddingBottom = '8px';
+              subTitle.style.borderBottom = '1px solid #ddd';
+              subTitle.textContent = sub.name;
+              content.appendChild(subTitle);
+
+              const grid = document.createElement('div');
+              grid.className = 'links-grid';
+
+              sub.links.forEach(link => {
+                const card = document.createElement('div');
+                card.className = 'link-card';
+                card.innerHTML = `
+                  ${link.icon ? `<img src="${link.icon}" alt="${link.name}">` : '<img src="https://via.placeholder.com/40?text=ICON" alt="默认图标">'}
+                  <a href="${link.url}" target="_blank">${link.name}</a>
+                  <div class="desc">${link.desc}</div>
+                `;
+                grid.appendChild(card);
+              });
+
+              content.appendChild(grid);
+            }
+          });
+        });
+
+      } catch (e) {
+        document.getElementById('content').innerHTML = '<p style="color:red;text-align:center;">加载预览失败：' + e.message + '</p>';
+      }
+    }
+
+    // 每5秒自动刷新预览
+    loadPreview();
+    setInterval(loadPreview, 5000);
+  </script>
+</body>
+</html>
