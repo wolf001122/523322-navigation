@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>网站提交事务</title>
+  <style>
+    body { background:#f5f5f5; font-family:Arial,sans-serif; padding:40px; }
+    .container { max-width:600px; margin:0 auto; background:white; padding:40px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1); }
+    h1 { text-align:center; color:#333; }
+    .form-group { margin-bottom:20px; }
+    label { display:block; margin-bottom:8px; font-weight:bold; }
+    input, select, textarea { width:100%; padding:12px; border:1px solid #ddd; border-radius:6px; font-size:16px; }
+    button { width:100%; padding:15px; background:#28a745; color:white; font-size:18px; border:none; border-radius:6px; cursor:pointer; }
+    button:hover { background:#218838; }
+    .captcha { display:flex; gap:10px; align-items:center; }
+    .captcha img { width:120px; height:50px; border:1px solid #ddd; border-radius:6px; }
+    .captcha input { flex:1; }
+    .refresh { cursor:pointer; color:#1976d2; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>网站提交事务</h1>
+    <form onsubmit="event.preventDefault(); alert('提交成功！管理员审核后添加。');">
+      <div class="form-group">
+        <label>网站名称</label>
+        <input type="text" required>
+      </div>
+      <div class="form-group">
+        <label>网站地址（带 https://）</label>
+        <input type="url" required>
+      </div>
+      <div class="form-group">
+        <label>所属分类</label>
+        <select required>
+          <option>常用工具</option>
+          <option>生物信息</option>
+          <option>小说网站</option>
+          <!-- 可添加更多 -->
+        </select>
+      </div>
+      <div class="form-group">
+        <label>网站描述（可选）</label>
+        <textarea rows="4"></textarea>
+      </div>
+      <div class="form-group">
+        <label>图标 URL（可选，建议 60x60 PNG）</label>
+        <input type="url" placeholder="https://example.com/logo.png">
+      </div>
+      <div class="form-group captcha">
+        <label>验证码（防机器人）</label>
+        <input type="text" placeholder="请输入验证码" required>
+        <img src="https://via.placeholder.com/120x50?text=CAPTCHA" alt="验证码">
+        <span class="refresh" onclick="this.previousElementSibling.src += '?';">刷新</span>
+      </div>
+      <button type="submit">提交网站</button>
+    </form>
+    <p style="text-align:center; margin-top:30px; color:#666;">提交后管理员审核，感谢支持！</p>
+  </div>
+</body>
+</html>
