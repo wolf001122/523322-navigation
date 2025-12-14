@@ -82,27 +82,39 @@
     async function loadData() {
       try {
         const res = await fetch('/api/data');
+        if (!res.ok) throw new Error('无法读取数据');
         const xml = await res.text();
         const parser = new DOMParser();
         const doc = parser.parseFromString(xml, 'text/xml');
 
         categories = Array.from(doc.querySelectorAll('category')).map(cat => ({
-          name: cat.getAttribute('name'),
+          name: cat.getAttribute('name') || '未命名分类',
           subcategories: Array.from(cat.querySelectorAll('subcategory')).map(sub => ({
-            name: sub.getAttribute('name'),
+            name: sub.getAttribute('name') || '未命名子分类',
             links: Array.from(sub.querySelectorAll('link')).map(l => ({
-              name: l.getAttribute('name'),
-              url: l.getAttribute('url'),
+              name: l.getAttribute('name') || '未命名链接',
+              url: l.getAttribute('url') || '#',
               desc: l.getAttribute('desc') || '',
               icon: l.getAttribute('icon') || ''
             }))
-          })) || [{ name: '默认子分类', links: [] }]
+          })) || []
         }));
 
         renderSidebar();
         loadDefault();
       } catch (e) {
         console.error('加载数据失败', e);
+        // 出错时显示友好提示
+        const frame = document.querySelector('iframe');
+        frame.contentDocument.open();
+        frame.contentDocument.write(`
+          <!DOCTYPE html><html><body style="text-align:center;padding:100px;font-family:Roboto,Arial,sans-serif;">
+            <h2>加载失败</h2>
+            <p>无法读取导航数据，请检查后台 KV 是否正常。</p>
+            <p>错误：${e.message}</p>
+          </body></html>
+        `);
+        frame.contentDocument.close();
       }
     }
 
@@ -114,14 +126,14 @@
         const a = document.createElement('a');
         a.href = 'javascript:void(0)';
         a.innerHTML = `<span class="material-icons">folder</span><span>${cat.name}</span>`;
-        a.onclick = () => loadCategory(idx);
+        a.onclick = (e) => loadCategory(idx, e);
         li.appendChild(a);
         container.appendChild(li);
       });
     }
 
     function loadDefault() {
-      highlightMenu(event.target);
+      highlightMenu(event?.target);
       const frame = document.querySelector('iframe');
       frame.contentDocument.open();
       frame.contentDocument.write(`
@@ -165,7 +177,7 @@
       frame.contentDocument.close();
     }
 
-    function loadCategory(idx) {
+    function loadCategory(idx, event) {
       highlightMenu(event.target);
       const cat = categories[idx];
       let html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
@@ -179,16 +191,16 @@
         .card a { font-size:18px; font-weight:500; color:#333; text-decoration:none; }
         .card a:hover { color:#4285f4; }
         .card .desc { font-size:14px; color:#666; }
-      </style></head><body><h2>${cat.name}</h2>`;
+      </style></head><body><h2>${escapeHtml(cat.name)}</h2>`;
 
       cat.subcategories.forEach(sub => {
-        if (sub.links.length > 0) {
-          html += `<div class="sub-title">${sub.name}</div><div class="grid">`;
+        if (sub.links && sub.links.length > 0) {
+          html += `<div class="sub-title">${escapeHtml(sub.name)}</div><div class="grid">`;
           sub.links.forEach(link => {
             html += `<div class="card">
-              ${link.icon ? `<img src="${link.icon}" alt="${link.name}">` : '<img src="https://via.placeholder.com/48?text=ICON" alt="图标">'}
-              <a href="${link.url}" target="_blank">${link.name}</a>
-              <div class="desc">${link.desc}</div>
+              ${link.icon ? `<img src="${escapeHtml(link.icon)}" alt="${escapeHtml(link.name)}">` : '<img src="https://via.placeholder.com/48?text=ICON" alt="默认图标">'}
+              <a href="${escapeHtml(link.url)}" target="_blank">${escapeHtml(link.name)}</a>
+              <div class="desc">${escapeHtml(link.desc)}</div>
             </div>`;
           });
           html += `</div>`;
@@ -241,6 +253,17 @@
         </body></html>
       `);
       frame.contentDocument.close();
+    }
+
+    // HTML 转义（防止 XSS）
+    function escapeHtml(text) {
+      if (!text) return '';
+      return text.toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
     }
 
     loadData();
