@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>分类管理</title>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
   <style>
     body { background:#f1f3f4; padding:24px; font-family:'Roboto',Arial,sans-serif; }
     .card { background:#fff; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.12); padding:24px; margin-bottom:24px; }
@@ -12,28 +13,54 @@
     button:hover { background:#3367d6; }
     button.danger { background:#ea4335; }
     button.danger:hover { background:#d33b2f; }
-    .category { border-left:4px solid #4285f4; padding-left:16px; margin:16px 0; }
-    .subcategory { margin:16px 0 24px 32px; border-left:2px solid #dadce0; padding-left:16px; }
+    button.secondary { background:#5f6368; }
+    .category { border-left:4px solid #4285f4; padding-left:16px; margin:20px 0; cursor:move; }
+    .subcategory { margin:16px 0 24px 32px; border-left:2px solid #dadce0; padding-left:16px; cursor:move; }
     .actions { display:flex; gap:8px; flex-wrap:wrap; }
   </style>
 </head>
 <body>
   <div class="card">
-    <h2>一级分类管理
+    <h2>分类管理
       <button onclick="addCategory()">+ 新增一级分类</button>
     </h2>
     <div id="categoriesList">
-      <!-- 动态加载 -->
       <p style="color:#5f6368;">加载中...</p>
     </div>
   </div>
 
   <script>
-    // 示例数据，实际从 parent 获取或 API
-    let categories = [
-      { name: "常用工具", subcategories: [{ name: "在线转换", links: [] }, { name: "图片处理", links: [] }] },
-      { name: "生物信息", subcategories: [{ name: "数据库", links: [] }] }
-    ];
+    let categories = [];
+
+    async function loadData() {
+      try {
+        const res = await fetch('/api/data');
+        const xml = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(xml, 'text/xml');
+        categories = Array.from(doc.querySelectorAll('category')).map(cat => ({
+          name: cat.getAttribute('name'),
+          subcategories: Array.from(cat.querySelectorAll('subcategory')).map(sub => ({
+            name: sub.getAttribute('name'),
+            links: Array.from(sub.querySelectorAll('link')).map(l => ({
+              name: l.getAttribute('name'),
+              url: l.getAttribute('url'),
+              desc: l.getAttribute('desc') || '',
+              icon: l.getAttribute('icon') || ''
+            }))
+          })) || [{ name: '默认子分类', links: Array.from(cat.querySelectorAll('link')).map(l => ({
+            name: l.getAttribute('name'),
+            url: l.getAttribute('url'),
+            desc: l.getAttribute('desc') || '',
+            icon: l.getAttribute('icon') || ''
+          }))} ]
+        }));
+        renderCategories();
+        initSortable();
+      } catch (e) {
+        alert('加载失败：' + e.message);
+      }
+    }
 
     function renderCategories() {
       const list = document.getElementById('categoriesList');
@@ -41,42 +68,99 @@
       categories.forEach((cat, cIdx) => {
         const catDiv = document.createElement('div');
         catDiv.className = 'category';
+        catDiv.dataset.idx = cIdx;
         catDiv.innerHTML = `
-          <h3 style="font-size:18px;margin:0 0 12px;">
-            ${cat.name}
-            <span class="actions">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <strong style="font-size:18px;">${cat.name}</strong>
+            <div class="actions">
               <button onclick="editCategory(${cIdx})">编辑</button>
               <button class="danger" onclick="deleteCategory(${cIdx})">删除</button>
               <button onclick="addSubcategory(${cIdx})">+ 二级分类</button>
-            </span>
-          </h3>
+            </div>
+          </div>
         `;
+
         cat.subcategories.forEach((sub, sIdx) => {
           const subDiv = document.createElement('div');
           subDiv.className = 'subcategory';
+          subDiv.dataset.subIdx = sIdx;
           subDiv.innerHTML = `
             <div style="display:flex;justify-content:space-between;align-items:center;">
-              <strong>${sub.name}</strong>
-              <span class="actions">
+              <span>${sub.name}</span>
+              <div class="actions">
                 <button onclick="editSubcategory(${cIdx},${sIdx})">编辑</button>
                 <button class="danger" onclick="deleteSubcategory(${cIdx},${sIdx})">删除</button>
-              </span>
+              </div>
             </div>
           `;
           catDiv.appendChild(subDiv);
         });
+
         list.appendChild(catDiv);
       });
     }
 
-    function addCategory() { alert('新增一级分类'); }
-    function editCategory(idx) { alert('编辑一级分类 ' + categories[idx].name); }
-    function deleteCategory(idx) { if (confirm('删除？')) categories.splice(idx,1); renderCategories(); }
-    function addSubcategory(cIdx) { alert('在 ' + categories[cIdx].name + ' 下新增二级分类'); }
-    function editSubcategory(cIdx, sIdx) { alert('编辑二级分类'); }
-    function deleteSubcategory(cIdx, sIdx) { if (confirm('删除？')) categories[cIdx].subcategories.splice(sIdx,1); renderCategories(); }
+    function initSortable() {
+      new Sortable(document.getElementById('categoriesList'), {
+        animation: 150,
+        handle: '.category',
+        onEnd: () => {
+          const newOrder = Array.from(document.querySelectorAll('.category')).map(el => parseInt(el.dataset.idx));
+          categories = newOrder.map(idx => categories[idx]);
+          renderCategories();
+          initSortable();
+        }
+      });
+    }
 
-    renderCategories();
+    function addCategory() {
+      const name = prompt('一级分类名称');
+      if (name) {
+        categories.push({ name, subcategories: [{ name: '默认子分类', links: [] }] });
+        renderCategories();
+        initSortable();
+      }
+    }
+
+    function editCategory(idx) {
+      const name = prompt('修改一级分类名称', categories[idx].name);
+      if (name) categories[idx].name = name;
+      renderCategories();
+    }
+
+    function deleteCategory(idx) {
+      if (confirm('删除一级分类及其所有内容？')) {
+        categories.splice(idx, 1);
+        renderCategories();
+        initSortable();
+      }
+    }
+
+    function addSubcategory(cIdx) {
+      const name = prompt('二级分类名称');
+      if (name) {
+        categories[cIdx].subcategories.push({ name, links: [] });
+        renderCategories();
+      }
+    }
+
+    function editSubcategory(cIdx, sIdx) {
+      const name = prompt('修改二级分类名称', categories[cIdx].subcategories[sIdx].name);
+      if (name) categories[cIdx].subcategories[sIdx].name = name;
+      renderCategories();
+    }
+
+    function deleteSubcategory(cIdx, sIdx) {
+      if (confirm('删除二级分类及其所有链接？')) {
+        categories[cIdx].subcategories.splice(sIdx, 1);
+        renderCategories();
+      }
+    }
+
+    // 将数据同步到 parent window (供 settings 保存)
+    window.parent.categoriesData = categories;
+
+    loadData();
   </script>
 </body>
 </html>
