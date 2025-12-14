@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>友情链接管理</title>
+  <style>
+    body { background:#f1f3f4; padding:24px; font-family:'Roboto',Arial,sans-serif; }
+    .card { background:#fff; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.12); padding:24px; margin-bottom:24px; }
+    h2 { font-size:20px; color:#3c4043; margin:0 0 16px; display:flex; justify-content:space-between; align-items:center; }
+    .form-group { margin-bottom:20px; }
+    label { display:block; margin-bottom:8px; color:#5f6368; font-size:14px; }
+    input, textarea { width:100%; padding:12px; border:1px solid #dadce0; border-radius:4px; font-size:16px; }
+    button { background:#4285f4; color:white; border:none; padding:12px 24px; border-radius:4px; cursor:pointer; font-size:16px; }
+    button:hover { background:#3367d6; }
+    button.success { background:#34a853; }
+    button.success:hover { background:#2d8e44; }
+    button.danger { background:#ea4335; }
+    button.danger:hover { background:#d33b2f; }
+    .link-list { margin-top:20px; }
+    .link-item { display:flex; align-items:center; justify-content:space-between; padding:16px; background:#f8f9fa; border-radius:8px; margin-bottom:12px; }
+    .link-item img { width:40px; height:40px; object-fit:contain; border-radius:6px; margin-right:16px; }
+    .status { margin-top:12px; padding:12px; border-radius:4px; font-size:14px; text-align:center; }
+    .status.success { background:#e6f4ea; color:#137333; border:1px solid #34a853; }
+    .status.error { background:#fce8e6; color:#c5221f; border:1px solid #ea4335; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>友情链接管理
+      <button class="success" onclick="saveToKV()">保存到 KV（永久生效）</button>
+    </h2>
+    <div id="saveStatus"></div>
+
+    <h3 style="margin:30px 0 20px;">添加新友情链接</h3>
+    <form id="addForm">
+      <div class="form-group">
+        <label>网站名称 *</label>
+        <input type="text" id="name" required>
+      </div>
+      <div class="form-group">
+        <label>网站地址 *</label>
+        <input type="url" id="url" required>
+      </div>
+      <div class="form-group">
+        <label>网站描述（可选）</label>
+        <textarea id="desc" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label>图标上传（可选，建议 60x60）</label>
+        <input type="file" id="iconFile" accept="image/*">
+        <button type="button" style="margin-top:8px;" onclick="uploadIcon()">上传图标</button>
+        <div id="iconPreview" style="margin-top:10px;"></div>
+        <p style="font-size:12px;color:#5f6368;margin-top:8px;">或手动输入图标 URL：</p>
+        <input type="url" id="icon" placeholder="https://example.com/logo.png">
+      </div>
+      <button type="submit">添加友情链接</button>
+    </form>
+
+    <h3 style="margin:40px 0 20px;">现有友情链接</h3>
+    <div class="link-list" id="linksList">
+      <p style="color:#5f6368;">加载中...</p>
+    </div>
+  </div>
+
+  <script>
+    let friendlyLinks = [];
+
+    // 加载友情链接
+    async function loadLinks() {
+      try {
+        const res = await fetch('/api/friendly');
+        if (res.ok) {
+          friendlyLinks = await res.json();
+        } else {
+          friendlyLinks = [];
+        }
+        renderLinks();
+      } catch (e) {
+        friendlyLinks = [];
+        renderLinks();
+      }
+    }
+
+    // 渲染列表
+    function renderLinks() {
+      const list = document.getElementById('linksList');
+      if (friendlyLinks.length === 0) {
+        list.innerHTML = '<p style="color:#5f6368;">暂无友情链接</p>';
+        return;
+      }
+
+      list.innerHTML = '';
+      friendlyLinks.forEach((link, idx) => {
+        const div = document.createElement('div');
+        div.className = 'link-item';
+        div.innerHTML = `
+          <div style="display:flex;align-items:center;">
+            ${link.icon ? `<img src="${link.icon}" alt="${link.name}">` : '<div style="width:40px;height:40px;background:#ddd;border-radius:6px;margin-right:16px;"></div>'}
+            <div>
+              <strong><a href="${link.url}" target="_blank">${link.name}</a></strong><br>
+              <span style="color:#666;font-size:14px;">${link.desc || '无描述'}</span>
+            </div>
+          </div>
+          <div>
+            <button onclick="editLink(${idx})">编辑</button>
+            <button class="danger" onclick="deleteLink(${idx})">删除</button>
+          </div>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    // 添加新链接
+    document.getElementById('addForm').onsubmit = (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const url = document.getElementById('url').value.trim();
+      const desc = document.getElementById('desc').value.trim();
+      const icon = document.getElementById('icon').value.trim();
+
+      if (!name || !url) return alert('名称和地址必填');
+
+      friendlyLinks.push({ name, url, desc, icon });
+      renderLinks();
+      document.getElementById('addForm').reset();
+      document.getElementById('iconPreview').innerHTML = '';
+    };
+
+    // 编辑链接
+    function editLink(idx) {
+      const link = friendlyLinks[idx];
+      const newName = prompt('网站名称', link.name);
+      const newUrl = prompt('网站地址', link.url);
+      const newDesc = prompt('描述', link.desc);
+      const newIcon = prompt('图标 URL', link.icon);
+
+      if (newName && newUrl) {
+        friendlyLinks[idx] = { name: newName, url: newUrl, desc: newDesc || '', icon: newIcon || '' };
+        renderLinks();
+      }
+    }
+
+    // 删除链接
+    function deleteLink(idx) {
+      if (confirm('确认删除此友情链接？')) {
+        friendlyLinks.splice(idx, 1);
+        renderLinks();
+      }
+    }
+
+    // 上传图标
+    async function uploadIcon() {
+      const fileInput = document.getElementById('iconFile');
+      const file = fileInput.files[0];
+      if (!file) return alert('请先选择图片');
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        if (!res.ok) throw new Error('上传失败');
+        const url = (await res.text()).trim();
+
+        document.getElementById('icon').value = url;
+        document.getElementById('iconPreview').innerHTML = `<img src="${url}" style="width:80px;height:80px;object-fit:contain;border-radius:8px;border:1px solid #ddd;">`;
+      } catch (e) {
+        alert('上传失败：' + e.message);
+      }
+    }
+
+    // 保存到 KV
+    async function saveToKV() {
+      if (!confirm('确认保存所有友情链接到云端？')) return;
+
+      const statusDiv = document.getElementById('saveStatus');
+      statusDiv.textContent = '正在保存...';
+      statusDiv.className = 'status';
+
+      try {
+        const res = await fetch('/api/friendly', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(friendlyLinks)
+        });
+
+        if (res.ok) {
+          statusDiv.textContent = '保存成功！';
+          statusDiv.className = 'status success';
+        } else {
+          throw new Error(await res.text());
+        }
+      } catch (e) {
+        statusDiv.textContent = '保存失败：' + e.message;
+        statusDiv.className = 'status error';
+      }
+    }
+
+    loadLinks();
+  </script>
+</body>
+</html>
