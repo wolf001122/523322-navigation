@@ -2,22 +2,81 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>分类管理</title>
   <style>
-    body { background:#f1f3f4; padding:24px; }
+    body { background:#f1f3f4; padding:24px; font-family:'Roboto',Arial,sans-serif; }
     .card { background:#fff; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.12); padding:24px; margin-bottom:24px; }
-    h2 { font-size:20px; color:#3c4043; margin:0 0 16px; }
-    button { background:#4285f4; color:white; border:none; padding:8px 16px; border-radius:4px; cursor:pointer; }
+    h2 { font-size:20px; color:#3c4043; margin:0 0 16px; display:flex; justify-content:space-between; align-items:center; }
+    button { background:#4285f4; color:white; border:none; padding:8px 16px; border-radius:4px; cursor:pointer; font-size:14px; }
     button:hover { background:#3367d6; }
-    /* 拖拽等逻辑同原后台，简化版 */
+    button.danger { background:#ea4335; }
+    button.danger:hover { background:#d33b2f; }
+    .category { border-left:4px solid #4285f4; padding-left:16px; margin:16px 0; }
+    .subcategory { margin:16px 0 24px 32px; border-left:2px solid #dadce0; padding-left:16px; }
+    .actions { display:flex; gap:8px; flex-wrap:wrap; }
   </style>
 </head>
 <body>
   <div class="card">
-    <h2>一级分类管理</h2>
-    <button onclick="alert('新增一级分类功能')">+ 新增一级分类</button>
-    <!-- 这里放拖拽分类列表 -->
-    <p>分类列表（拖拽排序）</p>
+    <h2>一级分类管理
+      <button onclick="addCategory()">+ 新增一级分类</button>
+    </h2>
+    <div id="categoriesList">
+      <!-- 动态加载 -->
+      <p style="color:#5f6368;">加载中...</p>
+    </div>
   </div>
-  <!-- 更多卡片 -->
+
+  <script>
+    // 示例数据，实际从 parent 获取或 API
+    let categories = [
+      { name: "常用工具", subcategories: [{ name: "在线转换", links: [] }, { name: "图片处理", links: [] }] },
+      { name: "生物信息", subcategories: [{ name: "数据库", links: [] }] }
+    ];
+
+    function renderCategories() {
+      const list = document.getElementById('categoriesList');
+      list.innerHTML = '';
+      categories.forEach((cat, cIdx) => {
+        const catDiv = document.createElement('div');
+        catDiv.className = 'category';
+        catDiv.innerHTML = `
+          <h3 style="font-size:18px;margin:0 0 12px;">
+            ${cat.name}
+            <span class="actions">
+              <button onclick="editCategory(${cIdx})">编辑</button>
+              <button class="danger" onclick="deleteCategory(${cIdx})">删除</button>
+              <button onclick="addSubcategory(${cIdx})">+ 二级分类</button>
+            </span>
+          </h3>
+        `;
+        cat.subcategories.forEach((sub, sIdx) => {
+          const subDiv = document.createElement('div');
+          subDiv.className = 'subcategory';
+          subDiv.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <strong>${sub.name}</strong>
+              <span class="actions">
+                <button onclick="editSubcategory(${cIdx},${sIdx})">编辑</button>
+                <button class="danger" onclick="deleteSubcategory(${cIdx},${sIdx})">删除</button>
+              </span>
+            </div>
+          `;
+          catDiv.appendChild(subDiv);
+        });
+        list.appendChild(catDiv);
+      });
+    }
+
+    function addCategory() { alert('新增一级分类'); }
+    function editCategory(idx) { alert('编辑一级分类 ' + categories[idx].name); }
+    function deleteCategory(idx) { if (confirm('删除？')) categories.splice(idx,1); renderCategories(); }
+    function addSubcategory(cIdx) { alert('在 ' + categories[cIdx].name + ' 下新增二级分类'); }
+    function editSubcategory(cIdx, sIdx) { alert('编辑二级分类'); }
+    function deleteSubcategory(cIdx, sIdx) { if (confirm('删除？')) categories[cIdx].subcategories.splice(sIdx,1); renderCategories(); }
+
+    renderCategories();
+  </script>
 </body>
 </html>
