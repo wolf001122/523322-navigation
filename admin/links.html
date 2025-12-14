@@ -20,38 +20,32 @@
 <body>
   <div class="card">
     <h2>新增/编辑链接</h2>
-    <form id="linkForm">
+    <form id="linkForm" onsubmit="event.preventDefault(); saveLink();">
       <div class="form-group">
-        <label>所属一级分类</label>
-        <select id="catSelect">
-          <option>常用工具</option>
-          <option>生物信息</option>
-        </select>
+        <label>一级分类</label>
+        <select id="catSelect" onchange="updateSubSelect()"></select>
       </div>
       <div class="form-group">
-        <label>所属二级分类</label>
-        <select id="subSelect">
-          <option>在线转换</option>
-          <option>图片处理</option>
-        </select>
+        <label>二级分类</label>
+        <select id="subSelect"></select>
       </div>
       <div class="form-group">
         <label>链接名称</label>
-        <input type="text" required>
+        <input type="text" id="linkName" required>
       </div>
       <div class="form-group">
         <label>链接地址</label>
-        <input type="url" required>
+        <input type="url" id="linkUrl" required>
       </div>
       <div class="form-group">
         <label>描述</label>
-        <textarea rows="3"></textarea>
+        <textarea id="linkDesc" rows="3"></textarea>
       </div>
       <div class="form-group">
-        <label>图标上传（可选）</label>
-        <input type="file" accept="image/*">
-        <p style="font-size:12px;color:#5f6368;margin-top:8px;">或手动输入 URL</p>
-        <input type="url" placeholder="https://example.com/logo.png">
+        <label>图标上传</label>
+        <input type="file" id="linkIconFile" accept="image/*">
+        <p style="font-size:12px;color:#5f6368;">或手动输入 URL</p>
+        <input type="url" id="linkIcon">
       </div>
       <button type="submit">保存链接</button>
     </form>
@@ -59,18 +53,57 @@
 
   <div class="card">
     <h2>现有链接</h2>
-    <div class="link-list" id="linksList">
-      <div class="link-item">
-        <div>
-          <img src="https://via.placeholder.com/40" style="width:40px;height:40px;vertical-align:middle;margin-right:12px;">
-          <strong>语雀</strong> - 专业的云端知识库
-        </div>
-        <div>
-          <button>编辑</button>
-          <button style="background:#ea4335;">删除</button>
-        </div>
-      </div>
-    </div>
+    <div class="link-list" id="linksList"></div>
   </div>
+
+  <script>
+    let categories = window.parent.categoriesData || [];
+
+    function updateSelects() {
+      const catSelect = document.getElementById('catSelect');
+      catSelect.innerHTML = categories.map((c, i) => `<option value="${i}">${c.name}</option>`).join('');
+      updateSubSelect();
+    }
+
+    function updateSubSelect() {
+      const catIdx = document.getElementById('catSelect').value;
+      const subSelect = document.getElementById('subSelect');
+      subSelect.innerHTML = categories[catIdx].subcategories.map((s, i) => `<option value="${i}">${s.name}</option>`).join('');
+    }
+
+    async function saveLink() {
+      const catIdx = document.getElementById('catSelect').value;
+      const subIdx = document.getElementById('subSelect').value;
+      const name = document.getElementById('linkName').value.trim();
+      const url = document.getElementById('linkUrl').value.trim();
+      const desc = document.getElementById('linkDesc').value.trim();
+      let icon = document.getElementById('linkIcon').value.trim();
+
+      const fileInput = document.getElementById('linkIconFile');
+      if (fileInput.files[0]) {
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+        try {
+          const res = await fetch('/api/upload', { method: 'POST', body: formData });
+          if (res.ok) icon = (await res.text()).trim();
+        } catch (e) {
+          alert('上传失败');
+        }
+      }
+
+      categories[catIdx].subcategories[subIdx].links.push({ name, url, desc, icon });
+      alert('链接添加成功！请在“系统设置”中保存到 KV');
+      window.parent.categoriesData = categories;
+      renderLinks();
+    }
+
+    function renderLinks() {
+      // 简化显示
+      document.getElementById('linksList').innerHTML = '<p style="color:#5f6368;">链接已保存到内存，请在“系统设置”保存到 KV</p>';
+    }
+
+    updateSelects();
+    renderLinks();
+  </script>
 </body>
 </html>
