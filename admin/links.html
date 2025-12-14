@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>链接管理</title>
+  <style>
+    body { background:#f1f3f4; padding:24px; font-family:'Roboto',Arial,sans-serif; }
+    .card { background:#fff; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.12); padding:24px; margin-bottom:24px; }
+    h2 { font-size:20px; color:#3c4043; margin:0 0 16px; }
+    .form-group { margin-bottom:20px; }
+    label { display:block; margin-bottom:8px; color:#5f6368; font-size:14px; }
+    input, textarea, select { width:100%; padding:12px; border:1px solid #dadce0; border-radius:4px; font-size:16px; }
+    button { background:#4285f4; color:white; border:none; padding:12px 24px; border-radius:4px; cursor:pointer; font-size:16px; }
+    button:hover { background:#3367d6; }
+    .link-list { margin-top:20px; }
+    .link-item { display:flex; align-items:center; justify-content:space-between; padding:12px; background:#f8f9fa; border-radius:4px; margin-bottom:8px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>新增/编辑链接</h2>
+    <form id="linkForm">
+      <div class="form-group">
+        <label>所属一级分类</label>
+        <select id="catSelect">
+          <option>常用工具</option>
+          <option>生物信息</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>所属二级分类</label>
+        <select id="subSelect">
+          <option>在线转换</option>
+          <option>图片处理</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>链接名称</label>
+        <input type="text" required>
+      </div>
+      <div class="form-group">
+        <label>链接地址</label>
+        <input type="url" required>
+      </div>
+      <div class="form-group">
+        <label>描述</label>
+        <textarea rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label>图标上传（可选）</label>
+        <input type="file" accept="image/*">
+        <p style="font-size:12px;color:#5f6368;margin-top:8px;">或手动输入 URL</p>
+        <input type="url" placeholder="https://example.com/logo.png">
+      </div>
+      <button type="submit">保存链接</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>现有链接</h2>
+    <div class="link-list" id="linksList">
+      <div class="link-item">
+        <div>
+          <img src="https://via.placeholder.com/40" style="width:40px;height:40px;vertical-align:middle;margin-right:12px;">
+          <strong>语雀</strong> - 专业的云端知识库
+        </div>
+        <div>
+          <button>编辑</button>
+          <button style="background:#ea4335;">删除</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
