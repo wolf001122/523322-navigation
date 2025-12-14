@@ -46,14 +46,14 @@
     .ad-top { text-align:center; padding:20px 0; background:#fff; box-shadow:0 2px 10px rgba(0,0,0,0.05); }
     .ad-side { position:fixed; right:2%; top:100px; width:15%; max-width:300px; box-shadow:0 4px 20px rgba(0,0,0,0.1); border-radius:12px; overflow:hidden; } /* 右侧广告自适应 */
 
-    /* 搜索引擎输入框 */
+    /* 搜索引擎输入框 - 确保显示 */
     .search-container { width:60%; max-width:800px; margin:20px auto; display:flex; align-items:center; gap:10px; }
     .search-container input { flex:1; padding:15px; font-size:16px; border:1px solid #ddd; border-radius:30px 0 0 30px; }
     .search-container select { padding:15px; font-size:16px; border:1px solid #ddd; border-left:none; border-radius:0 30px 30px 0; }
     .search-container button { padding:15px 30px; background:#1976d2; color:white; border:none; border-radius:30px; cursor:pointer; margin-left:10px; }
     .search-container button:hover { background:#0d47a1; }
 
-    footer { text-align:center; padding:40px; color:#666; width:100%; }
+    footer { text-align:center; padding:20px 0; color:#666; font-size:14px; border-top:1px solid #eee; background:#fff; } /* 降低高度，协调 */
   </style>
 </head>
 <body>
@@ -83,7 +83,6 @@
     <div class="main">
       <div id="contentArea">
         <!-- 默认搜索引擎输入框 -->
-        <h2>百度一下，你就知道</h2>
         <div class="search-container">
           <input type="text" id="searchInput" placeholder="请输入搜索内容...">
           <select id="searchEngine">
@@ -96,7 +95,6 @@
         </div>
         <!-- 默认卡片（可选展示常用链接） -->
         <div class="links-grid" id="defaultContent">
-          <!-- 保持原有 4 个卡片 -->
           <div class="link-card">
             <img src="https://cdn.freebiesupply.com/logos/thumbs/2x/baidu-icon-logo.png" alt="百度">
             <div class="info">
@@ -182,14 +180,78 @@
     }
 
     function showDefaultSearchEngines() {
-      // 同前默认内容...
+      const area = document.getElementById('contentArea');
+      area.innerHTML = `
+        <div class="search-container">
+          <input type="text" id="searchInput" placeholder="请输入搜索内容...">
+          <select id="searchEngine">
+            <option value="baidu">百度</option>
+            <option value="google">Google</option>
+            <option value="bing">Bing</option>
+            <option value="so">360搜索</option>
+          </select>
+          <button onclick="performSearch()">搜索</button>
+        </div>
+        <div class="links-grid" id="defaultContent">
+          <div class="link-card">
+            <img src="https://cdn.freebiesupply.com/logos/thumbs/2x/baidu-icon-logo.png" alt="百度">
+            <div class="info">
+              <a href="https://www.baidu.com" target="_blank">百度</a>
+              <div class="desc">百度一下，你就知道</div>
+            </div>
+          </div>
+          <div class="link-card">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/1024px-Google_%22G%22_Logo.svg.png" alt="Google">
+            <div class="info">
+              <a href="https://www.google.com" target="_blank">Google</a>
+              <div class="desc">全球最强搜索引擎</div>
+            </div>
+          </div>
+          <div class="link-card">
+            <img src="https://assets.stickpng.com/images/623afb0d27d4946aceae2faa.png" alt="Bing">
+            <div class="info">
+              <a href="https://www.bing.com" target="_blank">Bing</a>
+              <div class="desc">微软必应搜索</div>
+            </div>
+          </div>
+          <div class="link-card">
+            <img src="https://img.88icon.com/download/jpg/201912/d1694c5b671f8f7e6e2ea7ec1f67c82e.jpg!bg" alt="360搜索">
+            <div class="info">
+              <a href="https://www.so.com" target="_blank">360搜索</a>
+              <div class="desc">安全搜索</div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
     }
 
     function selectCategory(name) {
-      // 同前分类内容...
+      const cat = categories.find(c => c.name === name);
+      if (!cat) return;
+
+      const area = document.getElementById('contentArea');
+      area.innerHTML = `<h2>${cat.name}</h2><div class="links-grid"></div>`;
+      const grid = area.querySelector('.links-grid');
+
+      cat.links.forEach(link => {
+        const card = document.createElement('div');
+        card.className = 'link-card';
+        card.innerHTML = `
+          ${link.icon ? `<img src="${link.icon}" alt="${link.name}">` : '<img src="https://via.placeholder.com/50?text=ICON" alt="默认图标">'}
+          <div class="info">
+            <a href="${link.url}" target="_blank">${link.name}</a>
+            <div class="desc">${link.desc}</div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+      document.querySelector(`.sidebar a[onclick="selectCategory('${name}')"]`)?.classList.add('active');
     }
 
-    // 搜索功能
     function performSearch() {
       const query = document.getElementById('searchInput').value.trim();
       if (!query) return alert('请输入搜索内容');
@@ -204,7 +266,6 @@
       window.open(searchUrl, '_blank');
     }
 
-    // 网站提交事务
     function showSiteSubmission() {
       const area = document.getElementById('contentArea');
       area.innerHTML = `
@@ -214,7 +275,6 @@
       document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
     }
 
-    // 友情链接
     function showFriendlyLinks() {
       const area = document.getElementById('contentArea');
       area.innerHTML = `
@@ -232,7 +292,6 @@
       document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
     }
 
-    // 关于导航
     function showAboutNavigation() {
       const area = document.getElementById('contentArea');
       area.innerHTML = `
