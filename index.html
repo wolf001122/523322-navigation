@@ -5,44 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>网址导航 - 实用资源站</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Material+Icons&display=optional" rel="stylesheet">
+  <!-- Cloudflare Turnstile（可选，用于提交页） -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
-  <!-- Google AdSense 核心脚本 -->
+  <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9474229114991789"
           crossorigin="anonymous"></script>
 
   <style>
     body { margin:0; font-family:'Roboto',Arial,sans-serif; background:#f1f3f4; display:flex; height:100vh; overflow:hidden; }
-    /* 左侧菜单栏 - AdSense 风格 */
-    .sidebar { width:256px; background:#fff; box-shadow:2px 0 8px rgba(0,0,0,0.12); position:fixed; height:100%; overflow-y:auto; z-index:10; }
+    .sidebar { width:256px; background:#fff; box-shadow:2px 0 8px rgba(0,0,0,0.12); position:fixed; height:100%; overflow-y:auto; z-index:10; transition:width 0.3s; }
     .sidebar-header { padding:24px 16px; font-size:20px; color:#5f6368; border-bottom:1px solid #e0e0e0; text-align:center; font-weight:500; }
     .sidebar-menu { list-style:none; padding:0; margin:0; }
-    .sidebar-menu li a { display:flex; align-items:center; padding:12px 24px; color:#5f6368; text-decoration:none; font-size:14px; transition:0.2s; }
-    .sidebar-menu li a:hover { background:#f1f3f4; }
-    .sidebar-menu li a.active { background:#e8f0fe; color:#4285f4; font-weight:500; }
+    .sidebar-menu li a { display:flex; align-items:center; padding:12px 24px; color:#5f6368; text-decoration:none; font-size:14px; transition:all 0.2s; border-left:3px solid transparent; }
+    .sidebar-menu li a:hover { background:#f1f3f4; border-left-color:#4285f4; }
+    .sidebar-menu li a.active { background:#e8f0fe; color:#4285f4; font-weight:500; border-left-color:#4285f4; }
     .sidebar-menu li a .material-icons { margin-right:24px; font-size:24px; color:#5f6368; }
     .sidebar-menu li a.active .material-icons { color:#4285f4; }
 
-    /* 主内容区 */
-    .main-content { margin-left:256px; flex:1; display:flex; flex-direction:column; }
-    .top-bar { background:#fff; height:64px; box-shadow:0 2px 4px rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; padding:0 24px; position:relative; z-index:5; }
+    .main-content { margin-left:256px; flex:1; display:flex; flex-direction:column; transition:margin-left 0.3s; }
+    .top-bar { background:#fff; height:64px; box-shadow:0 2px 4px rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; padding:0 24px; z-index:5; }
     .top-bar .ad-container { width:728px; height:90px; display:flex; align-items:center; justify-content:center; }
 
-    /* 内容框架 */
-    .content-frame { flex:1; width:100%; border:none; background:#f1f3f4; }
+    .content-frame { flex:1; width:100%; border:none; background:#f1f3f4; opacity:0; transition:opacity 0.4s ease; }
+    .content-frame.loaded { opacity:1; }
 
-    /* 右侧广告（可选） */
     .ad-side { position:fixed; right:24px; top:100px; width:300px; height:600px; box-shadow:0 4px 20px rgba(0,0,0,0.1); border-radius:12px; overflow:hidden; z-index:5; }
 
     @media (max-width:1200px) {
       .sidebar { width:72px; }
       .sidebar-header { font-size:0; }
       .sidebar-menu li a span { display:none; }
-      .sidebar-menu li a .material-icons { margin-right:0; margin-left:auto; margin-right:auto; }
+      .sidebar-menu li a .material-icons { margin:0 auto; }
       .main-content { margin-left:72px; }
       .ad-side { display:none; }
-    }
-    @media (max-width:800px) {
-      .top-bar .ad-container { width:100%; height:90px; }
     }
   </style>
 </head>
@@ -52,8 +48,7 @@
     <div class="sidebar-header">网址导航</div>
     <ul class="sidebar-menu">
       <li><a href="javascript:void(0)" onclick="loadDefault()" class="active"><span class="material-icons">search</span><span>搜索首页</span></a></li>
-      <!-- 动态一级分类将插入这里 -->
-      <li id="dynamicCategories"></li>
+      <div id="dynamicCategories"></div>
       <li><a href="submit.html" target="contentFrame"><span class="material-icons">add_box</span><span>网站提交</span></a></li>
       <li><a href="javascript:void(0)" onclick="loadFriendlyLinks()"><span class="material-icons">link</span><span>友情链接</span></a></li>
       <li><a href="javascript:void(0)" onclick="loadAbout()"><span class="material-icons">info</span><span>关于导航</span></a></li>
@@ -62,23 +57,19 @@
 
   <!-- 主内容区 -->
   <div class="main-content">
-    <!-- 顶部广告栏 -->
     <div class="top-bar">
       <div class="ad-container">
         <ins class="adsbygoogle"
              style="display:inline-block;width:728px;height:90px"
              data-ad-client="ca-pub-9474229114991789"
-             data-ad-format="auto"
-             data-ad-slot=""></ins>
+             data-ad-format="auto"></ins>
         <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
       </div>
     </div>
-
-    <!-- 内容 iframe -->
-    <iframe name="contentFrame" class="content-frame" src="about:blank"></iframe>
+    <iframe name="contentFrame" class="content-frame" onload="this.classList.add('loaded')"></iframe>
   </div>
 
-  <!-- 右侧广告（可选） -->
+  <!-- 右侧广告 -->
   <div class="ad-side">
     <ins class="adsbygoogle"
          style="display:inline-block;width:300px;height:600px"
@@ -90,7 +81,6 @@
   <script>
     let categories = [];
 
-    // 加载 KV 数据并渲染左侧菜单 + 默认搜索页
     async function loadData() {
       try {
         const res = await fetch('/api/data');
@@ -112,16 +102,15 @@
         }));
 
         renderSidebar();
-        loadDefault(); // 默认加载搜索首页
+        loadDefault();
       } catch (e) {
-        console.error('加载数据失败', e);
+        console.error('加载失败', e);
       }
     }
 
-    // 渲染左侧一级分类菜单
     function renderSidebar() {
-      const list = document.getElementById('dynamicCategories');
-      list.innerHTML = '';
+      const container = document.getElementById('dynamicCategories');
+      container.innerHTML = '';
       categories.forEach((cat, idx) => {
         const li = document.createElement('li');
         const a = document.createElement('a');
@@ -129,49 +118,46 @@
         a.innerHTML = `<span class="material-icons">folder</span><span>${cat.name}</span>`;
         a.onclick = () => loadCategory(idx);
         li.appendChild(a);
-        list.appendChild(li);
+        container.appendChild(li);
       });
     }
 
-    // 默认搜索首页（居中搜索框）
     function loadDefault() {
-      document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
-      document.querySelector('.sidebar-menu a:first-child').classList.add('active');
-
+      highlightMenu(this);
       const frame = document.querySelector('iframe');
       frame.contentDocument.open();
       frame.contentDocument.write(`
         <!DOCTYPE html>
         <html><head><meta charset="UTF-8"><style>
-          body { margin:0; background:#f1f3f4; font-family:'Roboto',Arial,sans-serif; display:flex; align-items:center; justify-content:center; height:100%; }
-          .search-container { width:60%; max-width:800px; display:flex; box-shadow:0 8px 25px rgba(0,0,0,0.15); border-radius:30px; overflow:hidden; }
-          input { flex:1; padding:20px; font-size:20px; border:none; outline:none; }
-          select { padding:20px; font-size:18px; border:none; border-left:1px solid #ddd; background:#fff; }
-          button { padding:20px 40px; background:#4285f4; color:white; font-size:18px; border:none; cursor:pointer; }
+          body { margin:0; background:#f1f3f4; font-family:'Roboto',Arial,sans-serif; display:flex; align-items:center; justify-content:center; height:100vh; }
+          .search-box { width:70%; max-width:900px; display:flex; box-shadow:0 8px 25px rgba(0,0,0,0.15); border-radius:30px; overflow:hidden; background:white; }
+          input { flex:1; padding:24px; font-size:22px; border:none; outline:none; }
+          select { padding:24px; font-size:18px; border:none; border-left:1px solid #eee; background:white; }
+          button { padding:24px 48px; background:#4285f4; color:white; font-size:20px; border:none; cursor:pointer; }
           button:hover { background:#3367d6; }
         </style></head>
         <body>
-          <div class="search-container">
-            <input type="text" id="searchInput" placeholder="请输入搜索内容..." onkeydown="if(event.keyCode==13) performSearch()">
-            <select id="searchEngine">
+          <div class="search-box">
+            <input type="text" id="q" placeholder="请输入搜索内容..." onkeydown="if(event.keyCode==13) search()">
+            <select id="engine">
               <option value="baidu">百度</option>
               <option value="google">Google</option>
               <option value="bing">Bing</option>
               <option value="so">360搜索</option>
             </select>
-            <button onclick="performSearch()">搜索</button>
+            <button onclick="search()">搜索</button>
           </div>
           <script>
-            function performSearch() {
-              const query = document.getElementById('searchInput').value.trim();
-              if (!query) return;
-              const engine = document.getElementById('searchEngine').value;
-              let url;
-              switch(engine){
-                case 'baidu': url = 'https://www.baidu.com/s?wd=' + encodeURIComponent(query); break;
-                case 'google': url = 'https://www.google.com/search?q=' + encodeURIComponent(query); break;
-                case 'bing': url = 'https://www.bing.com/search?q=' + encodeURIComponent(query); break;
-                case 'so': url = 'https://www.so.com/s?q=' + encodeURIComponent(query); break;
+            function search() {
+              const q = document.getElementById('q').value.trim();
+              if (!q) return;
+              const engine = document.getElementById('engine').value;
+              let url = '';
+              switch(engine) {
+                case 'baidu': url = 'https://www.baidu.com/s?wd=' + encodeURIComponent(q); break;
+                case 'google': url = 'https://www.google.com/search?q=' + encodeURIComponent(q); break;
+                case 'bing': url = 'https://www.bing.com/search?q=' + encodeURIComponent(q); break;
+                case 'so': url = 'https://www.so.com/s?q=' + encodeURIComponent(q); break;
               }
               window.open(url, '_blank');
             }
@@ -181,33 +167,28 @@
       frame.contentDocument.close();
     }
 
-    // 加载分类内容
-    function loadCategory(catIdx) {
-      document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
-      event.target.closest('a').classList.add('active');
-
-      const cat = categories[catIdx];
+    function loadCategory(idx) {
+      highlightMenu(this);
+      const cat = categories[idx];
       let html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
         body { margin:0; background:#f1f3f4; padding:40px; font-family:'Roboto',Arial,sans-serif; }
-        h2 { font-size:24px; color:#333; margin-bottom:30px; padding-bottom:10px; border-bottom:2px solid #eee; }
-        .subcategory-title { font-size:20px; color:#4285f4; margin:40px 0 15px; padding-bottom:8px; border-bottom:1px solid #ddd; }
-        .links-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:20px; }
-        .link-card { background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.08); display:flex; flex-direction:column; gap:8px; height:120px; }
-        .link-card:hover { transform:translateY(-4px); box-shadow:0 8px 25px rgba(0,0,0,0.12); }
-        .link-card img { width:40px; height:40px; object-fit:contain; border-radius:8px; }
-        .link-card a { font-size:17px; color:#333; font-weight:bold; text-decoration:none; }
-        .link-card a:hover { color:#4285f4; }
-        .link-card .desc { font-size:14px; color:#666; }
-      </style></head><body>`;
-
-      html += `<h2>${cat.name}</h2>`;
+        h2 { font-size:28px; color:#333; margin-bottom:40px; text-align:center; }
+        .sub-title { font-size:22px; color:#4285f4; margin:50px 0 20px; padding-bottom:10px; border-bottom:2px solid #eee; }
+        .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:24px; }
+        .card { background:#fff; padding:24px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.08); display:flex; flex-direction:column; gap:12px; transition:0.3s; }
+        .card:hover { transform:translateY(-8px); box-shadow:0 12px 30px rgba(0,0,0,0.15); }
+        .card img { width:48px; height:48px; object-fit:contain; border-radius:8px; }
+        .card a { font-size:18px; font-weight:500; color:#333; text-decoration:none; }
+        .card a:hover { color:#4285f4; }
+        .card .desc { font-size:14px; color:#666; }
+      </style></head><body><h2>${cat.name}</h2>`;
 
       cat.subcategories.forEach(sub => {
         if (sub.links.length > 0) {
-          html += `<div class="subcategory-title">${sub.name}</div><div class="links-grid">`;
+          html += `<div class="sub-title">${sub.name}</div><div class="grid">`;
           sub.links.forEach(link => {
-            html += `<div class="link-card">
-              ${link.icon ? `<img src="${link.icon}" alt="${link.name}">` : '<img src="https://via.placeholder.com/40?text=ICON" alt="默认">'}
+            html += `<div class="card">
+              ${link.icon ? `<img src="${link.icon}" alt="${link.name}">` : '<img src="https://via.placeholder.com/48?text=ICON" alt="图标">'}
               <a href="${link.url}" target="_blank">${link.name}</a>
               <div class="desc">${link.desc}</div>
             </div>`;
@@ -224,48 +205,46 @@
       frame.contentDocument.close();
     }
 
-    // 友情链接（示例）
-    function loadFriendlyLinks() {
+    function highlightMenu(el) {
       document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
-      event.target.closest('a').classList.add('active');
+      el.closest('a').classList.add('active');
+    }
 
+    function loadFriendlyLinks() {
+      highlightMenu(this);
       const frame = document.querySelector('iframe');
       frame.contentDocument.open();
       frame.contentDocument.write(`
         <!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-          body { margin:0; background:#f1f3f4; padding:40px; font-family:'Roboto',Arial,sans-serif; text-align:center; }
-          h2 { font-size:24px; color:#333; }
-          p { max-width:800px; margin:20px auto; color:#5f6368; line-height:1.8; }
+          body { margin:0; background:#f1f3f4; padding:40px; text-align:center; font-family:'Roboto',Arial,sans-serif; }
+          h2 { font-size:28px; color:#333; }
+          p { font-size:16px; color:#5f6368; max-width:800px; margin:40px auto; line-height:1.8; }
         </style></head><body>
           <h2>友情链接</h2>
-          <p>暂无友情链接，可在后台添加。</p>
+          <p>暂无友情链接，欢迎交换友链！</p>
         </body></html>
       `);
       frame.contentDocument.close();
     }
 
-    // 关于导航
     function loadAbout() {
-      document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
-      event.target.closest('a').classList.add('active');
-
+      highlightMenu(this);
       const frame = document.querySelector('iframe');
       frame.contentDocument.open();
       frame.contentDocument.write(`
         <!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-          body { margin:0; background:#f1f3f4; padding:40px; font-family:'Roboto',Arial,sans-serif; text-align:center; }
-          h2 { font-size:24px; color:#333; }
-          p { max-width:800px; margin:20px auto; color:#5f6368; line-height:1.8; }
+          body { margin:0; background:#f1f3f4; padding:40px; text-align:center; font-family:'Roboto',Arial,sans-serif; }
+          h2 { font-size:28px; color:#333; }
+          p { font-size:16px; color:#5f6368; max-width:800px; margin:30px auto; line-height:1.8; }
         </style></head><body>
           <h2>关于导航</h2>
-          <p>吾爱三三两两导航站是一个实用资源集合网站，致力于提供常用工具、学习资源等优质链接。</p>
+          <p>吾爱三三两两导航站是一个实用资源集合网站，致力于提供优质工具与资源链接。</p>
           <p>版本：1.0 | 更新：2025-12-14</p>
         </body></html>
       `);
       frame.contentDocument.close();
     }
 
-    // 初始化
     loadData();
   </script>
 </body>
