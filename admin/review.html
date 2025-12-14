@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>提交审核</title>
+  <style>
+    body { background:#f1f3f4; padding:24px; font-family:'Roboto',Arial,sans-serif; }
+    .card { background:#fff; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.12); padding:24px; margin-bottom:24px; }
+    h2 { font-size:20px; color:#3c4043; margin:0 0 16px; }
+    .pending-item { border-left:4px solid #ff9800; padding-left:16px; margin:20px 0; background:#fffde7; border-radius:4px; }
+    .pending-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+    .pending-header strong { font-size:18px; }
+    .actions { display:flex; gap:12px; }
+    button { background:#4285f4; color:white; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; }
+    button:hover { background:#3367d6; }
+    button.approve { background:#34a853; }
+    button.approve:hover { background:#2d8e44; }
+    button.reject { background:#ea4335; }
+    button.reject:hover { background:#d33b2f; }
+    .form-group { margin-bottom:16px; }
+    label { display:block; margin-bottom:6px; color:#5f6368; font-weight:500; }
+    input, textarea, select { width:100%; padding:10px; border:1px solid #dadce0; border-radius:4px; }
+    .status { margin-top:12px; padding:12px; border-radius:4px; font-size:14px; }
+    .status.success { background:#e6f4ea; color:#137333; border:1px solid #34a853; }
+    .status.error { background:#fce8e6; color:#c5221f; border:1px solid #ea4335; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>待审核网站提交</h2>
+    <div id="pendingList">
+      <p style="color:#5f6368;">加载中...</p>
+    </div>
+  </div>
+
+  <script>
+    // 假设用户提交的数据预存在 KV 中的 key: "pending_submissions" (JSON 数组)
+    let pending = [];
+
+    async function loadPending() {
+      try {
+        const res = await fetch('/api/pending'); // 需要在 Functions 中添加 /api/pending 接口读取 pending_submissions
+        if (!res.ok) throw new Error('无待审核数据');
+        pending = await res.json();
+        renderPending();
+      } catch (e) {
+        document.getElementById('pendingList').innerHTML = '<p style="color:#5f6368;">暂无待审核提交</p>';
+      }
+    }
+
+    function renderPending() {
+      const list = document.getElementById('pendingList');
+      list.innerHTML = '';
+      pending.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'pending-item';
+        div.innerHTML = `
+          <div class="pending-header">
+            <strong>${item.name}（${item.url}）</strong>
+            <div class="actions">
+              <button class="approve" onclick="approveSubmission(${idx})">通过并添加</button>
+              <button onclick="editSubmission(${idx})">修改后添加</button>
+              <button class="reject" onclick="rejectSubmission(${idx})">拒绝删除</button>
+            </div>
+          </div>
+          <p><strong>提交分类：</strong>${item.category || '无'} > ${item.subcategory || '无'}</p>
+          <p><strong>描述：</strong>${item.desc || '无'}</p>
+          ${item.icon ? `<p><strong>图标：</strong><img src="${item.icon}" style="width:60px;height:60px;object-fit:contain;border-radius:8px;"></p>` : ''}
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    async function approveSubmission(idx) {
+      if (!confirm('确认通过并添加到正式导航？')) return;
+      await addToMain(pending[idx]);
+      pending.splice(idx, 1);
+      await savePending();
+      renderPending();
+    }
+
+    async function rejectSubmission(idx) {
+      if (!confirm('确认拒绝并删除此提交？')) return;
+      pending.splice(idx, 1);
+      await savePending();
+      renderPending();
+    }
+
+    function editSubmission(idx) {
+      const item = pending[idx];
+      const newName = prompt('网站名称', item.name);
+      const newUrl = prompt('网站地址', item.url);
+      const newDesc = prompt('描述', item.desc);
+      const newCat = prompt('一级分类', item.category);
+      const newSub = prompt('二级分类', item.subcategory);
+      if (newName && newUrl) {
+        pending[idx] = { ...item, name: newName, url: newUrl, desc: newDesc || '', category: newCat, subcategory: newSub };
+        alert('修改完成，可点击“通过并添加”保存');
+        renderPending();
+      }
+    }
+
+    async function addToMain(item) {
+      // 将提交的数据添加到正式 KV（简化：调用 /api/save 并合并）
+      // 这里实际需读取当前数据、合并、再保存（与 settings 保存逻辑类似）
+      alert('已通过！（实际需后端合并逻辑）');
+    }
+
+    async function savePending() {
+      // 保存回 KV pending_submissions
+      await fetch('/api/pending', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(pending)
+      });
+    }
+
+    loadPending();
+  </script>
+</body>
+</html>
