@@ -17,7 +17,7 @@
     button.success:hover { background:#2d8e44; }
     .link-list { margin-top:20px; }
     .link-item { display:flex; align-items:center; justify-content:space-between; padding:12px; background:#f8f9fa; border-radius:4px; margin-bottom:8px; }
-    .status { margin-top:12px; padding:12px; border-radius:4px; font-size:14px; }
+    .status { margin-top:12px; padding:12px; border-radius:4px; font-size:14px; text-align:center; }
     .status.success { background:#e6f4ea; color:#137333; border:1px solid #34a853; }
     .status.error { background:#fce8e6; color:#c5221f; border:1px solid #ea4335; }
   </style>
@@ -26,7 +26,8 @@
   <div class="card">
     <h2>链接管理</h2>
     <div style="margin-bottom:20px;">
-      <button class="success" onclick="parent.saveToKVFromChild()">保存到 KV（永久生效）</button>
+      <button class="success" onclick="saveToKV()">保存到 KV（永久生效）</button>
+      <div id="saveStatus"></div>
     </div>
     <form id="linkForm" onsubmit="event.preventDefault(); saveLink();">
       <div class="form-group">
@@ -69,11 +70,11 @@
 
   <script>
     let categories = [];
+    let tempLinks = []; // 本页面新增的链接
 
-    // 从 KV 加载最新分类数据
+    // 加载分类
     async function loadCategories() {
       try {
-        // 加时间戳防缓存
         const res = await fetch('/api/data?' + new Date().getTime());
         if (!res.ok) throw new Error('读取失败');
         const xml = await res.text();
@@ -93,7 +94,6 @@
       }
     }
 
-    // 填充下拉框
     function populateSelects() {
       const catSelect = document.getElementById('catSelect');
       catSelect.innerHTML = '<option value="">-- 选择一级分类 --</option>';
@@ -106,7 +106,6 @@
       updateSubSelect();
     }
 
-    // 更新二级分类下拉
     function updateSubSelect() {
       const catIdx = document.getElementById('catSelect').value;
       const subSelect = document.getElementById('subSelect');
@@ -121,11 +120,11 @@
       }
     }
 
-    // 保存链接到临时数组
+    // 添加链接到临时数组
     async function saveLink() {
       const catIdx = document.getElementById('catSelect').value;
       const subIdx = document.getElementById('subSelect').value;
-      if (catIdx === '' || subIdx === '') return alert('请选择一级和二级分类');
+      if (catIdx === '' || subIdx === '') return alert('请选择分类');
 
       const name = document.getElementById('linkName').value.trim();
       const url = document.getElementById('linkUrl').value.trim();
@@ -140,40 +139,126 @@
           const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
           if (uploadRes.ok) {
             icon = (await uploadRes.text()).trim();
-            alert('图标上传成功！URL: ' + icon);
-          } else {
-            alert('上传失败，使用手动输入的 URL');
+            alert('图标上传成功！');
           }
         } catch (e) {
-          alert('上传异常，使用手动输入的 URL');
+          alert('上传失败，使用手动 URL');
         }
       }
 
-      if (!name || !url) return alert('链接名称和地址不能为空');
+      if (!name || !url) return alert('名称和地址必填');
 
-      // 保存到 parent 临时数组
-      if (!window.parent.tempLinks) window.parent.tempLinks = [];
-      window.parent.tempLinks.push({
+      tempLinks.push({
         catIdx: parseInt(catIdx),
         subIdx: parseInt(subIdx),
         link: { name, url, desc, icon }
       });
 
-      alert('链接已添加到内存！点击上方“保存到 KV”按钮永久生效。');
-
-      // 清空表单
+      alert('链接已添加到内存！点击“保存到 KV”永久生效。');
       document.getElementById('linkForm').reset();
       document.getElementById('linkIconFile').value = '';
     }
 
-    // 监听主框架通知刷新数据
+    // 直接在本页面实现保存到 KV
+    async function saveToKV() {
+      if (!confirm('确认将所有新增链接永久保存到 KV？')) return;
+
+      const statusDiv = document.getElementById('saveStatus');
+      statusDiv.textContent = '正在保存...';
+      statusDiv.className = 'status';
+
+      try {
+        // 读取当前完整数据
+        const res = await fetch('/api/data');
+        if (!res.ok) throw new Error('读取失败');
+        const originalXml = await res.text();
+        const parser = new DOMParser();
+        const originalDoc = parser.parseFromString(originalXml, 'text/xml');
+
+        // 提取 admin
+        const adminNode = originalDoc.querySelector('admin');
+        const adminAttr = adminNode ? ` username="${adminNode.getAttribute('username')}" password="${adminNode.getAttribute('password')}"` : '';
+
+        // 解析当前结构
+        let currentCategories = Array.from(originalDoc.querySelectorAll('category')).map(cat => ({
+          name: cat.getAttribute('name'),
+          subcategories: Array.from(cat.querySelectorAll('subcategory')).map(sub => ({
+            name: sub.getAttribute('name'),
+            links: Array.from(sub.querySelectorAll('link')).map(l => ({
+              name: l.getAttribute('name'),
+              url: l.getAttribute('url'),
+              desc: l.getAttribute('desc') || '',
+              icon: l.getAttribute('icon') || ''
+            }))
+          })) || [{ name: '默认子分类', links: [] }]
+        }));
+
+        // 合并新增链接
+        tempLinks.forEach(item => {
+          const { catIdx, subIdx, link } = item;
+          if (currentCategories[catIdx] && currentCategories[catIdx].subcategories[subIdx]) {
+            currentCategories[catIdx].subcategories[subIdx].links.push(link);
+          }
+        });
+
+        // 生成新 XML
+        let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n';
+        if (adminAttr) xml += `  <admin${adminAttr} />\n`;
+
+        currentCategories.forEach(cat => {
+          xml += `  <category name="${escapeXml(cat.name)}">\n`;
+          cat.subcategories.forEach(sub => {
+            xml += `    <subcategory name="${escapeXml(sub.name)}">\n`;
+            sub.links.forEach(link => {
+              const desc = link.desc ? ` desc="${escapeXml(link.desc)}"` : '';
+              const icon = link.icon ? ` icon="${escapeXml(link.icon)}"` : '';
+              xml += `      <link name="${escapeXml(link.name)}" url="${escapeXml(link.url)}"${desc}${icon}/>\n`;
+            });
+            xml += '    </subcategory>\n';
+          });
+          xml += '  </category>\n';
+        });
+        xml += '</navigation>';
+
+        // 写入
+        const saveRes = await fetch('/api/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/xml' },
+          body: xml
+        });
+
+        if (saveRes.ok) {
+          statusDiv.textContent = '保存成功！所有链接已永久生效。';
+          statusDiv.className = 'status success';
+          tempLinks = []; // 清空临时
+          loadCategories(); // 刷新下拉框
+        } else {
+          throw new Error(await saveRes.text());
+        }
+      } catch (e) {
+        statusDiv.textContent = '保存失败：' + e.message;
+        statusDiv.className = 'status error';
+      }
+    }
+
+    function escapeXml(s) {
+      if (!s) return '';
+      return s.replace(/[<>&"']/g, c => ({
+        '<': '&lt;',
+        '>': '&gt;',
+        '&': '&amp;',
+        '"': '&quot;',
+        "'": '&apos;'
+      })[c]);
+    }
+
+    // 监听刷新
     window.addEventListener('message', (event) => {
       if (event.data === 'kvSaved') {
         loadCategories();
       }
     });
 
-    // 页面加载时初始化
     loadCategories();
   </script>
 </body>
