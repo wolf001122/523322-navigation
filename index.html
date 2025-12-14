@@ -251,26 +251,23 @@
     }
 
     // 修改后的友情链接显示
-    async function showFriendly() {
-      document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
-      event.target.closest('a').classList.add('active');
+function showFriendly() {
+  document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+  event.target.closest('a').classList.add('active');
 
-      // 重新加载最新友情链接（防止缓存）
-      try {
-        const res = await fetch('/api/friendly?' + new Date().getTime());
-        if (res.ok) {
-          friendlyLinks = await res.json();
-        }
-      } catch (e) {
-        friendlyLinks = [];
-      }
-
+  // 每次点击都重新从服务器加载最新友情链接（防止缓存）
+  fetch('/api/friendly?' + new Date().getTime())
+    .then(res => {
+      if (!res.ok) throw new Error('加载失败');
+      return res.json();
+    })
+    .then(links => {
       let html = `<div style="text-align:center;padding:60px 0;">
         <h2 style="font-size:28px;color:#333;">友情链接</h2>`;
 
-      if (friendlyLinks.length > 0) {
+      if (links.length > 0) {
         html += `<div class="links-grid">`;
-        friendlyLinks.forEach(link => {
+        links.forEach(link => {
           html += `<div class="link-card">
             ${link.icon ? `<img src="${link.icon}" alt="${link.name}">` : '<img src="https://via.placeholder.com/48?text=FL" alt="友链图标">'}
             <a href="${link.url}" target="_blank">${link.name}</a>
@@ -284,7 +281,16 @@
 
       html += `</div>`;
       document.getElementById('content').innerHTML = html;
-    }
+    })
+    .catch(err => {
+      document.getElementById('content').innerHTML = `
+        <div style="text-align:center;padding:100px;color:#c5221f;">
+          <p>加载友情链接失败：${err.message}</p>
+          <p>请刷新页面重试</p>
+        </div>
+      `;
+    });
+}
 
     function showAbout() {
       document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
@@ -305,3 +311,4 @@
   </script>
 </body>
 </html>
+
