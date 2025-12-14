@@ -62,31 +62,31 @@
       statusDiv.className = 'status ' + (isSuccess ? 'success' : 'error');
     }
 
-    // 保存到 KV
+    // 保存到 KV - 修复清空问题
     async function saveToKV() {
       if (!confirm('确认将当前所有修改永久保存到 Cloudflare KV？此操作不可逆！')) return;
 
-      showStatus('正在保存，请稍候...', false);
+      showStatus('正在读取当前 KV 数据...', false);
 
       try {
         // 读取当前 KV 数据作为基础
         const res = await fetch('/api/data');
-        if (!res.ok) throw new Error('读取数据失败');
+        if (!res.ok) throw new Error('无法读取当前数据');
         const originalXml = await res.text();
         const parser = new DOMParser();
-        const doc = parser.parseFromString(originalXml, 'text/xml');
+        const originalDoc = parser.parseFromString(originalXml, 'text/xml');
 
-        // 保留 admin 节点
-        const adminNode = doc.querySelector('admin');
+        // 提取 admin 节点
+        const adminNode = originalDoc.querySelector('admin');
         const adminAttr = adminNode ? ` username="${adminNode.getAttribute('username')}" password="${adminNode.getAttribute('password')}"` : '';
 
-        // 从其他页面获取内存中的分类数据（如果有）
+        // 从其他页面获取内存中的最新分类数据
         let categories = [];
-        if (window.parent.categoriesData) {
-          categories = window.parent.categoriesData;
+        if (window.parent.categoriesData && window.parent.categoriesData.length > 0) {
+          categories = JSON.parse(JSON.stringify(window.parent.categoriesData)); // 深拷贝
         } else {
-          // 回退：重新解析当前 KV
-          categories = Array.from(doc.querySelectorAll('category')).map(cat => ({
+          // 回退：解析当前 KV 中的分类结构
+          categories = Array.from(originalDoc.querySelectorAll('category')).map(cat => ({
             name: cat.getAttribute('name'),
             subcategories: Array.from(cat.querySelectorAll('subcategory')).map(sub => ({
               name: sub.getAttribute('name'),
@@ -105,18 +105,21 @@
           }));
         }
 
-        // 应用临时新增链接（从 links.html 传递）
+        // 应用“链接管理”页面临时新增的链接
         if (window.parent.tempLinks && window.parent.tempLinks.length > 0) {
           window.parent.tempLinks.forEach(item => {
             const { catIdx, subIdx, link } = item;
-            if (!categories[catIdx]) categories[catIdx] = { name: '临时分类', subcategories: [] };
-            if (!categories[catIdx].subcategories[subIdx]) categories[catIdx].subcategories[subIdx] = { name: '临时子分类', links: [] };
+            if (!categories[catIdx]) {
+              categories[catIdx] = { name: '临时一级分类', subcategories: [] };
+            }
+            if (!categories[catIdx].subcategories[subIdx]) {
+              categories[catIdx].subcategories[subIdx] = { name: '临时二级分类', links: [] };
+            }
             categories[catIdx].subcategories[subIdx].links.push(link);
           });
-          window.parent.tempLinks = []; // 清空临时
         }
 
-        // 生成新 XML
+        // 生成完整新 XML
         let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n';
         if (adminAttr) xml += `  <admin${adminAttr} />\n`;
 
@@ -136,6 +139,7 @@
         xml += '</navigation>';
 
         // 写入 KV
+        showStatus('正在写入 KV，请稍候...', false);
         const saveRes = await fetch('/api/save', {
           method: 'POST',
           headers: { 'Content-Type': 'text/xml' },
@@ -144,9 +148,9 @@
 
         if (saveRes.ok) {
           showStatus('保存成功！所有修改已永久写入 KV。', true);
-          // 清空内存临时数据
-          window.parent.categoriesData = categories;
+          // 清空临时数据
           window.parent.tempLinks = [];
+          window.parent.categoriesData = categories; // 更新内存
         } else {
           const errorText = await saveRes.text();
           showStatus('保存失败：' + errorText, false);
@@ -168,7 +172,7 @@
       })[c]);
     }
 
-    // 修改密码（模拟，实际需后端支持）
+    // 修改密码（模拟）
     function changePassword() {
       const pwd = document.getElementById('newPassword').value.trim();
       if (!pwd) return alert('请输入新密码或留空取消');
