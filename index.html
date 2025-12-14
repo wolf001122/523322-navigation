@@ -14,8 +14,8 @@
     body { margin:0; font-family:Arial,sans-serif; background:#f5f5f5; }
     .container { display:flex; max-width:100%; margin:0 auto; min-height:100vh; }
 
-    /* 左侧菜单 - 增加右边距避免重叠 */
-    .sidebar { width:15%; max-width:280px; background:#fff; border-right:1px solid #eee; padding:2% 1.5%; position:fixed; height:100vh; overflow-y:auto; box-shadow:2px 0 10px rgba(0,0,0,0.05); left:0; top:0; z-index:10; } /* 固定左边 */
+    /* 左侧菜单 */
+    .sidebar { width:15%; max-width:280px; background:#fff; border-right:1px solid #eee; padding:2% 1.5%; position:fixed; height:100vh; overflow-y:auto; box-shadow:2px 0 10px rgba(0,0,0,0.05); margin-left:2%; z-index:10; }
     .sidebar h3 { margin:0 0 30px; text-align:center; font-size:24px; color:#333; cursor:pointer; transition:0.3s; }
     .sidebar h3:hover { color:#1976d2; }
     .sidebar ul { list-style:none; padding:0; }
@@ -24,21 +24,26 @@
     .sidebar a:hover, .sidebar a.active { background:#e3f2fd; color:#1976d2; font-weight:bold; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
     .sidebar .bottom-links { position:absolute; bottom:50px; width:calc(100% - 40px); border-top:1px solid #eee; padding-top:20px; }
 
-    /* 主内容区 - 左边距等于左侧宽度，避免重叠 */
-    .main { margin-left:calc(15% + 40px); flex:1; padding:0; min-height:100vh; background:#fff; } /* 增加左边距 */
+    /* 主内容区 */
+    .main { margin-left:calc(15% + 40px); flex:1; padding:40px; min-height:100vh; background:#fff; }
 
     /* 内容区域 */
-    #contentArea { padding:40px; min-height:calc(100vh - 80px); display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-start; }
+    #contentArea { min-height:calc(100vh - 80px); }
 
+    /* 一级分类标题 */
     #contentArea h2 { font-size:24px; color:#333; margin-bottom:30px; padding-bottom:10px; border-bottom:2px solid #eee; }
 
-    .links-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:20px; }
+    /* 二级分类标题 */
+    .subcategory-title { font-size:20px; color:#1976d2; margin:40px 0 15px; padding-bottom:8px; border-bottom:1px solid #ddd; }
+
+    /* 链接网格 - 每行5个（自动调整） */
+    .links-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(20%, 1fr)); gap:20px; }
 
     /* 链接卡片 - 较小图标靠上靠左 */
-    .link-card { background:white; padding:20px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.08); text-align:left; transition:0.3s; height:100px; display:flex; flex-direction:column; justify-content:flex-start; align-items:flex-start; gap:5px; }
+    .link-card { background:white; padding:20px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.08); text-align:left; transition:0.3s; display:flex; flex-direction:column; justify-content:flex-start; align-items:flex-start; gap:8px; }
     .link-card:hover { transform:translateY(-4px); box-shadow:0 8px 25px rgba(0,0,0,0.12); }
-    .link-card img { width:40px; height:40px; object-fit:contain; border-radius:8px; margin-bottom:5px; }
-    .link-card a { font-size:17px; color:#333; text-decoration:none; font-weight:bold; display:block; margin-bottom:5px; }
+    .link-card img { width:40px; height:40px; object-fit:contain; border-radius:8px; }
+    .link-card a { font-size:17px; color:#333; text-decoration:none; font-weight:bold; }
     .link-card a:hover { color:#1976d2; }
     .link-card .desc { color:#666; font-size:14px; }
 
@@ -47,7 +52,7 @@
     .ad-side { position:fixed; right:2%; top:100px; width:15%; max-width:300px; box-shadow:0 4px 20px rgba(0,0,0,0.1); border-radius:12px; overflow:hidden; }
 
     /* 搜索引擎输入框 - 水平垂直居中 */
-    .search-container { width:60%; max-width:800px; display:flex; align-items:center; gap:0; margin:auto; } /* 居中 */
+    .search-container { width:60%; max-width:800px; display:flex; align-items:center; gap:0; margin:auto; }
     .search-container input { flex:1; padding:15px; font-size:16px; border:1px solid #ddd; border-radius:30px 0 0 30px; }
     .search-container select { padding:15px; font-size:16px; border:1px solid #ddd; border-left:none; border-radius:0; }
     .search-container button { padding:15px 30px; background:#1976d2; color:white; border:none; border-radius:0 30px 30px 0; cursor:pointer; }
@@ -119,11 +124,14 @@
         const doc = parser.parseFromString(xml, 'text/xml');
         categories = Array.from(doc.querySelectorAll('category')).map(cat => ({
           name: cat.getAttribute('name'),
-          links: Array.from(cat.querySelectorAll('link')).map(l => ({
-            name: l.getAttribute('name'),
-            url: l.getAttribute('url'),
-            desc: l.getAttribute('desc') || '',
-            icon: l.getAttribute('icon') || ''
+          subcategories: Array.from(cat.querySelectorAll('subcategory')).map(sub => ({
+            name: sub.getAttribute('name'),
+            links: Array.from(sub.querySelectorAll('link')).map(l => ({
+              name: l.getAttribute('name'),
+              url: l.getAttribute('url'),
+              desc: l.getAttribute('desc') || '',
+              icon: l.getAttribute('icon') || ''
+            }))
           }))
         }));
 
@@ -171,20 +179,29 @@
       if (!cat) return;
 
       const area = document.getElementById('contentArea');
-      area.innerHTML = `<h2>${cat.name}</h2><div class="links-grid"></div>`;
-      const grid = area.querySelector('.links-grid');
+      area.innerHTML = `<h2>${cat.name}</h2>`;
 
-      cat.links.forEach(link => {
-        const card = document.createElement('div');
-        card.className = 'link-card';
-        card.innerHTML = `
-          ${link.icon ? `<img src="${link.icon}" alt="${link.name}">` : '<img src="https://via.placeholder.com/40?text=ICON" alt="默认图标">'}
-          <div class="info">
+      cat.subcategories.forEach(sub => {
+        const subTitle = document.createElement('div');
+        subTitle.className = 'subcategory-title';
+        subTitle.textContent = sub.name;
+        area.appendChild(subTitle);
+
+        const grid = document.createElement('div');
+        grid.className = 'links-grid';
+
+        sub.links.forEach(link => {
+          const card = document.createElement('div');
+          card.className = 'link-card';
+          card.innerHTML = `
+            ${link.icon ? `<img src="${link.icon}" alt="${link.name}">` : '<img src="https://via.placeholder.com/40?text=ICON" alt="默认图标">'}
             <a href="${link.url}" target="_blank">${link.name}</a>
             <div class="desc">${link.desc}</div>
-          </div>
-        `;
-        grid.appendChild(card);
+          `;
+          grid.appendChild(card);
+        });
+
+        area.appendChild(grid);
       });
 
       document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
@@ -205,6 +222,10 @@
       window.open(searchUrl, '_blank');
     }
 
+    function showSiteSubmission() {
+      window.open('submit.html', '_blank');
+    }
+
     function showFriendlyLinks() {
       const area = document.getElementById('contentArea');
       area.innerHTML = `
@@ -212,10 +233,8 @@
         <div class="links-grid">
           <div class="link-card">
             <img src="https://via.placeholder.com/40?text=F1" alt="友情链接1">
-            <div class="info">
-              <a href="https://example.com" target="_blank">友情链接1</a>
-              <div class="desc">示例友情链接描述</div>
-            </div>
+            <a href="https://example.com" target="_blank">友情链接1</a>
+            <div class="desc">示例友情链接描述</div>
           </div>
         </div>
       `;
@@ -227,7 +246,7 @@
       area.innerHTML = `
         <h2>关于导航</h2>
         <p style="max-width:800px; line-height:1.8;">吾爱三三两两导航站是一个实用资源导航网站，致力于收集常用工具、学习资源、云服务等优质网站，方便用户快速访问。</p>
-        <p>版本：1.0 | 更新日期: 2025-12-13</p>
+        <p>版本：1.0 | 更新日期: 2025-12-14</p>
       `;
       document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
     }
