@@ -12,10 +12,10 @@
 
   <style>
     body { margin:0; font-family:Arial,sans-serif; background:#f5f5f5; }
-    .container { display:flex; max-width:100%; margin:0 auto; min-height:100vh; } /* 百分比宽度，自适应 */
+    .container { display:flex; max-width:100%; margin:0 auto; min-height:100vh; }
 
-    /* 左侧菜单 */
-    .sidebar { width:15%; max-width:280px; background:#fff; border-right:1px solid #eee; padding:2% 1.5%; position:fixed; height:100vh; overflow-y:auto; box-shadow:2px 0 10px rgba(0,0,0,0.05); margin-left:2%; } /* 距左边界距离 + 百分比 */
+    /* 左侧菜单 - 增加右边距避免重叠 */
+    .sidebar { width:15%; max-width:280px; background:#fff; border-right:1px solid #eee; padding:2% 1.5%; position:fixed; height:100vh; overflow-y:auto; box-shadow:2px 0 10px rgba(0,0,0,0.05); left:0; top:0; z-index:10; } /* 固定左边 */
     .sidebar h3 { margin:0 0 30px; text-align:center; font-size:24px; color:#333; cursor:pointer; transition:0.3s; }
     .sidebar h3:hover { color:#1976d2; }
     .sidebar ul { list-style:none; padding:0; }
@@ -24,11 +24,11 @@
     .sidebar a:hover, .sidebar a.active { background:#e3f2fd; color:#1976d2; font-weight:bold; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
     .sidebar .bottom-links { position:absolute; bottom:50px; width:calc(100% - 40px); border-top:1px solid #eee; padding-top:20px; }
 
-    /* 主内容区 - 紧贴顶部广告 */
-    .main { margin-left:15%; flex:1; padding:0; min-height:100vh; background:#fff; } /* 与左侧对齐，避免重叠 */
+    /* 主内容区 - 左边距等于左侧宽度，避免重叠 */
+    .main { margin-left:calc(15% + 40px); flex:1; padding:0; min-height:100vh; background:#fff; } /* 增加左边距 */
 
     /* 内容区域 */
-    #contentArea { padding:40px; min-height:calc(100vh - 80px); display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-start; } /* 分类内容左对齐 */
+    #contentArea { padding:40px; min-height:calc(100vh - 80px); display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-start; }
 
     #contentArea h2 { font-size:24px; color:#333; margin-bottom:30px; padding-bottom:10px; border-bottom:2px solid #eee; }
 
@@ -37,23 +37,23 @@
     /* 链接卡片 - 较小图标靠上靠左 */
     .link-card { background:white; padding:20px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.08); text-align:left; transition:0.3s; height:100px; display:flex; flex-direction:column; justify-content:flex-start; align-items:flex-start; gap:5px; }
     .link-card:hover { transform:translateY(-4px); box-shadow:0 8px 25px rgba(0,0,0,0.12); }
-    .link-card img { width:40px; height:40px; object-fit:contain; border-radius:8px; margin-bottom:5px; } /* 较小图标 */
+    .link-card img { width:40px; height:40px; object-fit:contain; border-radius:8px; margin-bottom:5px; }
     .link-card a { font-size:17px; color:#333; text-decoration:none; font-weight:bold; display:block; margin-bottom:5px; }
     .link-card a:hover { color:#1976d2; }
     .link-card .desc { color:#666; font-size:14px; }
 
     /* 广告位 */
     .ad-top { text-align:center; padding:20px 0; background:#fff; box-shadow:0 2px 10px rgba(0,0,0,0.05); }
-    .ad-side { position:fixed; right:2%; top:100px; width:15%; max-width:300px; box-shadow:0 4px 20px rgba(0,0,0,0.1); border-radius:12px; overflow:hidden; } /* 右侧广告自适应 */
+    .ad-side { position:fixed; right:2%; top:100px; width:15%; max-width:300px; box-shadow:0 4px 20px rgba(0,0,0,0.1); border-radius:12px; overflow:hidden; }
 
     /* 搜索引擎输入框 - 水平垂直居中 */
-    .search-container { width:60%; max-width:800px; display:flex; align-items:center; gap:0; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); } /* 居中 */
+    .search-container { width:60%; max-width:800px; display:flex; align-items:center; gap:0; margin:auto; } /* 居中 */
     .search-container input { flex:1; padding:15px; font-size:16px; border:1px solid #ddd; border-radius:30px 0 0 30px; }
     .search-container select { padding:15px; font-size:16px; border:1px solid #ddd; border-left:none; border-radius:0; }
     .search-container button { padding:15px 30px; background:#1976d2; color:white; border:none; border-radius:0 30px 30px 0; cursor:pointer; }
     .search-container button:hover { background:#0d47a1; }
 
-    footer { text-align:center; padding:20px 0; color:#666; font-size:14px; border-top:1px solid #eee; background:#fff; } /* 降低高度，协调 */
+    footer { text-align:center; padding:20px 0; color:#666; font-size:14px; border-top:1px solid #eee; background:#fff; }
   </style>
 </head>
 <body>
@@ -73,7 +73,7 @@
       <ul id="categoriesList"></ul>
       <!-- 底部固定链接 -->
       <div class="bottom-links">
-        <a href="javascript:void(0)" onclick="showSiteSubmission()">网站提交事务</a>
+        <a href="submit.html" target="_blank">网站提交事务</a>
         <a href="javascript:void(0)" onclick="showFriendlyLinks()">友情链接</a>
         <a href="javascript:void(0)" onclick="showAboutNavigation()">关于导航</a>
       </div>
@@ -102,9 +102,9 @@
            style="display:inline-block;width:300px;height:600px"
            data-ad-client="ca-pub-9474229114991789"
            data-ad-format="auto"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
   </div>
-</div>
 
   <footer>© 2025 吾爱三三两两导航站</footer>
 
@@ -178,7 +178,7 @@
         const card = document.createElement('div');
         card.className = 'link-card';
         card.innerHTML = `
-          ${link.icon ? `<img src="${link.icon}" alt="${link.name}">` : '<img src="https://via.placeholder.com/50?text=ICON" alt="默认图标">'}
+          ${link.icon ? `<img src="${link.icon}" alt="${link.name}">` : '<img src="https://via.placeholder.com/40?text=ICON" alt="默认图标">'}
           <div class="info">
             <a href="${link.url}" target="_blank">${link.name}</a>
             <div class="desc">${link.desc}</div>
@@ -205,22 +205,13 @@
       window.open(searchUrl, '_blank');
     }
 
-    function showSiteSubmission() {
-      const area = document.getElementById('contentArea');
-      area.innerHTML = `
-        <h2>网站提交事务</h2>
-        <p style="max-width:800px; line-height:1.8;">欢迎提交您的网站！请通过后台管理或联系管理员提供网站名称、URL、描述和分类，审核后添加。</p>
-      `;
-      document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
-    }
-
     function showFriendlyLinks() {
       const area = document.getElementById('contentArea');
       area.innerHTML = `
         <h2>友情链接</h2>
         <div class="links-grid">
           <div class="link-card">
-            <img src="https://via.placeholder.com/50?text=F1" alt="友情链接1">
+            <img src="https://via.placeholder.com/40?text=F1" alt="友情链接1">
             <div class="info">
               <a href="https://example.com" target="_blank">友情链接1</a>
               <div class="desc">示例友情链接描述</div>
