@@ -19,7 +19,7 @@
 </head>
 <body>
   <div class="card">
-    <h2>新增/编辑链接</h2>
+    <h2>新增链接</h2>
     <form id="linkForm" onsubmit="event.preventDefault(); saveLink();">
       <div class="form-group">
         <label>一级分类</label>
@@ -34,76 +34,131 @@
         <input type="text" id="linkName" required>
       </div>
       <div class="form-group">
-        <label>链接地址</label>
+        <label>链接地址（带 https://）</label>
         <input type="url" id="linkUrl" required>
       </div>
       <div class="form-group">
-        <label>描述</label>
+        <label>描述（可选）</label>
         <textarea id="linkDesc" rows="3"></textarea>
       </div>
       <div class="form-group">
-        <label>图标上传</label>
+        <label>图标上传（可选，建议 60x60）</label>
         <input type="file" id="linkIconFile" accept="image/*">
-        <p style="font-size:12px;color:#5f6368;">或手动输入 URL</p>
-        <input type="url" id="linkIcon">
+        <p style="font-size:12px;color:#5f6368;margin-top:8px;">或手动输入图标 URL：</p>
+        <input type="url" id="linkIcon" placeholder="https://example.com/logo.png">
       </div>
       <button type="submit">保存链接</button>
     </form>
   </div>
 
   <div class="card">
-    <h2>现有链接</h2>
-    <div class="link-list" id="linksList"></div>
+    <h2>提示</h2>
+    <p style="color:#5f6368;line-height:1.6;">
+      链接已保存到内存。<br>
+      请切换到“系统设置”页面，点击“保存到 KV”按钮永久写入云端。
+    </p>
   </div>
 
   <script>
-    let categories = window.parent.categoriesData || [];
+    let categories = [];
 
-    function updateSelects() {
+    // 从 KV 加载数据并填充下拉框
+    async function loadCategories() {
+      try {
+        const res = await fetch('/api/data');
+        const xml = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(xml, 'text/xml');
+
+        categories = Array.from(doc.querySelectorAll('category')).map(cat => ({
+          name: cat.getAttribute('name'),
+          subcategories: Array.from(cat.querySelectorAll('subcategory')).map(sub => ({
+            name: sub.getAttribute('name'),
+            links: [] // 不需要加载链接，只需分类结构
+          })) || [{ name: '默认子分类', links: [] }]
+        }));
+
+        populateSelects();
+      } catch (e) {
+        alert('加载分类失败：' + e.message);
+      }
+    }
+
+    function populateSelects() {
       const catSelect = document.getElementById('catSelect');
-      catSelect.innerHTML = categories.map((c, i) => `<option value="${i}">${c.name}</option>`).join('');
-      updateSubSelect();
+      catSelect.innerHTML = '<option value="">-- 选择一级分类 --</option>';
+      categories.forEach((cat, idx) => {
+        const option = document.createElement('option');
+        option.value = idx;
+        option.textContent = cat.name;
+        catSelect.appendChild(option);
+      });
+
+      updateSubSelect(); // 初始化二级
     }
 
     function updateSubSelect() {
       const catIdx = document.getElementById('catSelect').value;
       const subSelect = document.getElementById('subSelect');
-      subSelect.innerHTML = categories[catIdx].subcategories.map((s, i) => `<option value="${i}">${s.name}</option>`).join('');
+      subSelect.innerHTML = '<option value="">-- 选择二级分类 --</option>';
+
+      if (catIdx !== '') {
+        categories[catIdx].subcategories.forEach((sub, sIdx) => {
+          const option = document.createElement('option');
+          option.value = sIdx;
+          option.textContent = sub.name;
+          subSelect.appendChild(option);
+        });
+      }
     }
 
+    // 保存链接到内存（通过 parent 传递给 settings 保存）
     async function saveLink() {
       const catIdx = document.getElementById('catSelect').value;
       const subIdx = document.getElementById('subSelect').value;
+      if (catIdx === '' || subIdx === '') return alert('请选择一级和二级分类');
+
       const name = document.getElementById('linkName').value.trim();
       const url = document.getElementById('linkUrl').value.trim();
       const desc = document.getElementById('linkDesc').value.trim();
       let icon = document.getElementById('linkIcon').value.trim();
 
       const fileInput = document.getElementById('linkIconFile');
-      if (fileInput.files[0]) {
+      if (fileInput.files && fileInput.files[0]) {
         const formData = new FormData();
         formData.append('file', fileInput.files[0]);
         try {
-          const res = await fetch('/api/upload', { method: 'POST', body: formData });
-          if (res.ok) icon = (await res.text()).trim();
+          const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
+          if (uploadRes.ok) {
+            icon = (await uploadRes.text()).trim();
+            alert('图标上传成功！URL: ' + icon);
+          } else {
+            alert('上传失败，使用手动输入的 URL');
+          }
         } catch (e) {
-          alert('上传失败');
+          alert('上传异常，使用手动输入的 URL');
         }
       }
 
-      categories[catIdx].subcategories[subIdx].links.push({ name, url, desc, icon });
-      alert('链接添加成功！请在“系统设置”中保存到 KV');
-      window.parent.categoriesData = categories;
-      renderLinks();
+      if (!name || !url) return alert('链接名称和地址不能为空');
+
+      // 将新链接添加到内存结构（供 settings 保存）
+      if (!window.parent.tempLinks) window.parent.tempLinks = [];
+      window.parent.tempLinks.push({
+        catIdx: parseInt(catIdx),
+        subIdx: parseInt(subIdx),
+        link: { name, url, desc, icon }
+      });
+
+      alert('链接已保存到内存！请到“系统设置”页面点击“保存到 KV”永久生效。');
+
+      // 清空表单
+      document.getElementById('linkForm').reset();
+      document.getElementById('linkIconFile').value = '';
     }
 
-    function renderLinks() {
-      // 简化显示
-      document.getElementById('linksList').innerHTML = '<p style="color:#5f6368;">链接已保存到内存，请在“系统设置”保存到 KV</p>';
-    }
-
-    updateSelects();
-    renderLinks();
+    // 页面加载时初始化
+    loadCategories();
   </script>
 </body>
 </html>
