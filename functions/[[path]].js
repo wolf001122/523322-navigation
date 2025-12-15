@@ -3,7 +3,7 @@ export async function onRequest(context) {
   const url = new URL(request.url);
 
   /* ===============================
-     一、后台访问控制（Cookie）
+     一、后台访问控制
      =============================== */
   if (url.pathname.startsWith('/admin/login.html')) {
     return next();
@@ -20,17 +20,13 @@ export async function onRequest(context) {
   }
 
   /* ===============================
-     二、读取导航数据（JSON）
-     GET /api/data
+     二、GET /api/data → JSON
      =============================== */
   if (url.pathname === '/api/data' && request.method === 'GET') {
     let json = await env.NAV_DATA.get('nav_data');
 
-    // 初始化三层最小结构
     if (!json) {
-      json = JSON.stringify({
-        categories: []
-      });
+      json = JSON.stringify({ categories: [] });
       await env.NAV_DATA.put('nav_data', json);
     }
 
@@ -42,34 +38,22 @@ export async function onRequest(context) {
   }
 
   /* ===============================
-     三、保存导航数据（JSON）
-     POST /api/save
+     三、POST /api/save → JSON
      =============================== */
   if (url.pathname === '/api/save' && request.method === 'POST') {
-    try {
-      const body = await request.json();
+    const body = await request.json();
 
-      // 强制结构约束（防止误清空）
-      if (!body || !Array.isArray(body.categories)) {
-        return new Response('数据结构非法', { status: 400 });
-      }
-
-      await env.NAV_DATA.put(
-        'nav_data',
-        JSON.stringify(body)
-      );
-
-      return new Response('OK');
-    } catch (err) {
-      return new Response(
-        '保存失败: ' + err.message,
-        { status: 500 }
-      );
+    if (!body || !Array.isArray(body.categories)) {
+      return new Response('数据结构非法', { status: 400 });
     }
+
+    await env.NAV_DATA.put(
+      'nav_data',
+      JSON.stringify(body)
+    );
+
+    return new Response('OK');
   }
 
-  /* ===============================
-     四、其他请求交给 Pages
-     =============================== */
   return next();
 }
