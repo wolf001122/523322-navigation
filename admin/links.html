@@ -386,6 +386,7 @@
       alert('未找到该网站的 favicon，您可以手动上传或输入 URL');
     }
 
+    // 最终修复的 saveToKV：清空原有链接，用内存 allLinks 完全重建（保持原分类）
     async function saveToKV() {
       if (!confirm('确认保存所有链接到云端？')) return;
 
@@ -406,7 +407,7 @@
         let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n';
         if (adminAttr) xml += `  <admin${adminAttr} />\n`;
 
-        // 保留原有分类结构
+        // 保留原有分类结构（清空链接）
         originalDoc.querySelectorAll('category').forEach(cat => {
           xml += `  <category name="${escapeXml(cat.getAttribute('name'))}">\n`;
           cat.querySelectorAll('subcategory').forEach(sub => {
@@ -416,7 +417,7 @@
           xml += '  </category>\n';
         });
 
-        // 将内存 allLinks 放回原分类的子分类
+        // 用内存 allLinks 完全重建链接（放回原分类）
         allLinks.forEach(link => {
           const catElements = originalDoc.querySelectorAll('category');
           const cat = catElements[link.catIdx];
