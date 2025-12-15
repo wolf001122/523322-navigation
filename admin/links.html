@@ -77,6 +77,14 @@
     <div id="editForm" class="edit-form">
       <h3>编辑链接</h3>
       <div class="form-group">
+        <label>一级分类</label>
+        <select id="editCatSelect" onchange="updateEditSubSelect()"></select>
+      </div>
+      <div class="form-group">
+        <label>二级分类</label>
+        <select id="editSubSelect"></select>
+      </div>
+      <div class="form-group">
         <label>链接名称 *</label>
         <input type="text" id="editName" required>
       </div>
@@ -111,7 +119,7 @@
 
   <script>
     let categories = [];
-    let allLinks = [];
+    let allLinks = []; // { name, url, desc, icon, catIdx, subIdx }
     let editingIndex = -1;
 
     async function loadData() {
@@ -122,20 +130,28 @@
         const parser = new DOMParser();
         const doc = parser.parseFromString(xml, 'text/xml');
 
-        categories = Array.from(doc.querySelectorAll('category')).map(cat => ({
+        categories = Array.from(doc.querySelectorAll('category')).map((cat, catIdx) => ({
           name: cat.getAttribute('name'),
-          subcategories: Array.from(cat.querySelectorAll('subcategory')).map(sub => ({
-            name: sub.getAttribute('name')
-          })) || [{ name: '默认子分类' }]
+          subcategories: Array.from(cat.querySelectorAll('subcategory')).map((sub, subIdx) => ({
+            name: sub.getAttribute('name'),
+            catIdx,
+            subIdx
+          })) || [{ name: '默认子分类', catIdx, subIdx: 0 }]
         }));
 
         allLinks = [];
-        doc.querySelectorAll('link').forEach(l => {
-          allLinks.push({
-            name: l.getAttribute('name') || '未命名',
-            url: l.getAttribute('url') || '#',
-            desc: l.getAttribute('desc') || '',
-            icon: l.getAttribute('icon') || ''
+        doc.querySelectorAll('category').forEach((cat, catIdx) => {
+          cat.querySelectorAll('subcategory').forEach((sub, subIdx) => {
+            sub.querySelectorAll('link').forEach(l => {
+              allLinks.push({
+                name: l.getAttribute('name') || '未命名',
+                url: l.getAttribute('url') || '#',
+                desc: l.getAttribute('desc') || '',
+                icon: l.getAttribute('icon') || '',
+                catIdx,
+                subIdx
+              });
+            });
           });
         });
 
@@ -172,11 +188,39 @@
       }
     }
 
+    function populateEditSelects(catIdx, subIdx) {
+      const editCatSelect = document.getElementById('editCatSelect');
+      editCatSelect.innerHTML = '';
+      categories.forEach((cat, idx) => {
+        const option = document.createElement('option');
+        option.value = idx;
+        option.textContent = cat.name;
+        if (idx === catIdx) option.selected = true;
+        editCatSelect.appendChild(option);
+      });
+      updateEditSubSelect(subIdx);
+    }
+
+    function updateEditSubSelect(selectedSubIdx = -1) {
+      const catIdx = document.getElementById('editCatSelect').value;
+      const editSubSelect = document.getElementById('editSubSelect');
+      editSubSelect.innerHTML = '<option value="">-- 选择二级分类 --</option>';
+      if (catIdx !== '') {
+        categories[catIdx].subcategories.forEach((sub, sIdx) => {
+          const option = document.createElement('option');
+          option.value = sIdx;
+          option.textContent = sub.name;
+          if (sIdx === selectedSubIdx) option.selected = true;
+          editSubSelect.appendChild(option);
+        });
+      }
+    }
+
     document.getElementById('addForm').onsubmit = (e) => {
       e.preventDefault();
-      const catIdx = document.getElementById('catSelect').value;
-      const subIdx = document.getElementById('subSelect').value;
-      if (catIdx === '' || subIdx === '') return alert('请选择分类');
+      const catIdx = parseInt(document.getElementById('catSelect').value);
+      const subIdx = parseInt(document.getElementById('subSelect').value);
+      if (isNaN(catIdx) || isNaN(subIdx)) return alert('请选择分类');
 
       const name = document.getElementById('name').value.trim();
       const url = document.getElementById('url').value.trim();
@@ -185,7 +229,7 @@
 
       if (!name || !url) return alert('名称和地址必填');
 
-      allLinks.push({ name, url, desc, icon });
+      allLinks.push({ name, url, desc, icon, catIdx, subIdx });
       renderLinks();
       alert('链接已添加到内存！点击“保存到 KV”永久生效。');
       document.getElementById('addForm').reset();
@@ -208,7 +252,7 @@
             ${link.icon ? `<img src="${link.icon}" alt="${link.name}">` : '<div style="width:40px;height:40px;background:#eee;border-radius:6px;margin-right:16px;"></div>'}
             <div>
               <strong>${link.name}</strong><br>
-              <span style="color:#666;font-size:14px;">${link.desc || '无描述'}</span>
+              <span style="color:#666;font-size:14px;">${link.desc || '无描述'} (${categories[link.catIdx]?.name || '未知分类'} - ${categories[link.catIdx]?.subcategories[link.subIdx]?.name || '未知子分类'})</span>
             </div>
           </div>
           <div>
@@ -230,6 +274,8 @@
       document.getElementById('editIcon').value = link.icon;
       document.getElementById('editIconPreview').innerHTML = link.icon ? `<img src="${link.icon}" style="width:80px;height:80px;object-fit:contain;border-radius:8px;">` : '<p>无图标</p>';
 
+      populateEditSelects(link.catIdx, link.subIdx);
+
       document.getElementById('editForm').classList.add('active');
       document.getElementById('addForm').style.display = 'none';
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -245,6 +291,10 @@
     function saveEdit() {
       if (editingIndex === -1) return;
 
+      const catIdx = parseInt(document.getElementById('editCatSelect').value);
+      const subIdx = parseInt(document.getElementById('editSubSelect').value);
+      if (isNaN(catIdx) || isNaN(subIdx)) return alert('请选择分类');
+
       const name = document.getElementById('editName').value.trim();
       const url = document.getElementById('editUrl').value.trim();
       const desc = document.getElementById('editDesc').value.trim();
@@ -252,7 +302,7 @@
 
       if (!name || !url) return alert('名称和地址必填');
 
-      allLinks[editingIndex] = { name, url, desc, icon };
+      allLinks[editingIndex] = { name, url, desc, icon, catIdx, subIdx };
       renderLinks();
       cancelEdit();
       alert('修改成功！点击“保存到 KV”永久生效。');
@@ -336,7 +386,6 @@
       alert('未找到该网站的 favicon，您可以手动上传或输入 URL');
     }
 
-    // 完全修复后的 saveToKV：保留分类结构 + 用内存 allLinks 完全替换链接
     async function saveToKV() {
       if (!confirm('确认保存所有链接到云端？')) return;
 
@@ -357,7 +406,7 @@
         let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n';
         if (adminAttr) xml += `  <admin${adminAttr} />\n`;
 
-        // 保留原有分类结构（不添加链接）
+        // 保留原有分类结构
         originalDoc.querySelectorAll('category').forEach(cat => {
           xml += `  <category name="${escapeXml(cat.getAttribute('name'))}">\n`;
           cat.querySelectorAll('subcategory').forEach(sub => {
@@ -367,23 +416,20 @@
           xml += '  </category>\n';
         });
 
-        // 将内存中的 allLinks 完全追加（所有链接放在最后一个子分类）
-        if (allLinks.length > 0) {
-          const lastCat = originalDoc.querySelector('category:last-child');
-          if (lastCat) {
-            let lastSub = lastCat.querySelector('subcategory:last-child');
-            if (!lastSub) {
-              lastSub = originalDoc.createElement('subcategory');
-              lastSub.setAttribute('name', '默认子分类');
-              lastCat.appendChild(lastSub);
-            }
-            allLinks.forEach(link => {
+        // 将内存 allLinks 放回原分类的子分类
+        allLinks.forEach(link => {
+          const catElements = originalDoc.querySelectorAll('category');
+          const cat = catElements[link.catIdx];
+          if (cat) {
+            const subElements = cat.querySelectorAll('subcategory');
+            const sub = subElements[link.subIdx];
+            if (sub) {
               const desc = link.desc ? ` desc="${escapeXml(link.desc)}"` : '';
               const icon = link.icon ? ` icon="${escapeXml(link.icon)}"` : '';
               xml += `      <link name="${escapeXml(link.name)}" url="${escapeXml(link.url)}"${desc}${icon}/>\n`;
-            });
+            }
           }
-        }
+        });
 
         xml += '</navigation>';
 
@@ -394,9 +440,9 @@
         });
 
         if (saveRes.ok) {
-          statusDiv.textContent = '保存成功！所有链接已更新。';
+          statusDiv.textContent = '保存成功！';
           statusDiv.className = 'status success';
-          loadData(); // 重新加载
+          loadData();
         } else {
           throw new Error(await saveRes.text());
         }
