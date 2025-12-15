@@ -2,18 +2,7 @@ export async function onRequest(context) {
   const { request, env, next } = context;
   const url = new URL(request.url);
 
-  // 后台登录检查：宽松放行登录页（兼容任何路径变体，避免重定向循环）
-  if (url.pathname.includes('login.html')) {
-    return next();
-  }
 
-  // 对其他 /admin/ 路径检查登录
-  if (url.pathname.startsWith('/admin/')) {
-    const cookie = request.headers.get('cookie') || '';
-    if (!cookie.includes('admin_logged_in=true')) {
-      return Response.redirect(new URL('/admin/login.html', request.url), 302);
-    }
-  }
 
   // GET /api/data - 返回正式导航 XML 数据
   if (url.pathname === '/api/data' && request.method === 'GET') {
@@ -116,3 +105,4 @@ export async function onRequest(context) {
   // 其他路径交给静态文件
   return next();
 }
+
