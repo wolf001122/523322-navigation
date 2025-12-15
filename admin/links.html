@@ -216,24 +216,22 @@
       });
     }
 
-    // 编辑
-// 开始编辑
-function startEdit(idx) {
-  editingIndex = idx;
-  const link = allLinks[idx];
+    // 编辑相关
+    function startEdit(idx) {
+      editingIndex = idx;
+      const link = allLinks[idx];
 
-  document.getElementById('editName').value = link.name;
-  document.getElementById('editUrl').value = link.url;
-  document.getElementById('editDesc').value = link.desc;
-  document.getElementById('editIcon').value = link.icon;
-  document.getElementById('editIconPreview').innerHTML = link.icon ? `<img src="${link.icon}" style="width:80px;height:80px;object-fit:contain;border-radius:8px;">` : '<p>无图标</p>';
+      document.getElementById('editName').value = link.name;
+      document.getElementById('editUrl').value = link.url;
+      document.getElementById('editDesc').value = link.desc;
+      document.getElementById('editIcon').value = link.icon;
+      document.getElementById('editIconPreview').innerHTML = link.icon ? `<img src="${link.icon}" style="width:80px;height:80px;object-fit:contain;border-radius:8px;">` : '<p>无图标</p>';
 
-  document.getElementById('editForm').classList.add('active');
-  document.getElementById('addForm').style.display = 'none';
+      document.getElementById('editForm').classList.add('active');
+      document.getElementById('addForm').style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-  // 新增：自动滚动到页面顶部，让编辑表单可见
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
     function cancelEdit() {
       editingIndex = -1;
       document.getElementById('editForm').classList.remove('active');
@@ -299,82 +297,75 @@ function startEdit(idx) {
       }
     }
 
-    // 保存到 KV（简化版，保留原有结构，只更新链接）
-async function saveToKV() {
-  if (!confirm('确认保存所有链接到云端？')) return;
+    // 修复后的保存到 KV：保留原有结构 + 使用内存 allLinks 覆盖所有链接
+    async function saveToKV() {
+      if (!confirm('确认保存所有链接到云端？')) return;
 
-  const statusDiv = document.getElementById('saveStatus');
-  statusDiv.textContent = '正在保存...';
-  statusDiv.className = 'status';
+      const statusDiv = document.getElementById('saveStatus');
+      statusDiv.textContent = '正在保存...';
+      statusDiv.className = 'status';
 
-  try {
-    const res = await fetch('/api/data');
-    if (!res.ok) throw new Error('读取失败');
-    const originalXml = await res.text();
-    const parser = new DOMParser();
-    const originalDoc = parser.parseFromString(originalXml, 'text/xml');
+      try {
+        const res = await fetch('/api/data');
+        if (!res.ok) throw new Error('读取失败');
+        const originalXml = await res.text();
+        const parser = new DOMParser();
+        const originalDoc = parser.parseFromString(originalXml, 'text/xml');
 
-    const adminNode = originalDoc.querySelector('admin');
-    const adminAttr = adminNode ? ` username="${adminNode.getAttribute('username')}" password="${adminNode.getAttribute('password')}"` : '';
+        const adminNode = originalDoc.querySelector('admin');
+        const adminAttr = adminNode ? ` username="${adminNode.getAttribute('username')}" password="${adminNode.getAttribute('password')}"` : '';
 
-    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n';
-    if (adminAttr) xml += `  <admin${adminAttr} />\n`;
+        let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n';
+        if (adminAttr) xml += `  <admin${adminAttr} />\n`;
 
-    // 保留原有所有分类和链接
-    originalDoc.querySelectorAll('category').forEach(cat => {
-      xml += `  <category name="${escapeXml(cat.getAttribute('name'))}">\n`;
-      cat.querySelectorAll('subcategory').forEach(sub => {
-        xml += `    <subcategory name="${escapeXml(sub.getAttribute('name'))}">\n`;
-        sub.querySelectorAll('link').forEach(link => {
-          const attrs = ['name', 'url', 'desc', 'icon'].map(attr => {
-            const val = link.getAttribute(attr) || '';
-            return val ? ` ${attr}="${escapeXml(val)}"` : '';
-          }).join('');
-          xml += `      <link${attrs} />\n`;
+        // 保留原有分类结构（清空链接）
+        originalDoc.querySelectorAll('category').forEach(cat => {
+          xml += `  <category name="${escapeXml(cat.getAttribute('name'))}">\n`;
+          cat.querySelectorAll('subcategory').forEach(sub => {
+            xml += `    <subcategory name="${escapeXml(sub.getAttribute('name'))}">\n`;
+            xml += '    </subcategory>\n';
+          });
+          xml += '  </category>\n';
         });
-        xml += '    </subcategory>\n';
-      });
-      xml += '  </category>\n';
-    });
 
-    // 追加内存中新添加/修改的链接（简单追加到最后一个分类）
-    if (allLinks.length > 0) {
-      const lastCat = originalDoc.querySelector('category:last-child');
-      if (lastCat) {
-        let lastSub = lastCat.querySelector('subcategory:last-child');
-        if (!lastSub) {
-          lastSub = originalDoc.createElement('subcategory');
-          lastSub.setAttribute('name', '默认子分类');
-          lastCat.appendChild(lastSub);
+        // 使用内存中的 allLinks 重新填充所有链接（追加到最后一个子分类，或根据需要调整）
+        if (allLinks.length > 0) {
+          const lastCat = originalDoc.querySelector('category:last-child');
+          if (lastCat) {
+            let lastSub = lastCat.querySelector('subcategory:last-child');
+            if (!lastSub) {
+              lastSub = originalDoc.createElement('subcategory');
+              lastSub.setAttribute('name', '默认子分类');
+              lastCat.appendChild(lastSub);
+            }
+            allLinks.forEach(link => {
+              const desc = link.desc ? ` desc="${escapeXml(link.desc)}"` : '';
+              const icon = link.icon ? ` icon="${escapeXml(link.icon)}"` : '';
+              xml += `      <link name="${escapeXml(link.name)}" url="${escapeXml(link.url)}"${desc}${icon}/>\n`;
+            });
+          }
         }
-        allLinks.forEach(link => {
-          const desc = link.desc ? ` desc="${escapeXml(link.desc)}"` : '';
-          const icon = link.icon ? ` icon="${escapeXml(link.icon)}"` : '';
-          xml += `      <link name="${escapeXml(link.name)}" url="${escapeXml(link.url)}"${desc}${icon}/>\n`;
+
+        xml += '</navigation>';
+
+        const saveRes = await fetch('/api/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/xml' },
+          body: xml
         });
+
+        if (saveRes.ok) {
+          statusDiv.textContent = '保存成功！';
+          statusDiv.className = 'status success';
+          loadData(); // 重新加载确认
+        } else {
+          throw new Error(await saveRes.text());
+        }
+      } catch (e) {
+        statusDiv.textContent = '保存失败：' + e.message;
+        statusDiv.className = 'status error';
       }
     }
-
-    xml += '</navigation>';
-
-    const saveRes = await fetch('/api/save', {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/xml' },
-      body: xml
-    });
-
-    if (saveRes.ok) {
-      statusDiv.textContent = '保存成功！所有原有数据保留，新链接已追加。';
-      statusDiv.className = 'status success';
-      loadData(); // 重新加载
-    } else {
-      throw new Error(await saveRes.text());
-    }
-  } catch (e) {
-    statusDiv.textContent = '保存失败：' + e.message;
-    statusDiv.className = 'status error';
-  }
-}
 
     function escapeXml(s) {
       if (!s) return '';
