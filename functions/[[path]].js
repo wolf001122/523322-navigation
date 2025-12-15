@@ -2,12 +2,12 @@ export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
 
-  // 后台登录检查：放行 login.html
+  // 放行 login.html
   if (url.pathname.includes('login.html')) {
     return await context.next();
   }
 
-  // 其他 /admin/ 路径检查登录 cookie
+  // 其他 admin 路径检查登录
   if (url.pathname.startsWith('/admin/')) {
     const cookie = request.headers.get('cookie') || '';
     if (!cookie.includes('admin_logged_in=true')) {
@@ -15,7 +15,7 @@ export async function onRequest(context) {
     }
   }
 
-  // GET /api/data - 返回导航 XML 数据
+  // GET /api/data - 返回 XML 数据
   if (url.pathname === '/api/data' && request.method === 'GET') {
     let xml = await env.NAV_DATA.get('nav_data');
     if (!xml) {
@@ -30,7 +30,7 @@ export async function onRequest(context) {
     });
   }
 
-  // POST /api/save - 保存完整 XML（原有接口保留）
+  // POST /api/save - 保存完整 XML
   if (url.pathname === '/api/save' && request.method === 'POST') {
     try {
       const body = await request.text();
@@ -41,12 +41,11 @@ export async function onRequest(context) {
     }
   }
 
-  // POST /api/save-links - 新接口：接收 JSON 链接数组，安全重建 XML
+  // POST /api/save-links - 新接口：接收链接数组重建 XML
   if (url.pathname === '/api/save-links' && request.method === 'POST') {
     try {
-      const links = await request.json(); // 接收 allLinks 数组
+      const links = await request.json();
 
-      // 读取当前 KV 数据
       let currentData = await env.NAV_DATA.get('nav_data');
       if (!currentData) {
         return new Response('No data found', { status: 404 });
@@ -55,10 +54,10 @@ export async function onRequest(context) {
       const parser = new DOMParser();
       const doc = parser.parseFromString(currentData, 'text/xml');
 
-      // 清空所有原有链接
-      doc.querySelectorAll('link').forEach(linkEl => linkEl.remove());
+      // 清空所有链接
+      doc.querySelectorAll('link').forEach(el => el.remove());
 
-      // 根据接收的 links 数组重建链接
+      // 重建链接
       links.forEach(link => {
         const catElements = doc.querySelectorAll('category');
         const cat = catElements[link.catIdx];
@@ -79,7 +78,6 @@ export async function onRequest(context) {
       const serializer = new XMLSerializer();
       const newXml = serializer.serializeToString(doc);
 
-      // 保存回 KV
       await env.NAV_DATA.put('nav_data', newXml);
 
       return new Response('Saved successfully', { status: 200 });
@@ -88,7 +86,7 @@ export async function onRequest(context) {
     }
   }
 
-  // POST /api/upload - 上传图标到 R2
+  // POST /api/upload - 上传图标
   if (url.pathname === '/api/upload' && request.method === 'POST') {
     try {
       const formData = await request.formData();
@@ -107,6 +105,6 @@ export async function onRequest(context) {
     }
   }
 
-  // 其他路径交给静态文件服务
+  // 其他路径交给静态文件
   return await context.next();
 }
