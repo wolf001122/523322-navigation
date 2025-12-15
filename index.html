@@ -1,217 +1,315 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
 <title>导航</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-/* ===== 基础 ===== */
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-  background: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f8f9fa;
   color: #202124;
 }
 
-/* ===== 顶部（预留广告位） ===== */
-header {
-  height: 60px;
+/* ===== 顶部广告 ===== */
+.top-ad {
+  background: #fff;
   border-bottom: 1px solid #e0e0e0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  color: #5f6368;
-}
-
-/* ===== 主区域布局 ===== */
-main {
-  height: calc(100vh - 60px);
-  display: flex;
-}
-
-/* ===== 左侧分类栏（你已有，这里只占位） ===== */
-aside {
-  width: 220px;
-  border-right: 1px solid #e0e0e0;
-  padding: 16px;
-  font-size: 14px;
-  color: #444;
-}
-
-/* ===== 主内容区 ===== */
-#content {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ===== 首页搜索态 ===== */
-.home-search-wrapper {
+  padding: 10px;
   text-align: center;
-  width: 100%;
 }
 
-.home-logo {
-  font-size: 34px;
-  font-weight: 600;
-  letter-spacing: 2px;
-  margin-bottom: 28px;
-}
-
-.search-box {
-  width: 520px;
-  max-width: 90%;
-  margin: 0 auto;
-  position: relative;
-}
-
-.search-box input {
-  width: 100%;
-  padding: 14px 50px 14px 22px;
-  font-size: 16px;
-  border-radius: 30px;
-  border: 1px solid #dfe1e5;
-  outline: none;
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.search-box input:focus {
-  border-color: #1a73e8;
-  box-shadow: 0 1px 6px rgba(32,33,36,.28);
-}
-
-/* ===== 搜索引擎切换 ===== */
-.engine-switch {
-  margin-top: 18px;
+/* ===== 主布局 ===== */
+.layout {
   display: flex;
-  justify-content: center;
-  gap: 12px;
-  font-size: 13px;
+  min-height: calc(100vh - 60px);
 }
 
-.engine-switch span {
-  cursor: pointer;
+/* ===== 左侧菜单 ===== */
+.sidebar {
+  width: 220px;
+  background: #fff;
+  border-right: 1px solid #e0e0e0;
+  padding: 16px 0;
+}
+
+.sidebar h2 {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 20px;
+  margin: 0;
   color: #5f6368;
-  padding: 4px 10px;
-  border-radius: 12px;
 }
 
-.engine-switch span.active {
+.menu-item {
+  padding: 8px 20px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.menu-item:hover,
+.menu-item.active {
   background: #e8f0fe;
   color: #1a73e8;
 }
 
-/* ===== 提示 ===== */
-.home-hint {
-  margin-top: 14px;
+.sidebar-footer {
+  margin-top: 20px;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 10px;
+}
+
+.sidebar-footer div {
+  padding: 8px 20px;
   font-size: 13px;
   color: #5f6368;
+  cursor: pointer;
+}
+
+.sidebar-footer div:hover {
+  text-decoration: underline;
+}
+
+/* ===== 主窗口 ===== */
+.main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 80px;
+}
+
+/* ===== 首页搜索 ===== */
+.home-search {
+  width: 100%;
+  max-width: 640px;
+  text-align: center;
+}
+
+.logo {
+  font-size: 48px;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 14px 20px;
+  font-size: 16px;
+  border-radius: 24px;
+  border: 1px solid #dadce0;
+  outline: none;
+}
+
+.search-input:focus {
+  box-shadow: 0 1px 6px rgba(32,33,36,.28);
+}
+
+.engine-switch {
+  margin-top: 12px;
+}
+
+.engine-switch span {
+  font-size: 13px;
+  margin: 0 6px;
+  cursor: pointer;
+  color: #1a73e8;
+}
+
+.engine-switch .active {
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* ===== 搜索结果 ===== */
+.results {
+  width: 100%;
+  max-width: 1000px;
+  padding: 20px;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08);
+}
+
+.card img {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-desc {
+  font-size: 12px;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <!-- 顶部广告位（AdSense 后续直接插代码） -->
-  顶部广告位
-</header>
+<!-- 顶部广告位 -->
+<div class="top-ad">
+  <!-- Google AdSense 代码放这里 -->
+  广告位
+</div>
 
-<main>
-  <aside>
-    <!-- 这里保留你现有的一级分类菜单 -->
-    一级分类
-  </aside>
+<div class="layout">
+  <!-- 左侧菜单 -->
+  <div class="sidebar" id="sidebar">
+    <h2>分类</h2>
+    <div id="menu"></div>
 
-  <div id="content"></div>
-</main>
+    <div class="sidebar-footer">
+      <div>网站提交</div>
+      <div>友情链接</div>
+      <div>关于导航</div>
+    </div>
+  </div>
+
+  <!-- 主窗口 -->
+  <div class="main" id="main"></div>
+</div>
 
 <script>
-/* ===============================
-   多搜索引擎配置
-=============================== */
-const engines = {
-  google: {
-    name: 'Google',
-    url: 'https://www.google.com/search?q='
-  },
-  baidu: {
-    name: '百度',
-    url: 'https://www.baidu.com/s?wd='
-  },
-  bing: {
-    name: 'Bing',
-    url: 'https://www.bing.com/search?q='
-  },
-  duck: {
-    name: 'DuckDuckGo',
-    url: 'https://duckduckgo.com/?q='
-  }
-};
+const DATA_API = '/api/data';
+const DEFAULT_ICON = '/icons/default.png';
 
-let currentEngine = 'google';
+let navData = [];
+let engine = 'site';
 
-/* ===============================
-   渲染首页搜索态
-=============================== */
-function renderHomeSearch() {
-  document.getElementById('content').innerHTML = `
-    <div class="home-search-wrapper">
-      <div class="home-logo">导航</div>
+/* ===== 加载数据 ===== */
+fetch(DATA_API)
+  .then(r => r.text())
+  .then(parseXML)
+  .then(data => {
+    navData = data;
+    renderMenu(data);
+    renderHome();
+  });
 
-      <div class="search-box">
-        <input id="searchInput" placeholder="搜索你想访问的网站" autofocus />
-      </div>
+function parseXML(xmlText) {
+  const xml = new DOMParser().parseFromString(xmlText, 'text/xml');
+  const cats = [...xml.querySelectorAll('category')];
 
+  return cats.map(cat => ({
+    name: cat.getAttribute('name'),
+    links: [...cat.querySelectorAll('link')].map(l => ({
+      name: l.getAttribute('name'),
+      url: l.getAttribute('url'),
+      desc: l.getAttribute('desc') || '',
+      icon: l.getAttribute('icon') || DEFAULT_ICON
+    }))
+  }));
+}
+
+/* ===== 左侧菜单 ===== */
+function renderMenu(data) {
+  const menu = document.getElementById('menu');
+  data.forEach(cat => {
+    const div = document.createElement('div');
+    div.className = 'menu-item';
+    div.textContent = cat.name;
+    div.onclick = () => showCategory(cat);
+    menu.appendChild(div);
+  });
+}
+
+/* ===== 首页搜索 ===== */
+function renderHome() {
+  document.getElementById('main').innerHTML = `
+    <div class="home-search">
+      <div class="logo">导航</div>
+      <input class="search-input" id="searchInput" placeholder="搜索你想访问的网站">
       <div class="engine-switch">
-        ${Object.keys(engines).map(key => `
-          <span data-engine="${key}" class="${key === currentEngine ? 'active' : ''}">
-            ${engines[key].name}
-          </span>
-        `).join('')}
-      </div>
-
-      <div class="home-hint">
-        支持多搜索引擎 · 回车搜索
+        ${['site','google','baidu','bing'].map(e =>
+          `<span class="${engine===e?'active':''}" onclick="switchEngine('${e}')">${e}</span>`
+        ).join('')}
       </div>
     </div>
   `;
 
-  bindSearchEvents();
+  document.getElementById('searchInput').oninput = e => search(e.target.value);
 }
 
-/* ===============================
-   绑定事件
-=============================== */
-function bindSearchEvents() {
-  const input = document.getElementById('searchInput');
-
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && input.value.trim()) {
-      const q = encodeURIComponent(input.value.trim());
-      window.open(engines[currentEngine].url + q, '_blank');
-    }
-  });
-
-  document.querySelectorAll('.engine-switch span').forEach(el => {
-    el.onclick = () => {
-      currentEngine = el.dataset.engine;
-      renderHomeSearch();
-      document.getElementById('searchInput').focus();
-    };
-  });
+function switchEngine(e) {
+  engine = e;
+  renderHome();
 }
 
-/* ===============================
-   初始化
-=============================== */
-renderHomeSearch();
+/* ===== 站内搜索 ===== */
+function search(keyword) {
+  if (!keyword.trim()) return;
+
+  if (engine !== 'site') {
+    window.location.href = {
+      google: 'https://www.google.com/search?q=',
+      baidu: 'https://www.baidu.com/s?wd=',
+      bing: 'https://www.bing.com/search?q='
+    }[engine] + encodeURIComponent(keyword);
+    return;
+  }
+
+  const results = [];
+  navData.forEach(cat =>
+    cat.links.forEach(l => {
+      if ((l.name + l.desc + l.url).includes(keyword)) results.push(l);
+    })
+  );
+
+  renderResults(results);
+}
+
+function renderResults(list) {
+  document.getElementById('main').innerHTML = `
+    <div class="results">
+      <div class="results-grid">
+        ${list.map(l => `
+          <a class="card" href="${l.url}" target="_blank">
+            <img src="${l.icon}" onerror="this.src='${DEFAULT_ICON}'">
+            <div>
+              <div class="card-title">${l.name}</div>
+              <div class="card-desc">${l.desc}</div>
+            </div>
+          </a>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+/* ===== 点击分类 ===== */
+function showCategory(cat) {
+  renderResults(cat.links);
+}
 </script>
 
 </body>
