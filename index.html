@@ -5,221 +5,244 @@
 <title>导航</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- Google AdSense（示例，换成你的） -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+     crossorigin="anonymous"></script>
+
 <style>
+* { box-sizing: border-box; }
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   background: #f5f6f7;
+  color: #333;
 }
+
+/* ===== 顶部 ===== */
 header {
-  padding: 18px;
-  text-align: center;
   background: #fff;
   border-bottom: 1px solid #e5e5e5;
+  padding: 12px 20px;
+  text-align: center;
 }
-header h1 { margin: 0; font-size: 22px; }
 
-.layout {
+.top-ad {
+  max-width: 1200px;
+  margin: 10px auto 0;
+}
+
+/* ===== 布局 ===== */
+.container {
   display: flex;
-  max-width: 1300px;
-  margin: 0 auto;
+  max-width: 1400px;
+  margin: auto;
 }
 
-/* 左侧一级分类 */
+/* ===== 左侧菜单 ===== */
 .sidebar {
-  width: 220px;
-  background: #ffffff;
+  width: 260px;
+  background: #fff;
   border-right: 1px solid #e5e5e5;
-}
-.sidebar ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.sidebar li {
-  padding: 14px 18px;
-  cursor: pointer;
-  border-left: 4px solid transparent;
-}
-.sidebar li:hover {
-  background: #f2f6fc;
-}
-.sidebar li.active {
-  background: #ecf5ff;
-  border-left-color: #409eff;
-  font-weight: 600;
+  padding: 15px;
 }
 
-/* 右侧内容区 */
-.content {
+.search-box input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  outline: none;
+}
+
+.category-list {
+  margin-top: 15px;
+}
+
+.category-item {
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+.category-item:hover,
+.category-item.active {
+  background: #409eff;
+  color: #fff;
+}
+
+/* 底部 3 栏 */
+.footer-links {
+  margin-top: 20px;
+  font-size: 13px;
+}
+.footer-links a {
+  display: block;
+  color: #666;
+  text-decoration: none;
+  margin-bottom: 6px;
+}
+
+/* ===== 主内容 ===== */
+main {
   flex: 1;
   padding: 20px;
+  min-height: 600px; /* 防抖动关键 */
 }
-.category-title {
-  font-size: 22px;
-  margin-bottom: 15px;
+
+/* 搜索首页 */
+.search-home {
+  text-align: center;
+  margin-top: 80px;
 }
+
+.search-home input {
+  width: 60%;
+  padding: 12px;
+  font-size: 16px;
+}
+
+/* 分类内容 */
 .subcategory {
   margin-bottom: 30px;
 }
 .subcategory-title {
-  font-size: 15px;
-  color: #666;
+  font-size: 16px;
   margin-bottom: 10px;
 }
+
 .links {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill,minmax(200px,1fr));
   gap: 15px;
 }
+
 .card {
-  display: flex;
-  padding: 10px;
   background: #fff;
   border-radius: 8px;
+  padding: 10px;
+  display: flex;
   text-decoration: none;
   color: inherit;
-  box-shadow: 0 1px 4px rgba(0,0,0,.06);
 }
-.card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,.1);
-}
-.icon {
+
+.card img {
   width: 36px;
   height: 36px;
   margin-right: 10px;
   border-radius: 6px;
-  object-fit: cover;
-  background: #eee;
-}
-.name {
-  font-size: 14px;
-  font-weight: 600;
-}
-.desc {
-  font-size: 12px;
-  color: #888;
 }
 
-/* 广告位 */
-.ad {
-  margin: 30px 0;
-  padding: 20px;
-  background: #fff;
-  border: 1px dashed #ccc;
-  text-align: center;
-  color: #999;
+.card .text {
+  overflow: hidden;
+}
+
+.card .name {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card .desc {
+  font-size: 12px;
+  color: #888;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 </style>
 </head>
 
 <body>
+
 <header>
   <h1>导航</h1>
+  <div class="top-ad">
+    <ins class="adsbygoogle"
+      style="display:block"
+      data-ad-client="ca-pub-xxxxxxxx"
+      data-ad-slot="1234567890"
+      data-ad-format="auto"></ins>
+  </div>
 </header>
 
-<div class="layout">
+<div class="container">
   <aside class="sidebar">
-    <ul id="menu"></ul>
+    <div class="search-box">
+      <input placeholder="搜索网站…">
+    </div>
+
+    <div class="category-list" id="categories"></div>
+
+    <div class="footer-links">
+      <a href="#">网站提交</a>
+      <a href="#">友情链接</a>
+      <a href="#">关于导航</a>
+    </div>
   </aside>
 
-  <main class="content" id="content"></main>
+  <main id="main">
+    <div class="search-home">
+      <input placeholder="搜索你想要的网站">
+    </div>
+  </main>
 </div>
 
 <script>
-const DATA_API = '/api/data';
-const DEFAULT_ICON = '/icons/default.png';
-let DATA = [];
+const xmlApi = '/api/data';
+let parsedData = [];
 
-fetch(DATA_API)
-  .then(r => r.text())
-  .then(parseXML)
-  .then(init)
-  .catch(() => {
-    document.getElementById('content').innerHTML = '数据加载失败';
-  });
+fetch(xmlApi).then(r=>r.text()).then(parseXML);
 
 function parseXML(xmlText) {
-  const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
-  const categories = [];
-  doc.querySelectorAll('category').forEach(cat => {
-    const c = { name: cat.getAttribute('name'), subs: [] };
-    cat.querySelectorAll('subcategory').forEach(sub => {
-      const s = { name: sub.getAttribute('name'), links: [] };
-      sub.querySelectorAll('link').forEach(l => {
-        s.links.push({
-          name: l.getAttribute('name'),
-          url: l.getAttribute('url'),
-          icon: l.getAttribute('icon') || '',
-          desc: l.getAttribute('desc') || ''
-        });
-      });
-      c.subs.push(s);
-    });
-    categories.push(c);
-  });
-  return categories;
-}
+  const xml = new DOMParser().parseFromString(xmlText,'text/xml');
+  const cats = xml.querySelectorAll('category');
+  const list = document.getElementById('categories');
 
-function init(categories) {
-  DATA = categories;
-  renderMenu();
-  selectCategory(0);
-}
-
-function renderMenu() {
-  const menu = document.getElementById('menu');
-  menu.innerHTML = '';
-  DATA.forEach((c, i) => {
-    const li = document.createElement('li');
-    li.textContent = c.name;
-    li.onclick = () => selectCategory(i);
-    menu.appendChild(li);
+  cats.forEach((cat,i)=>{
+    const name = cat.getAttribute('name');
+    const div = document.createElement('div');
+    div.className='category-item';
+    div.textContent=name;
+    div.onclick=()=>showCategory(cat,div);
+    list.appendChild(div);
   });
 }
 
-function selectCategory(index) {
-  document.querySelectorAll('.sidebar li').forEach((li, i) => {
-    li.classList.toggle('active', i === index);
-  });
-  renderContent(DATA[index]);
-}
+function showCategory(catNode,el){
+  document.querySelectorAll('.category-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
 
-function renderContent(category) {
-  const el = document.getElementById('content');
-  el.innerHTML = `<div class="category-title">${category.name}</div>`;
+  const main = document.getElementById('main');
+  main.innerHTML='';
 
-  category.subs.forEach(sub => {
-    if (!sub.links.length) return;
+  catNode.querySelectorAll('subcategory').forEach(sub=>{
+    const links=sub.querySelectorAll('link');
+    if(!links.length) return;
 
-    const block = document.createElement('div');
-    block.className = 'subcategory';
-    block.innerHTML = `<div class="subcategory-title">${sub.name}</div><div class="links"></div>`;
-    const linksEl = block.querySelector('.links');
+    const box=document.createElement('div');
+    box.className='subcategory';
+    box.innerHTML=`<div class="subcategory-title">${sub.getAttribute('name')}</div><div class="links"></div>`;
+    const grid=box.querySelector('.links');
 
-    sub.links.forEach(link => {
-      const a = document.createElement('a');
-      a.className = 'card';
-      a.href = link.url;
-      a.target = '_blank';
-      const icon = link.icon.trim() || DEFAULT_ICON;
-      a.innerHTML = `
-        <img class="icon" src="${icon}" onerror="this.src='${DEFAULT_ICON}'">
-        <div>
-          <div class="name">${link.name}</div>
-          <div class="desc">${link.desc}</div>
+    links.forEach(l=>{
+      const a=document.createElement('a');
+      a.className='card';
+      a.href=l.getAttribute('url');
+      a.target='_blank';
+      a.innerHTML=`
+        <img src="${l.getAttribute('icon')||''}">
+        <div class="text">
+          <div class="name">${l.getAttribute('name')}</div>
+          <div class="desc">${l.getAttribute('desc')||''}</div>
         </div>`;
-      linksEl.appendChild(a);
+      grid.appendChild(a);
     });
 
-    el.appendChild(block);
+    main.appendChild(box);
   });
-
-  // 广告位
-  el.innerHTML += `
-    <div class="ad">广告位（可放 AdSense / 百度联盟）</div>
-  `;
 }
 </script>
+
 </body>
 </html>
