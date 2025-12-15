@@ -29,6 +29,8 @@
     .edit-form.active { display:block; }
     .icon-options { margin-top:12px; }
     .icon-options p { margin:12px 0 8px; font-size:12px; color:#5f6368; }
+    .url-group { display:flex; align-items:center; gap:12px; }
+    .url-group input { flex:1; }
   </style>
 </head>
 <body>
@@ -54,7 +56,10 @@
       </div>
       <div class="form-group">
         <label>链接地址（带 https://）*</label>
-        <input type="url" id="url" required>
+        <div class="url-group">
+          <input type="url" id="url" required>
+          <button type="button" class="secondary" onclick="fetchFaviconFromUrl()">获取图标</button>
+        </div>
       </div>
       <div class="form-group">
         <label>描述（可选）</label>
@@ -68,8 +73,6 @@
         <div class="icon-options">
           <p>或手动输入图标 URL：</p>
           <input type="url" id="icon" placeholder="https://example.com/logo.png">
-          <p>或从链接地址自动获取图标：</p>
-          <button type="button" class="secondary" onclick="fetchFaviconFromUrl()">获取图标</button>
         </div>
       </div>
       <button type="submit">添加链接</button>
@@ -83,7 +86,10 @@
       </div>
       <div class="form-group">
         <label>链接地址 *</label>
-        <input type="url" id="editUrl" required>
+        <div class="url-group">
+          <input type="url" id="editUrl" required>
+          <button type="button" class="secondary" onclick="fetchFaviconFromEditUrl()">获取图标</button>
+        </div>
       </div>
       <div class="form-group">
         <label>描述</label>
@@ -97,8 +103,6 @@
         <div class="icon-options">
           <p>或修改 URL：</p>
           <input type="url" id="editIcon">
-          <p>或从链接地址自动获取图标：</p>
-          <button type="button" class="secondary" onclick="fetchFaviconFromEditUrl()">获取图标</button>
         </div>
       </div>
       <button onclick="saveEdit()">保存修改</button>
@@ -301,22 +305,19 @@
       }
     }
 
-    // 从链接地址自动获取图标（添加表单）
     async function fetchFaviconFromUrl() {
       const siteUrl = document.getElementById('url').value.trim();
-      if (!siteUrl) return alert('请先填写链接地址');
       await fetchFaviconCommon(siteUrl, 'icon', 'iconPreview');
     }
 
-    // 从链接地址自动获取图标（编辑表单）
     async function fetchFaviconFromEditUrl() {
       const siteUrl = document.getElementById('editUrl').value.trim();
-      if (!siteUrl) return alert('请先填写链接地址');
       await fetchFaviconCommon(siteUrl, 'editIcon', 'editIconPreview');
     }
 
-    // 公共获取函数
     async function fetchFaviconCommon(siteUrl, iconInputId, previewId) {
+      if (!siteUrl) return alert('请先填写链接地址');
+
       const paths = [
         '/favicon.ico',
         '/favicon.png',
@@ -361,7 +362,7 @@
         let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n';
         if (adminAttr) xml += `  <admin${adminAttr} />\n`;
 
-        // 保留原有分类结构（清空链接）
+        // 保留原有分类结构
         originalDoc.querySelectorAll('category').forEach(cat => {
           xml += `  <category name="${escapeXml(cat.getAttribute('name'))}">\n`;
           cat.querySelectorAll('subcategory').forEach(sub => {
@@ -371,7 +372,7 @@
           xml += '  </category>\n';
         });
 
-        // 使用内存 allLinks 完全替换所有链接
+        // 使用内存 allLinks 完全替换链接
         if (allLinks.length > 0) {
           const lastCat = originalDoc.querySelector('category:last-child');
           if (lastCat) {
