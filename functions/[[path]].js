@@ -2,16 +2,26 @@ export async function onRequest(context) {
   const { request, env, next } = context;
   const url = new URL(request.url);
 
+  // 后台登录检查：宽松放行所有包含 login.html 的路径（彻底避免循环）
+  if (url.pathname.includes('login.html')) {
+    return next();
+  }
 
+  // 其他 /admin/ 路径检查登录
+  if (url.pathname.startsWith('/admin/')) {
+    const cookie = request.headers.get('cookie') || '';
+    if (!cookie.includes('admin_logged_in=true')) {
+      return Response.redirect(new URL('/admin/login.html', request.url), 302);
+    }
+  }
 
   // GET /api/data - 返回正式导航 XML 数据
   if (url.pathname === '/api/data' && request.method === 'GET') {
     let xml = await env.NAV_DATA.get('nav_data');
     if (!xml) {
-      // 首次初始化（不设置默认密码，安全）
       xml = `<?xml version="1.0" encoding="UTF-8"?>
 <navigation>
-  <admin username="admin" password="" />
+  <admin username="admin" password="pbkdf2:sha256:600000:example:example" />
 </navigation>`;
       await env.NAV_DATA.put('nav_data', xml);
     }
@@ -105,4 +115,3 @@ export async function onRequest(context) {
   // 其他路径交给静态文件
   return next();
 }
-
