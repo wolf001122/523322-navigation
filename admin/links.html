@@ -27,8 +27,6 @@
     .status.error { background:#fce8e6; color:#c5221f; border:1px solid #ea4335; }
     .edit-form { display:none; background:#fff; padding:20px; border-radius:8px; box-shadow:0 4px 15px rgba(0,0,0,0.1); margin-top:20px; }
     .edit-form.active { display:block; }
-    .icon-options { margin-top:12px; }
-    .icon-options p { margin:12px 0 8px; font-size:12px; color:#5f6368; }
     .url-group { display:flex; align-items:center; gap:12px; }
     .url-group input { flex:1; }
   </style>
@@ -70,10 +68,8 @@
         <input type="file" id="iconFile" accept="image/*">
         <button type="button" class="secondary" onclick="uploadIcon()">上传图标</button>
         <div id="iconPreview" style="margin-top:10px;"></div>
-        <div class="icon-options">
-          <p>或手动输入图标 URL：</p>
-          <input type="url" id="icon" placeholder="https://example.com/logo.png">
-        </div>
+        <p style="font-size:12px;color:#5f6368;margin-top:12px;">或手动输入图标 URL：</p>
+        <input type="url" id="icon" placeholder="https://example.com/logo.png">
       </div>
       <button type="submit">添加链接</button>
     </form>
@@ -100,10 +96,8 @@
         <div id="editIconPreview"></div>
         <input type="file" id="editIconFile" accept="image/*">
         <button type="button" class="secondary" onclick="uploadEditIcon()">重新上传</button>
-        <div class="icon-options">
-          <p>或修改 URL：</p>
-          <input type="url" id="editIcon">
-        </div>
+        <p style="font-size:12px;color:#5f6368;margin-top:12px;">或修改 URL：</p>
+        <input type="url" id="editIcon">
       </div>
       <button onclick="saveEdit()">保存修改</button>
       <button class="danger" style="margin-left:8px;" onclick="cancelEdit()">取消</button>
@@ -342,6 +336,7 @@
       alert('未找到该网站的 favicon，您可以手动上传或输入 URL');
     }
 
+    // 修复后的 saveToKV：保留原有所有链接 + 追加内存中的新链接
     async function saveToKV() {
       if (!confirm('确认保存所有链接到云端？')) return;
 
@@ -362,17 +357,25 @@
         let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n';
         if (adminAttr) xml += `  <admin${adminAttr} />\n`;
 
-        // 保留原有分类结构
+        // 保留原有分类结构和原有链接
         originalDoc.querySelectorAll('category').forEach(cat => {
           xml += `  <category name="${escapeXml(cat.getAttribute('name'))}">\n`;
           cat.querySelectorAll('subcategory').forEach(sub => {
             xml += `    <subcategory name="${escapeXml(sub.getAttribute('name'))}">\n`;
+            // 保留原有链接
+            sub.querySelectorAll('link').forEach(link => {
+              const attrs = ['name', 'url', 'desc', 'icon'].map(attr => {
+                const val = link.getAttribute(attr) || '';
+                return val ? ` ${attr}="${escapeXml(val)}"` : '';
+              }).join('');
+              xml += `      <link${attrs} />\n`;
+            });
             xml += '    </subcategory>\n';
           });
           xml += '  </category>\n';
         });
 
-        // 使用内存 allLinks 完全替换链接
+        // 追加内存中的新链接（追加到最后一个子分类）
         if (allLinks.length > 0) {
           const lastCat = originalDoc.querySelector('category:last-child');
           if (lastCat) {
@@ -401,7 +404,7 @@
         if (saveRes.ok) {
           statusDiv.textContent = '保存成功！';
           statusDiv.className = 'status success';
-          loadData();
+          loadData(); // 重新加载确认
         } else {
           throw new Error(await saveRes.text());
         }
