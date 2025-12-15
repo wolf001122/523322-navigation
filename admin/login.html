@@ -28,8 +28,8 @@
         <input type="text" id="username" value="admin" required>
       </div>
       <div class="form-group">
-        <label>密码</label>
-        <input type="password" id="password" placeholder="当前密码: example" required>
+        <label>密码（当前为 example）</label>
+        <input type="password" id="password" value="example" required>
       </div>
       <div class="cf-turnstile" data-sitekey="0x4AAAAAACGkz4X0J8Vxw1wl" data-theme="light"></div>
       <button type="submit">登录</button>
@@ -69,7 +69,6 @@
         const salt = parts[3];
         const expectedHash = parts[4];
 
-        // 计算输入密码的哈希
         const derivedKey = CryptoJS.PBKDF2(password, salt, {
           keySize: 256 / 32,
           iterations: iterations,
