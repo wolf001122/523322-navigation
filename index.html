@@ -12,52 +12,43 @@
       background: #f5f6f7;
       color: #333;
     }
-
     header {
       padding: 20px;
       text-align: center;
       background: #ffffff;
       border-bottom: 1px solid #e5e5e5;
     }
-
     header h1 {
       margin: 0;
       font-size: 24px;
     }
-
     main {
       padding: 20px;
       max-width: 1200px;
       margin: auto;
     }
-
     .category {
       margin-bottom: 40px;
     }
-
     .category-title {
       font-size: 22px;
       margin-bottom: 15px;
       border-left: 5px solid #409eff;
       padding-left: 10px;
     }
-
     .subcategory {
       margin-bottom: 25px;
     }
-
     .subcategory-title {
       font-size: 16px;
       margin-bottom: 10px;
       color: #666;
     }
-
     .links {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       gap: 15px;
     }
-
     .card {
       display: flex;
       align-items: center;
@@ -69,12 +60,10 @@
       box-shadow: 0 1px 4px rgba(0,0,0,0.06);
       transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-
     .card:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-
     .icon {
       width: 36px;
       height: 36px;
@@ -84,11 +73,6 @@
       background: #f0f0f0;
       object-fit: cover;
     }
-
-    .text {
-      overflow: hidden;
-    }
-
     .name {
       font-size: 14px;
       font-weight: 600;
@@ -96,7 +80,6 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-
     .desc {
       font-size: 12px;
       color: #888;
@@ -115,17 +98,12 @@
   <main id="app"></main>
 
   <script>
-    // ===============================
-    // 配置区
-    // ===============================
-    const DATA_API = '/api/data';   // ← 如果你不是这个接口，只改这一行
-    const DEFAULT_ICON = '/icons/default.png'; // 默认图标（可自行替换）
+    const DATA_API = '/api/data';
+    const DEFAULT_ICON = '/icons/default.png';
 
-    // ===============================
-    // 主逻辑
-    // ===============================
     fetch(DATA_API)
-      .then(res => res.json())
+      .then(res => res.text())   // ✅ 正确：读取 XML
+      .then(parseXML)
       .then(render)
       .catch(err => {
         document.getElementById('app').innerHTML =
@@ -133,23 +111,54 @@
         console.error(err);
       });
 
+    function parseXML(xmlText) {
+      const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
+      const categories = [];
+
+      doc.querySelectorAll('category').forEach(catNode => {
+        const category = {
+          name: catNode.getAttribute('name'),
+          subcategories: []
+        };
+
+        catNode.querySelectorAll('subcategory').forEach(subNode => {
+          const sub = {
+            name: subNode.getAttribute('name'),
+            links: []
+          };
+
+          subNode.querySelectorAll('link').forEach(linkNode => {
+            sub.links.push({
+              name: linkNode.getAttribute('name'),
+              url: linkNode.getAttribute('url'),
+              icon: linkNode.getAttribute('icon') || '',
+              desc: linkNode.getAttribute('desc') || ''
+            });
+          });
+
+          category.subcategories.push(sub);
+        });
+
+        categories.push(category);
+      });
+
+      return { categories };
+    }
+
     function render(data) {
       const app = document.getElementById('app');
+      app.innerHTML = '';
 
       data.categories.forEach(category => {
         const catEl = document.createElement('div');
         catEl.className = 'category';
-
-        catEl.innerHTML = `
-          <div class="category-title">${category.name}</div>
-        `;
+        catEl.innerHTML = `<div class="category-title">${category.name}</div>`;
 
         category.subcategories.forEach(sub => {
-          if (!sub.links || sub.links.length === 0) return;
+          if (!sub.links.length) return;
 
           const subEl = document.createElement('div');
           subEl.className = 'subcategory';
-
           subEl.innerHTML = `
             <div class="subcategory-title">${sub.name}</div>
             <div class="links"></div>
@@ -158,25 +167,18 @@
           const linksEl = subEl.querySelector('.links');
 
           sub.links.forEach(link => {
+            const icon = link.icon.trim() || DEFAULT_ICON;
             const a = document.createElement('a');
             a.className = 'card';
             a.href = link.url;
             a.target = '_blank';
-            a.rel = 'noopener noreferrer';
-
-            // ⭐ 核心：icon 兜底逻辑
-            const icon = link.icon && link.icon.trim()
-              ? link.icon
-              : DEFAULT_ICON;
-
             a.innerHTML = `
               <img class="icon" src="${icon}" onerror="this.src='${DEFAULT_ICON}'">
-              <div class="text">
+              <div>
                 <div class="name">${link.name}</div>
-                <div class="desc">${link.desc || ''}</div>
+                <div class="desc">${link.desc}</div>
               </div>
             `;
-
             linksEl.appendChild(a);
           });
 
@@ -189,5 +191,3 @@
   </script>
 </body>
 </html>
-
-
