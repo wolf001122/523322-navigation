@@ -130,7 +130,12 @@
         }));
 
         allLinks = [];
-        doc.querySelectorAll('link').forEach(l => {
+        const links = doc.querySelectorAll('link');
+        if (links.length === 0) {
+          renderLinks(); // 即使没有链接也渲染“暂无”
+          return;
+        }
+        links.forEach(l => {
           allLinks.push({
             name: l.getAttribute('name') || '未命名',
             url: l.getAttribute('url') || '#',
@@ -142,7 +147,7 @@
         populateSelects();
         renderLinks();
       } catch (e) {
-        alert('加载失败：' + e.message);
+        document.getElementById('linksList').innerHTML = '<p style="color:#c5221f;">加载失败：' + e.message + '</p>';
       }
     }
 
@@ -160,7 +165,7 @@
 
     function updateSubSelect() {
       const catIdx = document.getElementById('catSelect').value;
-      const subSelect = document.getElementById'subSelect');
+      const subSelect = document.getElementById('subSelect');
       subSelect.innerHTML = '<option value="">-- 选择二级分类 --</option>';
       if (catIdx !== '') {
         categories[catIdx].subcategories.forEach((sub, sIdx) => {
@@ -356,7 +361,7 @@
         let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n';
         if (adminAttr) xml += `  <admin${adminAttr} />\n`;
 
-        // 保留原有分类结构（清空所有链接）
+        // 保留原有分类结构
         originalDoc.querySelectorAll('category').forEach(cat => {
           xml += `  <category name="${escapeXml(cat.getAttribute('name'))}">\n`;
           cat.querySelectorAll('subcategory').forEach(sub => {
@@ -366,7 +371,7 @@
           xml += '  </category>\n';
         });
 
-        // 使用内存中的 allLinks 完全替换所有链接（追加到最后一个子分类）
+        // 使用内存 allLinks 完全替换链接
         if (allLinks.length > 0) {
           const lastCat = originalDoc.querySelector('category:last-child');
           if (lastCat) {
@@ -393,9 +398,9 @@
         });
 
         if (saveRes.ok) {
-          statusDiv.textContent = '保存成功！所有链接已更新。';
+          statusDiv.textContent = '保存成功！';
           statusDiv.className = 'status success';
-          loadData(); // 重新加载确认
+          loadData();
         } else {
           throw new Error(await saveRes.text());
         }
