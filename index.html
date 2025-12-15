@@ -5,10 +5,11 @@
 <title>导航</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Google AdSense -->
+<!-- Google AdSense 自动广告（最稳） -->
 <meta name="google-adsense-account" content="ca-pub-9474229114991789">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9474229114991789"
-        crossorigin="anonymous"></script>
+<script async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9474229114991789"
+  crossorigin="anonymous"></script>
 
 <style>
 * { box-sizing: border-box; }
@@ -19,16 +20,16 @@ html, body {
   height: 100%;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: #f5f6f7;
-  overflow: hidden;
 }
 
-/* ================= 布局 ================= */
+/* ===== 主布局 ===== */
 .app {
   display: flex;
-  height: 100%;
   width: 100%;
+  height: 100%;
 }
 
+/* ===== 左侧导航 ===== */
 .sidebar {
   width: 240px;
   background: #fff;
@@ -51,7 +52,6 @@ html, body {
 .menu div {
   padding: 10px 20px;
   cursor: pointer;
-  color: #333;
 }
 
 .menu div:hover {
@@ -60,29 +60,19 @@ html, body {
 
 .sidebar-footer {
   border-top: 1px solid #eee;
-  padding: 10px 0;
 }
 
 .sidebar-footer div {
-  padding: 8px 20px;
+  padding: 10px 20px;
   font-size: 13px;
   color: #666;
-  cursor: pointer;
 }
 
-/* ================= 主区域 ================= */
+/* ===== 主区域 ===== */
 .main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-}
-
-.top-ad {
-  background: #fff;
-  border-bottom: 1px solid #e5e5e5;
-  padding: 10px;
-  text-align: center;
 }
 
 .content {
@@ -91,7 +81,7 @@ html, body {
   padding: 30px;
 }
 
-/* ================= 搜索首页 ================= */
+/* ===== 搜索首页 ===== */
 .search-home {
   height: 100%;
   display: flex;
@@ -110,18 +100,12 @@ html, body {
   font-size: 18px;
   border-radius: 30px;
   border: 1px solid #ccc;
-  outline: none;
 }
 
-/* ================= 分类视图 ================= */
-.back-link {
-  margin-bottom: 20px;
+/* ===== 分类视图 ===== */
+.back {
   color: #409eff;
   cursor: pointer;
-}
-
-.category-title {
-  font-size: 22px;
   margin-bottom: 20px;
 }
 
@@ -131,7 +115,6 @@ html, body {
 
 .subcategory h3 {
   font-size: 16px;
-  margin-bottom: 10px;
   color: #555;
 }
 
@@ -149,7 +132,7 @@ html, body {
   gap: 10px;
   text-decoration: none;
   color: #333;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
 }
 
 .card img {
@@ -157,27 +140,17 @@ html, body {
   height: 36px;
   border-radius: 6px;
   object-fit: cover;
-  flex-shrink: 0;
 }
 
-.card .info {
-  overflow: hidden;
-}
-
-.card .name {
-  font-weight: 600;
-  font-size: 14px;
+.name, .desc {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.card .desc {
+.desc {
   font-size: 12px;
   color: #777;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 </style>
 </head>
@@ -185,7 +158,7 @@ html, body {
 <body>
 <div class="app">
 
-  <!-- 左侧导航 -->
+  <!-- 左侧 -->
   <div class="sidebar">
     <h2>导　　航</h2>
     <div class="menu" id="menu"></div>
@@ -196,69 +169,53 @@ html, body {
     </div>
   </div>
 
-  <!-- 主区域 -->
+  <!-- 主区 -->
   <div class="main">
-
-    <!-- 顶部广告 -->
-    <div class="top-ad">
-      <!-- AdSense 自动广告 -->
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-9474229114991789"
-           data-ad-slot="auto"
-           data-ad-format="auto"></ins>
-      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    </div>
-
-    <!-- 内容区 -->
     <div class="content" id="content"></div>
-
   </div>
+
 </div>
 
 <script>
 const API = '/api/data';
-const content = document.getElementById('content');
 const menu = document.getElementById('menu');
+const content = document.getElementById('content');
 
 fetch(API)
   .then(r => r.text())
   .then(xmlText => {
     const xml = new DOMParser().parseFromString(xmlText, 'text/xml');
-    const categories = [...xml.querySelectorAll('category')];
+    const cats = [...xml.querySelectorAll('category')];
 
-    categories.forEach(cat => {
-      const div = document.createElement('div');
-      div.textContent = cat.getAttribute('name');
-      div.onclick = () => showCategory(cat);
-      menu.appendChild(div);
+    cats.forEach(c => {
+      const d = document.createElement('div');
+      d.textContent = c.getAttribute('name');
+      d.onclick = () => showCategory(c);
+      menu.appendChild(d);
     });
 
-    showSearchHome();
+    showSearch();
   });
 
-function showSearchHome() {
+function showSearch() {
   content.innerHTML = `
     <div class="search-home">
       <div class="search-box">
         <input placeholder="搜索你想访问的网站">
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
 function showCategory(cat) {
-  content.innerHTML = `<div class="back-link" onclick="showSearchHome()">← 返回搜索首页</div>
-                       <div class="category-title">${cat.getAttribute('name')}</div>`;
+  content.innerHTML = `<div class="back" onclick="showSearch()">← 返回搜索</div>`;
 
-  [...cat.querySelectorAll('subcategory')].forEach(sub => {
-    const links = [...sub.querySelectorAll('link')];
+  [...cat.querySelectorAll('subcategory')].forEach(s => {
+    const links = [...s.querySelectorAll('link')];
     if (!links.length) return;
 
     const block = document.createElement('div');
     block.className = 'subcategory';
-    block.innerHTML = `<h3>${sub.getAttribute('name')}</h3><div class="cards"></div>`;
-
+    block.innerHTML = `<h3>${s.getAttribute('name')}</h3><div class="cards"></div>`;
     const cards = block.querySelector('.cards');
 
     links.forEach(l => {
@@ -266,14 +223,12 @@ function showCategory(cat) {
       a.className = 'card';
       a.href = l.getAttribute('url');
       a.target = '_blank';
-
       a.innerHTML = `
         <img src="${l.getAttribute('icon') || ''}">
-        <div class="info">
+        <div>
           <div class="name">${l.getAttribute('name')}</div>
           <div class="desc">${l.getAttribute('desc') || ''}</div>
-        </div>
-      `;
+        </div>`;
       cards.appendChild(a);
     });
 
@@ -281,6 +236,5 @@ function showCategory(cat) {
   });
 }
 </script>
-
 </body>
 </html>
