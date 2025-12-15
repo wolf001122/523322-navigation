@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>后台登录</title>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <style>
+    body { margin:0; background:#f1f3f4; font-family:'Roboto',Arial,sans-serif; display:flex; align-items:center; justify-content:center; height:100vh; }
+    .login-card { background:#fff; width:90%; max-width:400px; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.15); padding:40px; text-align:center; }
+    h1 { color:#333; margin-bottom:30px; }
+    .form-group { margin-bottom:20px; text-align:left; }
+    label { display:block; margin-bottom:8px; color:#5f6368; font-weight:500; }
+    input { width:100%; padding:14px; border:1px solid #dadce0; border-radius:8px; font-size:16px; }
+    button { width:100%; padding:16px; background:#4285f4; color:white; border:none; border-radius:8px; font-size:18px; cursor:pointer; margin-top:20px; }
+    button:hover { background:#3367d6; }
+    .status { margin-top:20px; padding:16px; border-radius:8px; font-size:16px; }
+    .error { background:#fce8e6; color:#c5221f; border:1px solid #ea4335; }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <h1>后台管理登录</h1>
+    <form id="loginForm">
+      <div class="form-group">
+        <label>用户名</label>
+        <input type="text" id="username" required>
+      </div>
+      <div class="form-group">
+        <label>密码</label>
+        <input type="password" id="password" required>
+      </div>
+      <div class="cf-turnstile" data-sitekey="0x4AAAAAACGkz4X0J8Vxw1wl" data-theme="light"></div>
+      <button type="submit">登录</button>
+    </form>
+    <div id="status"></div>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const token = turnstile.getResponse();
+
+      if (!username || !password) return showStatus('请填写用户名和密码', true);
+      if (!token) return showStatus('请完成验证码验证', true);
+
+      try {
+        const res = await fetch('/api/data');
+        const xml = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(xml, 'text/xml');
+        const admin = doc.querySelector('admin');
+        if (!admin) throw new Error('未配置管理员');
+
+        const storedUser = admin.getAttribute('username');
+        const storedPass = admin.getAttribute('password'); // 已哈希
+
+        // 简单验证（实际生产建议服务器端验证，这里前端模拟）
+        if (username === storedUser && password === storedPass) { // 如果密码明文，需改哈希比对
+          // 设置登录 Cookie（7天有效）
+          document.cookie = `admin_logged_in=true; path=/; max-age=${7*24*60*60}; Secure; SameSite=Lax`;
+          showStatus('登录成功，正在跳转...', false);
+          setTimeout(() => location.href = '/admin/admin.html', 1000);
+        } else {
+          turnstile.reset();
+          throw new Error('用户名或密码错误');
+        }
+      } catch (e) {
+        turnstile.reset();
+        showStatus(e.message || '登录失败', true);
+      }
+    };
+
+    function showStatus(msg, isError = false) {
+      const div = document.getElementById('status');
+      div.textContent = msg;
+      div.className = 'status' + (isError ? ' error' : '');
+    }
+  </script>
+</body>
+</html>
