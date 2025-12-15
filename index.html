@@ -1,193 +1,225 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <title>导航</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<title>导航</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f5f6f7;
-      color: #333;
-    }
-    header {
-      padding: 20px;
-      text-align: center;
-      background: #ffffff;
-      border-bottom: 1px solid #e5e5e5;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 24px;
-    }
-    main {
-      padding: 20px;
-      max-width: 1200px;
-      margin: auto;
-    }
-    .category {
-      margin-bottom: 40px;
-    }
-    .category-title {
-      font-size: 22px;
-      margin-bottom: 15px;
-      border-left: 5px solid #409eff;
-      padding-left: 10px;
-    }
-    .subcategory {
-      margin-bottom: 25px;
-    }
-    .subcategory-title {
-      font-size: 16px;
-      margin-bottom: 10px;
-      color: #666;
-    }
-    .links {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 15px;
-    }
-    .card {
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      background: #fff;
-      border-radius: 8px;
-      text-decoration: none;
-      color: inherit;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    .icon {
-      width: 36px;
-      height: 36px;
-      margin-right: 10px;
-      flex-shrink: 0;
-      border-radius: 6px;
-      background: #f0f0f0;
-      object-fit: cover;
-    }
-    .name {
-      font-size: 14px;
-      font-weight: 600;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .desc {
-      font-size: 12px;
-      color: #888;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  </style>
+<style>
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f5f6f7;
+}
+header {
+  padding: 18px;
+  text-align: center;
+  background: #fff;
+  border-bottom: 1px solid #e5e5e5;
+}
+header h1 { margin: 0; font-size: 22px; }
+
+.layout {
+  display: flex;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+/* 左侧一级分类 */
+.sidebar {
+  width: 220px;
+  background: #ffffff;
+  border-right: 1px solid #e5e5e5;
+}
+.sidebar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sidebar li {
+  padding: 14px 18px;
+  cursor: pointer;
+  border-left: 4px solid transparent;
+}
+.sidebar li:hover {
+  background: #f2f6fc;
+}
+.sidebar li.active {
+  background: #ecf5ff;
+  border-left-color: #409eff;
+  font-weight: 600;
+}
+
+/* 右侧内容区 */
+.content {
+  flex: 1;
+  padding: 20px;
+}
+.category-title {
+  font-size: 22px;
+  margin-bottom: 15px;
+}
+.subcategory {
+  margin-bottom: 30px;
+}
+.subcategory-title {
+  font-size: 15px;
+  color: #666;
+  margin-bottom: 10px;
+}
+.links {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 15px;
+}
+.card {
+  display: flex;
+  padding: 10px;
+  background: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,.1);
+}
+.icon {
+  width: 36px;
+  height: 36px;
+  margin-right: 10px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #eee;
+}
+.name {
+  font-size: 14px;
+  font-weight: 600;
+}
+.desc {
+  font-size: 12px;
+  color: #888;
+}
+
+/* 广告位 */
+.ad {
+  margin: 30px 0;
+  padding: 20px;
+  background: #fff;
+  border: 1px dashed #ccc;
+  text-align: center;
+  color: #999;
+}
+</style>
 </head>
 
 <body>
-  <header>
-    <h1>导航</h1>
-  </header>
+<header>
+  <h1>导航</h1>
+</header>
 
-  <main id="app"></main>
+<div class="layout">
+  <aside class="sidebar">
+    <ul id="menu"></ul>
+  </aside>
 
-  <script>
-    const DATA_API = '/api/data';
-    const DEFAULT_ICON = '/icons/default.png';
+  <main class="content" id="content"></main>
+</div>
 
-    fetch(DATA_API)
-      .then(res => res.text())   // ✅ 正确：读取 XML
-      .then(parseXML)
-      .then(render)
-      .catch(err => {
-        document.getElementById('app').innerHTML =
-          '<p style="color:red">数据加载失败</p>';
-        console.error(err);
-      });
+<script>
+const DATA_API = '/api/data';
+const DEFAULT_ICON = '/icons/default.png';
+let DATA = [];
 
-    function parseXML(xmlText) {
-      const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
-      const categories = [];
+fetch(DATA_API)
+  .then(r => r.text())
+  .then(parseXML)
+  .then(init)
+  .catch(() => {
+    document.getElementById('content').innerHTML = '数据加载失败';
+  });
 
-      doc.querySelectorAll('category').forEach(catNode => {
-        const category = {
-          name: catNode.getAttribute('name'),
-          subcategories: []
-        };
-
-        catNode.querySelectorAll('subcategory').forEach(subNode => {
-          const sub = {
-            name: subNode.getAttribute('name'),
-            links: []
-          };
-
-          subNode.querySelectorAll('link').forEach(linkNode => {
-            sub.links.push({
-              name: linkNode.getAttribute('name'),
-              url: linkNode.getAttribute('url'),
-              icon: linkNode.getAttribute('icon') || '',
-              desc: linkNode.getAttribute('desc') || ''
-            });
-          });
-
-          category.subcategories.push(sub);
+function parseXML(xmlText) {
+  const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
+  const categories = [];
+  doc.querySelectorAll('category').forEach(cat => {
+    const c = { name: cat.getAttribute('name'), subs: [] };
+    cat.querySelectorAll('subcategory').forEach(sub => {
+      const s = { name: sub.getAttribute('name'), links: [] };
+      sub.querySelectorAll('link').forEach(l => {
+        s.links.push({
+          name: l.getAttribute('name'),
+          url: l.getAttribute('url'),
+          icon: l.getAttribute('icon') || '',
+          desc: l.getAttribute('desc') || ''
         });
-
-        categories.push(category);
       });
+      c.subs.push(s);
+    });
+    categories.push(c);
+  });
+  return categories;
+}
 
-      return { categories };
-    }
+function init(categories) {
+  DATA = categories;
+  renderMenu();
+  selectCategory(0);
+}
 
-    function render(data) {
-      const app = document.getElementById('app');
-      app.innerHTML = '';
+function renderMenu() {
+  const menu = document.getElementById('menu');
+  menu.innerHTML = '';
+  DATA.forEach((c, i) => {
+    const li = document.createElement('li');
+    li.textContent = c.name;
+    li.onclick = () => selectCategory(i);
+    menu.appendChild(li);
+  });
+}
 
-      data.categories.forEach(category => {
-        const catEl = document.createElement('div');
-        catEl.className = 'category';
-        catEl.innerHTML = `<div class="category-title">${category.name}</div>`;
+function selectCategory(index) {
+  document.querySelectorAll('.sidebar li').forEach((li, i) => {
+    li.classList.toggle('active', i === index);
+  });
+  renderContent(DATA[index]);
+}
 
-        category.subcategories.forEach(sub => {
-          if (!sub.links.length) return;
+function renderContent(category) {
+  const el = document.getElementById('content');
+  el.innerHTML = `<div class="category-title">${category.name}</div>`;
 
-          const subEl = document.createElement('div');
-          subEl.className = 'subcategory';
-          subEl.innerHTML = `
-            <div class="subcategory-title">${sub.name}</div>
-            <div class="links"></div>
-          `;
+  category.subs.forEach(sub => {
+    if (!sub.links.length) return;
 
-          const linksEl = subEl.querySelector('.links');
+    const block = document.createElement('div');
+    block.className = 'subcategory';
+    block.innerHTML = `<div class="subcategory-title">${sub.name}</div><div class="links"></div>`;
+    const linksEl = block.querySelector('.links');
 
-          sub.links.forEach(link => {
-            const icon = link.icon.trim() || DEFAULT_ICON;
-            const a = document.createElement('a');
-            a.className = 'card';
-            a.href = link.url;
-            a.target = '_blank';
-            a.innerHTML = `
-              <img class="icon" src="${icon}" onerror="this.src='${DEFAULT_ICON}'">
-              <div>
-                <div class="name">${link.name}</div>
-                <div class="desc">${link.desc}</div>
-              </div>
-            `;
-            linksEl.appendChild(a);
-          });
+    sub.links.forEach(link => {
+      const a = document.createElement('a');
+      a.className = 'card';
+      a.href = link.url;
+      a.target = '_blank';
+      const icon = link.icon.trim() || DEFAULT_ICON;
+      a.innerHTML = `
+        <img class="icon" src="${icon}" onerror="this.src='${DEFAULT_ICON}'">
+        <div>
+          <div class="name">${link.name}</div>
+          <div class="desc">${link.desc}</div>
+        </div>`;
+      linksEl.appendChild(a);
+    });
 
-          catEl.appendChild(subEl);
-        });
+    el.appendChild(block);
+  });
 
-        app.appendChild(catEl);
-      });
-    }
-  </script>
+  // 广告位
+  el.innerHTML += `
+    <div class="ad">广告位（可放 AdSense / 百度联盟）</div>
+  `;
+}
+</script>
 </body>
 </html>
