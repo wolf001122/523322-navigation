@@ -5,161 +5,163 @@
 <title>导航</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Google AdSense -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
-     crossorigin="anonymous"></script>
-
 <style>
+:root {
+  --bg: #f8f9fa;
+  --card: #ffffff;
+  --border: #e0e0e0;
+  --text: #202124;
+  --subtext: #5f6368;
+  --blue: #1a73e8;
+}
+
 * { box-sizing: border-box; }
+
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
-  background: #f8f9fa;
-  color: #202124;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
 }
 
-/* ===== 顶部 ===== */
-header {
+/* ===== 顶部广告 ===== */
+.top-ad {
+  height: 90px;
   background: #fff;
-  border-bottom: 1px solid #dadce0;
-  padding: 14px 24px;
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-}
-
-header h1 {
-  font-size: 20px;
-  font-weight: 500;
-  margin: 0;
-  color: #1a73e8;
-}
-
-.top-ad {
-  max-width: 728px;
-  margin: 0 auto;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--subtext);
 }
 
 /* ===== 主体布局 ===== */
 .layout {
   display: flex;
-  max-width: 1440px;
-  margin: 0 auto;
+  height: calc(100vh - 90px);
 }
 
-/* ===== 左侧菜单 ===== */
+/* ===== 左侧栏 ===== */
 .sidebar {
-  width: 260px;
+  width: 240px;
   background: #fff;
-  border-right: 1px solid #dadce0;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar .search {
   padding: 16px;
 }
 
 .sidebar input {
   width: 100%;
-  padding: 10px 12px;
-  border-radius: 24px;
-  border: 1px solid #dadce0;
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
   outline: none;
-  font-size: 14px;
 }
 
-.category {
-  margin-top: 16px;
+.menu {
+  flex: 1;
+  padding: 8px;
+  overflow-y: auto;
 }
 
-.category-item {
-  padding: 10px 14px;
-  border-radius: 24px;
+.menu-item {
+  padding: 10px 12px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  color: #3c4043;
+  color: var(--text);
 }
 
-.category-item:hover {
-  background: #f1f3f4;
-}
-
-.category-item.active {
+.menu-item:hover,
+.menu-item.active {
   background: #e8f0fe;
-  color: #1a73e8;
-  font-weight: 500;
+  color: var(--blue);
 }
 
-/* 底部固定三栏 */
 .sidebar-footer {
-  margin-top: 24px;
-  border-top: 1px solid #dadce0;
-  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  padding: 12px;
+  font-size: 13px;
 }
 
 .sidebar-footer a {
   display: block;
-  font-size: 13px;
-  color: #5f6368;
+  color: var(--subtext);
   text-decoration: none;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
-/* ===== 主内容区 ===== */
-main {
+.sidebar-footer a:hover {
+  color: var(--blue);
+}
+
+/* ===== 内容区 ===== */
+.content {
   flex: 1;
-  padding: 24px;
-  min-height: 700px; /* 防抖动 */
+  padding: 40px;
+  overflow-y: auto;
 }
 
-/* 搜索首页 */
 .search-home {
   max-width: 600px;
   margin: 120px auto;
-  text-align: center;
 }
 
 .search-home input {
   width: 100%;
-  padding: 14px 18px;
+  padding: 14px 20px;
   font-size: 16px;
-  border-radius: 32px;
-  border: 1px solid #dadce0;
+  border-radius: 30px;
+  border: 2px solid #000;
 }
 
-/* 分类内容 */
-.sub {
-  margin-bottom: 36px;
+/* ===== 分类内容 ===== */
+.category-block {
+  margin-bottom: 40px;
 }
 
-.sub h2 {
-  font-size: 16px;
-  font-weight: 500;
-  margin-bottom: 12px;
+.sub-title {
+  font-size: 15px;
+  color: var(--subtext);
+  margin: 20px 0 10px;
 }
 
-.grid {
+.cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill,minmax(220px,1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
 }
 
 .card {
-  background: #fff;
-  border-radius: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
   padding: 12px;
   display: flex;
+  gap: 10px;
   text-decoration: none;
   color: inherit;
-  box-shadow: 0 1px 2px rgba(60,64,67,.15);
+  height: 72px; /* 防抖关键 */
 }
 
 .card img {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  margin-right: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.card .info {
+  overflow: hidden;
 }
 
 .card .name {
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -167,32 +169,30 @@ main {
 
 .card .desc {
   font-size: 12px;
-  color: #5f6368;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  color: var(--subtext);
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <h1>导航</h1>
-  <div class="top-ad">
-    <ins class="adsbygoogle"
-      style="display:block"
-      data-ad-client="ca-pub-xxxxxxxx"
-      data-ad-slot="1234567890"
-      data-ad-format="auto"></ins>
-  </div>
-</header>
+<!-- 顶部广告 -->
+<div class="top-ad">
+  <!-- 在这里粘贴 AdSense 代码 -->
+  广告位（90px）
+</div>
 
 <div class="layout">
+  <!-- 左侧 -->
   <aside class="sidebar">
-    <input placeholder="搜索网站…">
-    <div class="category" id="cat"></div>
+    <div class="search">
+      <input placeholder="搜索网站…" id="menuSearch">
+    </div>
+
+    <div class="menu" id="menu"></div>
 
     <div class="sidebar-footer">
       <a href="#">网站提交</a>
@@ -201,53 +201,86 @@ main {
     </div>
   </aside>
 
-  <main id="main">
-    <div class="search-home">
-      <input placeholder="搜索你想访问的网站">
-    </div>
+  <!-- 主内容 -->
+  <main class="content">
+    <div id="content"></div>
   </main>
 </div>
 
 <script>
-fetch('/api/data').then(r=>r.text()).then(xml=>{
-  const doc=new DOMParser().parseFromString(xml,'text/xml');
-  const cats=doc.querySelectorAll('category');
-  const box=document.getElementById('cat');
+const API = '/api/data';
+let NAV = null;
 
-  cats.forEach(c=>{
-    const d=document.createElement('div');
-    d.className='category-item';
-    d.textContent=c.getAttribute('name');
-    d.onclick=()=>show(c,d);
-    box.appendChild(d);
+fetch(API)
+  .then(r => r.text())
+  .then(xml => {
+    NAV = parseXML(xml);
+    renderMenu();
+    renderSearchHome();
   });
 
-  function show(cat,el){
-    document.querySelectorAll('.category-item').forEach(i=>i.classList.remove('active'));
-    el.classList.add('active');
-    const main=document.getElementById('main');
-    main.innerHTML='';
-    cat.querySelectorAll('subcategory').forEach(s=>{
-      const links=s.querySelectorAll('link');
-      if(!links.length) return;
-      const sec=document.createElement('div');
-      sec.className='sub';
-      sec.innerHTML=`<h2>${s.getAttribute('name')}</h2><div class="grid"></div>`;
-      const g=sec.querySelector('.grid');
-      links.forEach(l=>{
-        g.innerHTML+=`
-<a class="card" href="${l.getAttribute('url')}" target="_blank">
-  <img src="${l.getAttribute('icon')||''}">
-  <div>
-    <div class="name">${l.getAttribute('name')}</div>
-    <div class="desc">${l.getAttribute('desc')||''}</div>
-  </div>
-</a>`;
-      });
-      main.appendChild(sec);
+function parseXML(xml) {
+  const dom = new DOMParser().parseFromString(xml, 'text/xml');
+  return [...dom.querySelectorAll('category')].map(c => ({
+    name: c.getAttribute('name'),
+    subs: [...c.querySelectorAll('subcategory')].map(s => ({
+      name: s.getAttribute('name'),
+      links: [...s.querySelectorAll('link')].map(l => ({
+        name: l.getAttribute('name'),
+        url: l.getAttribute('url'),
+        icon: l.getAttribute('icon') || '/icons/default.png',
+        desc: l.getAttribute('desc') || ''
+      }))
+    }))
+  }));
+}
+
+function renderMenu() {
+  const m = document.getElementById('menu');
+  NAV.forEach((c, i) => {
+    const d = document.createElement('div');
+    d.className = 'menu-item';
+    d.textContent = c.name;
+    d.onclick = () => {
+      document.querySelectorAll('.menu-item').forEach(x => x.classList.remove('active'));
+      d.classList.add('active');
+      renderCategory(c);
+    };
+    m.appendChild(d);
+  });
+}
+
+function renderSearchHome() {
+  document.getElementById('content').innerHTML = `
+    <div class="search-home">
+      <input placeholder="搜索你想访问的网站">
+    </div>
+  `;
+}
+
+function renderCategory(cat) {
+  const c = document.getElementById('content');
+  c.innerHTML = '';
+  cat.subs.forEach(s => {
+    if (!s.links.length) return;
+    const block = document.createElement('div');
+    block.className = 'category-block';
+    block.innerHTML = `<div class="sub-title">${s.name}</div><div class="cards"></div>`;
+    const cards = block.querySelector('.cards');
+    s.links.forEach(l => {
+      cards.innerHTML += `
+        <a class="card" href="${l.url}" target="_blank">
+          <img src="${l.icon}" onerror="this.src='/icons/default.png'">
+          <div class="info">
+            <div class="name">${l.name}</div>
+            <div class="desc">${l.desc}</div>
+          </div>
+        </a>
+      `;
     });
-  }
-});
+    c.appendChild(block);
+  });
+}
 </script>
 
 </body>
