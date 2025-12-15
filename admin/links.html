@@ -160,7 +160,7 @@
 
     function updateSubSelect() {
       const catIdx = document.getElementById('catSelect').value;
-      const subSelect = document.getElementById('subSelect');
+      const subSelect = document.getElementById'subSelect');
       subSelect.innerHTML = '<option value="">-- 选择二级分类 --</option>';
       if (catIdx !== '') {
         categories[catIdx].subcategories.forEach((sub, sIdx) => {
@@ -336,7 +336,6 @@
       alert('未找到该网站的 favicon，您可以手动上传或输入 URL');
     }
 
-    // 修复后的 saveToKV：保留原有所有链接 + 追加内存中的新链接
     async function saveToKV() {
       if (!confirm('确认保存所有链接到云端？')) return;
 
@@ -357,25 +356,17 @@
         let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n';
         if (adminAttr) xml += `  <admin${adminAttr} />\n`;
 
-        // 保留原有分类结构和原有链接
+        // 保留原有分类结构（清空所有链接）
         originalDoc.querySelectorAll('category').forEach(cat => {
           xml += `  <category name="${escapeXml(cat.getAttribute('name'))}">\n`;
           cat.querySelectorAll('subcategory').forEach(sub => {
             xml += `    <subcategory name="${escapeXml(sub.getAttribute('name'))}">\n`;
-            // 保留原有链接
-            sub.querySelectorAll('link').forEach(link => {
-              const attrs = ['name', 'url', 'desc', 'icon'].map(attr => {
-                const val = link.getAttribute(attr) || '';
-                return val ? ` ${attr}="${escapeXml(val)}"` : '';
-              }).join('');
-              xml += `      <link${attrs} />\n`;
-            });
             xml += '    </subcategory>\n';
           });
           xml += '  </category>\n';
         });
 
-        // 追加内存中的新链接（追加到最后一个子分类）
+        // 使用内存中的 allLinks 完全替换所有链接（追加到最后一个子分类）
         if (allLinks.length > 0) {
           const lastCat = originalDoc.querySelector('category:last-child');
           if (lastCat) {
@@ -402,7 +393,7 @@
         });
 
         if (saveRes.ok) {
-          statusDiv.textContent = '保存成功！';
+          statusDiv.textContent = '保存成功！所有链接已更新。';
           statusDiv.className = 'status success';
           loadData(); // 重新加载确认
         } else {
