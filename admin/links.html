@@ -217,20 +217,23 @@
     }
 
     // 编辑
-    function startEdit(idx) {
-      editingIndex = idx;
-      const link = allLinks[idx];
+// 开始编辑
+function startEdit(idx) {
+  editingIndex = idx;
+  const link = allLinks[idx];
 
-      document.getElementById('editName').value = link.name;
-      document.getElementById('editUrl').value = link.url;
-      document.getElementById('editDesc').value = link.desc;
-      document.getElementById('editIcon').value = link.icon;
-      document.getElementById('editIconPreview').innerHTML = link.icon ? `<img src="${link.icon}" style="width:80px;height:80px;object-fit:contain;border-radius:8px;">` : '<p>无图标</p>';
+  document.getElementById('editName').value = link.name;
+  document.getElementById('editUrl').value = link.url;
+  document.getElementById('editDesc').value = link.desc;
+  document.getElementById('editIcon').value = link.icon;
+  document.getElementById('editIconPreview').innerHTML = link.icon ? `<img src="${link.icon}" style="width:80px;height:80px;object-fit:contain;border-radius:8px;">` : '<p>无图标</p>';
 
-      document.getElementById('editForm').classList.add('active');
-      document.getElementById('addForm').style.display = 'none';
-    }
+  document.getElementById('editForm').classList.add('active');
+  document.getElementById('addForm').style.display = 'none';
 
+  // 新增：自动滚动到页面顶部，让编辑表单可见
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
     function cancelEdit() {
       editingIndex = -1;
       document.getElementById('editForm').classList.remove('active');
