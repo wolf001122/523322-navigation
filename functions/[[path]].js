@@ -2,13 +2,13 @@ export async function onRequest(context) {
   const { request, env, next } = context;
   const url = new URL(request.url);
 
-  // 后台登录检查：只对 /admin/ 下除 login.html 外的页面检查
-  if (url.pathname.startsWith('/admin/')) {
-    // 放行 login.html（无论是否带尾斜杠）
-    if (url.pathname.includes('login.html')) {
-      return next();
-    }
+  // 后台登录检查：完全放行 login.html（避免任何路径规范化问题）
+  if (url.pathname.startsWith('/admin/login.html')) {
+    return next();  // 直接放行登录页，防止任何重定向
+  }
 
+  // 对其他 /admin/ 页面检查登录
+  if (url.pathname.startsWith('/admin/')) {
     const cookie = request.headers.get('cookie') || '';
     if (!cookie.includes('admin_logged_in=true')) {
       return Response.redirect(new URL('/admin/login.html', request.url), 302);
