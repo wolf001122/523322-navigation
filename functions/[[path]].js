@@ -8,19 +8,6 @@ export async function onRequest(context) {
   }
 
 
-if (url.pathname.startsWith('/admin/')) {
-  if (url.pathname.includes('login.html')) {
-    return next();
-  }
-
-  const cookie = request.headers.get('cookie') || '';
-  if (!cookie.includes('admin_logged_in=true')) {
-    return Response.redirect(new URL('/admin/login.html', request.url), 302);
-  }
-}
-
-  
-
 // GET /api/data - 返回正式导航 XML 数据
 if (url.pathname === '/api/data' && request.method === 'GET') {
   let xml = await env.NAV_DATA.get('nav_data');
@@ -128,6 +115,7 @@ if (url.pathname === '/api/data' && request.method === 'GET') {
   // 其他路径交给静态文件
   return next();
 }
+
 
 
 
