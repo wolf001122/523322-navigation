@@ -2,13 +2,22 @@ export async function onRequest(context) {
   const { request, env, next } = context;
   const url = new URL(request.url);
 
+  // 后台登录检查（除了 login.html 本身）
+  if (url.pathname.startsWith('/admin/') && !url.pathname.endsWith('/login.html')) {
+    const cookie = request.headers.get('cookie') || '';
+    if (!cookie.includes('admin_logged_in=true')) {
+      return Response.redirect(new URL('/admin/login.html', request.url), 302);
+    }
+  }
+
   // GET /api/data - 返回正式导航 XML 数据
   if (url.pathname === '/api/data' && request.method === 'GET') {
     let xml = await env.NAV_DATA.get('nav_data');
     if (!xml) {
+      // 初始默认数据
       xml = `<?xml version="1.0" encoding="UTF-8"?>
 <navigation>
-  <admin username="admin" password="pbkdf2:sha256:600000:example:example" />
+  <admin username="admin" password="admin123" />
 </navigation>`;
       await env.NAV_DATA.put('nav_data', xml);
     }
@@ -40,7 +49,7 @@ export async function onRequest(context) {
         httpMetadata: { contentType: file.type }
       });
 
-      const publicUrl = `https://pub-0bb15820dbcd4d9a9c46bffea3806e50.r2.dev/${key}`; // 替换为您的实际 r2.dev 子域
+      const publicUrl = `https://pub-您的r2-dev子域.r2.dev/${key}`; // 请替换为您的实际 r2.dev 子域
       return new Response(publicUrl, { status: 200 });
     } catch (e) {
       return new Response('上传失败: ' + e.message, { status: 500 });
@@ -99,7 +108,6 @@ export async function onRequest(context) {
     }
   }
 
-  // 其他路径交给静态文件
+  // 其他路径交给静态文件服务
   return next();
 }
-
