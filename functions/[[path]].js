@@ -1,26 +1,24 @@
 export async function onRequest(context) {
-  const { request, env, next } = context;
+  const { request, env } = context;
   const url = new URL(request.url);
 
-  /* ==================================================
-     一、后台访问控制（仅 Cookie）
-     ================================================== */
-
-  // 放行登录页
-  if (url.pathname.startsWith('/admin/login.html')) {
-    return next();
-  }
-
-  // 保护所有 /admin/ 页面
-  if (url.pathname.startsWith('/admin/')) {
-    const cookie = request.headers.get('cookie') || '';
-    if (!cookie.includes('admin_logged_in=true')) {
-      return Response.redirect(
-        new URL('/admin/login.html', request.url),
-        302
-      );
+  /* ========= API：读取导航数据 ========= */
+  if (url.pathname === '/api/data') {
+    let xml = await env.NAV_DATA.get('nav_data');
+    if (!xml) {
+      xml = `<?xml version="1.0" encoding="UTF-8"?>
+<navigation></navigation>`;
+      await env.NAV_DATA.put('nav_data', xml);
     }
+    return new Response(xml, {
+      headers: { 'Content-Type': 'text/xml; charset=utf-8' }
+    });
   }
+
+  /* ========= 其它请求全部放行 ========= */
+  return fetch(request);
+}
+
 
   /* ==================================================
      二、读取导航数据（XML 原始）
@@ -164,3 +162,4 @@ function escapeHtml(str) {
 function escapeAttr(str) {
   return escapeHtml(str).replace(/'/g, '&#39;');
 }
+
