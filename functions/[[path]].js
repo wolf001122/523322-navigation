@@ -2,12 +2,12 @@ export async function onRequest(context) {
   const { request, env, next } = context;
   const url = new URL(request.url);
 
-  // 完全放行登录页（精确匹配 /admin/login.html 开头，兼容尾斜杠）
-  if (url.pathname.startsWith('/admin/login.html')) {
+  // 后台登录检查：优先放行登录页（宽松匹配，兼容任何尾斜杠或查询）
+  if (url.pathname === '/admin/login.html' || url.pathname === '/admin/login.html/' || url.pathname.startsWith('/admin/login.html?')) {
     return next();
   }
 
-  // 对其他 /admin/ 页面进行登录检查
+  // 对其他 /admin/ 路径检查登录
   if (url.pathname.startsWith('/admin/')) {
     const cookie = request.headers.get('cookie') || '';
     if (!cookie.includes('admin_logged_in=true')) {
