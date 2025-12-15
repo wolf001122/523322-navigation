@@ -2,20 +2,20 @@ export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
 
-  // 后台登录检查：宽松放行所有包含 login.html 的路径
+  // 后台登录检查：放行 login.html
   if (url.pathname.includes('login.html')) {
-    return context.next();
+    return await context.next();
   }
 
-  // 其他 /admin/ 路径检查登录
+  // 其他 /admin/ 路径检查登录 cookie
   if (url.pathname.startsWith('/admin/')) {
     const cookie = request.headers.get('cookie') || '';
     if (!cookie.includes('admin_logged_in=true')) {
-      return Response.redirect(new URL('/admin/login.html', request.url), 302);
+      return Response.redirect(new URL('/admin/login.html', request.url).toString(), 302);
     }
   }
 
-  // GET /api/data - 返回正式导航 XML 数据
+  // GET /api/data - 返回导航 XML 数据
   if (url.pathname === '/api/data' && request.method === 'GET') {
     let xml = await env.NAV_DATA.get('nav_data');
     if (!xml) {
@@ -30,7 +30,7 @@ export async function onRequest(context) {
     });
   }
 
-  // POST /api/save - 保存正式导航数据（原有接口保留）
+  // POST /api/save - 保存完整 XML（原有接口保留）
   if (url.pathname === '/api/save' && request.method === 'POST') {
     try {
       const body = await request.text();
@@ -41,7 +41,7 @@ export async function onRequest(context) {
     }
   }
 
-  // 新增：POST /api/save-links - 接收 JSON 链接数组，安全重建 XML
+  // POST /api/save-links - 新接口：接收 JSON 链接数组，安全重建 XML
   if (url.pathname === '/api/save-links' && request.method === 'POST') {
     try {
       const links = await request.json(); // 接收 allLinks 数组
@@ -55,8 +55,8 @@ export async function onRequest(context) {
       const parser = new DOMParser();
       const doc = parser.parseFromString(currentData, 'text/xml');
 
-      // 清空所有链接
-      doc.querySelectorAll('link').forEach(link => link.remove());
+      // 清空所有原有链接
+      doc.querySelectorAll('link').forEach(linkEl => linkEl.remove());
 
       // 根据接收的 links 数组重建链接
       links.forEach(link => {
@@ -107,6 +107,6 @@ export async function onRequest(context) {
     }
   }
 
-  // 其他路径交给静态文件
-  return context.next();
+  // 其他路径交给静态文件服务
+  return await context.next();
 }
