@@ -14,7 +14,7 @@ export async function onRequest(context) {
     if (!xml) {
       xml = `<?xml version="1.0" encoding="UTF-8"?>
 <navigation>
-  <admin username="admin" password="pbkdf2:sha256:600000:example:example" />
+  <admin username="admin" password="pbkdf2:sha256:600000:b6688978b64829e08a89ef11a0596a36:43b4cb6651f9529b45a68fa81ce54a4f8d1348de36681c39e4bcac00a268ab3f" />
 </navigation>`;
       await env.NAV_DATA.put('nav_data', xml);
     }
@@ -108,4 +108,5 @@ export async function onRequest(context) {
   // 其他路径交给静态文件
   return next();
 }
+
 
