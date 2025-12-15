@@ -1,463 +1,173 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>链接管理</title>
-  <style>
-    body { background:#f1f3f4; padding:24px; font-family:'Roboto',Arial,sans-serif; }
-    .card { background:#fff; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.12); padding:24px; margin-bottom:24px; }
-    h2 { font-size:20px; color:#3c4043; margin:0 0 16px; display:flex; justify-content:space-between; align-items:center; }
-    .form-group { margin-bottom:20px; }
-    label { display:block; margin-bottom:8px; color:#5f6368; font-size:14px; }
-    input, textarea, select { width:100%; padding:12px; border:1px solid #dadce0; border-radius:4px; font-size:16px; box-sizing:border-box; }
-    button { background:#4285f4; color:white; border:none; padding:12px 24px; border-radius:4px; cursor:pointer; font-size:16px; }
-    button:hover { background:#3367d6; }
-    button.success { background:#34a853; }
-    button.success:hover { background:#2d8e44; }
-    button.danger { background:#ea4335; }
-    button.danger:hover { background:#d33b2f; }
-    button.secondary { background:#5f6368; margin-left:8px; }
-    button.secondary:hover { background:#484c50; }
-    .link-list { margin-top:20px; }
-    .link-item { display:flex; align-items:center; justify-content:space-between; padding:16px; background:#f8f9fa; border-radius:8px; margin-bottom:12px; }
-    .link-item img { width:40px; height:40px; object-fit:contain; border-radius:6px; margin-right:16px; }
-    .status { margin-top:12px; padding:12px; border-radius:4px; font-size:14px; text-align:center; }
-    .status.success { background:#e6f4ea; color:#137333; border:1px solid #34a853; }
-    .status.error { background:#fce8e6; color:#c5221f; border:1px solid #ea4335; }
-    .edit-form { display:none; background:#fff; padding:20px; border-radius:8px; box-shadow:0 4px 15px rgba(0,0,0,0.1); margin-top:20px; }
-    .edit-form.active { display:block; }
-    .url-group { display:flex; align-items:center; gap:12px; }
-    .url-group input { flex:1; }
-  </style>
+<meta charset="UTF-8" />
+<title>链接管理</title>
+<style>
+body { font-family: Arial; background:#f1f3f4; padding:24px; }
+.card { background:#fff; border-radius:8px; padding:20px; box-shadow:0 1px 3px rgba(0,0,0,.1); }
+h2 { margin-top:0; }
+select, input, textarea { width:100%; padding:6px; margin:6px 0; }
+button { padding:8px 14px; margin-right:6px; cursor:pointer; }
+.list { margin-top:20px; }
+.item { border-bottom:1px solid #eee; padding:10px 0; }
+.item b { font-size:15px; }
+.actions button { margin-top:6px; }
+</style>
 </head>
 <body>
-  <div class="card">
-    <h2>链接管理
-      <button class="success" onclick="saveToKV()">保存到 KV（永久生效）</button>
-    </h2>
-    <div id="saveStatus"></div>
 
-    <form id="addForm">
-      <h3 style="margin:30px 0 20px;">添加新链接</h3>
-      <div class="form-group">
-        <label>一级分类</label>
-        <select id="catSelect" onchange="updateSubSelect()"></select>
+<div class="card">
+  <h2>链接管理（基于二级分类）</h2>
+
+  <label>一级分类</label>
+  <select id="catSelect"></select>
+
+  <label>二级分类</label>
+  <select id="subSelect"></select>
+
+  <hr>
+
+  <h3>新增 / 编辑链接</h3>
+  <input id="name" placeholder="名称">
+  <input id="url" placeholder="URL">
+  <input id="icon" placeholder="图标 URL（可选）">
+  <textarea id="desc" placeholder="描述（可选）"></textarea>
+  <button onclick="saveLink()">保存链接</button>
+
+  <div class="list" id="linkList"></div>
+</div>
+
+<script>
+let xmlDoc;
+let editIndex = -1;
+
+/* ===== 加载 XML ===== */
+async function loadXML() {
+  const res = await fetch('/api/data?t=' + Date.now());
+  const text = await res.text();
+  xmlDoc = new DOMParser().parseFromString(text, 'text/xml');
+  initSelects();
+}
+
+/* ===== 初始化下拉 ===== */
+function initSelects() {
+  const catSelect = document.getElementById('catSelect');
+  catSelect.innerHTML = '';
+
+  xmlDoc.querySelectorAll('category').forEach((c,i)=>{
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = c.getAttribute('name');
+    catSelect.appendChild(opt);
+  });
+
+  catSelect.onchange = updateSub;
+  updateSub();
+}
+
+/* ===== 二级分类联动 ===== */
+function updateSub() {
+  const subSelect = document.getElementById('subSelect');
+  subSelect.innerHTML = '';
+
+  const cat = xmlDoc.querySelectorAll('category')[catSelect.value];
+  cat.querySelectorAll('subcategory').forEach((s,i)=>{
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = s.getAttribute('name');
+    subSelect.appendChild(opt);
+  });
+
+  renderList();
+  subSelect.onchange = renderList;
+}
+
+/* ===== 渲染链接列表 ===== */
+function renderList() {
+  editIndex = -1;
+  const list = document.getElementById('linkList');
+  list.innerHTML = '';
+
+  const cat = xmlDoc.querySelectorAll('category')[catSelect.value];
+  const sub = cat.querySelectorAll('subcategory')[subSelect.value];
+  const links = sub.querySelectorAll('link');
+
+  links.forEach((l,i)=>{
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.innerHTML = `
+      <b>${l.getAttribute('name')}</b><br>
+      <small>${l.getAttribute('url')}</small>
+      <div class="actions">
+        <button onclick="editLink(${i})">编辑</button>
+        <button onclick="deleteLink(${i})">删除</button>
       </div>
-      <div class="form-group">
-        <label>二级分类</label>
-        <select id="subSelect"></select>
-      </div>
-      <div class="form-group">
-        <label>链接名称 *</label>
-        <input type="text" id="name" required>
-      </div>
-      <div class="form-group">
-        <label>链接地址（带 https://）*</label>
-        <div class="url-group">
-          <input type="url" id="url" required>
-          <button type="button" class="secondary" onclick="fetchFaviconFromUrl()">获取图标</button>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>描述（可选）</label>
-        <textarea id="desc" rows="3"></textarea>
-      </div>
-      <div class="form-group">
-        <label>图标上传（可选，建议 60x60）</label>
-        <input type="file" id="iconFile" accept="image/*">
-        <button type="button" class="secondary" onclick="uploadIcon()">上传图标</button>
-        <div id="iconPreview" style="margin-top:10px;"></div>
-        <p style="font-size:12px;color:#5f6368;margin-top:12px;">或手动输入图标 URL：</p>
-        <input type="url" id="icon" placeholder="https://example.com/logo.png">
-      </div>
-      <button type="submit">添加链接</button>
-    </form>
+    `;
+    list.appendChild(div);
+  });
+}
 
-    <div id="editForm" class="edit-form">
-      <h3>编辑链接</h3>
-      <div class="form-group">
-        <label>一级分类</label>
-        <select id="editCatSelect" onchange="updateEditSubSelect()"></select>
-      </div>
-      <div class="form-group">
-        <label>二级分类</label>
-        <select id="editSubSelect"></select>
-      </div>
-      <div class="form-group">
-        <label>链接名称 *</label>
-        <input type="text" id="editName" required>
-      </div>
-      <div class="form-group">
-        <label>链接地址 *</label>
-        <div class="url-group">
-          <input type="url" id="editUrl" required>
-          <button type="button" class="secondary" onclick="fetchFaviconFromEditUrl()">获取图标</button>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>描述</label>
-        <textarea id="editDesc" rows="3"></textarea>
-      </div>
-      <div class="form-group">
-        <label>当前图标</label>
-        <div id="editIconPreview"></div>
-        <input type="file" id="editIconFile" accept="image/*">
-        <button type="button" class="secondary" onclick="uploadEditIcon()">重新上传</button>
-        <p style="font-size:12px;color:#5f6368;margin-top:12px;">或修改 URL：</p>
-        <input type="url" id="editIcon">
-      </div>
-      <button onclick="saveEdit()">保存修改</button>
-      <button class="danger" style="margin-left:8px;" onclick="cancelEdit()">取消</button>
-    </div>
+/* ===== 编辑 ===== */
+function editLink(i) {
+  const cat = xmlDoc.querySelectorAll('category')[catSelect.value];
+  const sub = cat.querySelectorAll('subcategory')[subSelect.value];
+  const link = sub.querySelectorAll('link')[i];
 
-    <h3 style="margin:40px 0 20px;">现有链接</h3>
-    <div class="link-list" id="linksList">
-      <p style="color:#5f6368;">加载中...</p>
-    </div>
-  </div>
+  name.value = link.getAttribute('name');
+  url.value = link.getAttribute('url');
+  icon.value = link.getAttribute('icon') || '';
+  desc.value = link.getAttribute('desc') || '';
 
-  <script>
-    let categories = [];
-    let allLinks = []; // { name, url, desc, icon, catIdx, subIdx }
-    let editingIndex = -1;
+  editIndex = i;
+}
 
-    async function loadData() {
-      try {
-        const res = await fetch('/api/data?' + new Date().getTime());
-        if (!res.ok) throw new Error('读取失败');
-        const xml = await res.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(xml, 'text/xml');
+/* ===== 保存（新增 / 修改） ===== */
+function saveLink() {
+  const cat = xmlDoc.querySelectorAll('category')[catSelect.value];
+  const sub = cat.querySelectorAll('subcategory')[subSelect.value];
 
-        categories = Array.from(doc.querySelectorAll('category')).map((cat, catIdx) => ({
-          name: cat.getAttribute('name'),
-          subcategories: Array.from(cat.querySelectorAll('subcategory')).map((sub, subIdx) => ({
-            name: sub.getAttribute('name'),
-            catIdx,
-            subIdx
-          })) || [{ name: '默认子分类', catIdx, subIdx: 0 }]
-        }));
+  let link;
+  if (editIndex >= 0) {
+    link = sub.querySelectorAll('link')[editIndex];
+  } else {
+    link = xmlDoc.createElement('link');
+    sub.appendChild(link);
+  }
 
-        allLinks = [];
-        doc.querySelectorAll('category').forEach((cat, catIdx) => {
-          cat.querySelectorAll('subcategory').forEach((sub, subIdx) => {
-            sub.querySelectorAll('link').forEach(l => {
-              allLinks.push({
-                name: l.getAttribute('name') || '未命名',
-                url: l.getAttribute('url') || '#',
-                desc: l.getAttribute('desc') || '',
-                icon: l.getAttribute('icon') || '',
-                catIdx,
-                subIdx
-              });
-            });
-          });
-        });
+  link.setAttribute('name', name.value);
+  link.setAttribute('url', url.value);
 
-        populateSelects();
-        renderLinks();
-      } catch (e) {
-        document.getElementById('linksList').innerHTML = '<p style="color:#c5221f;">加载失败：' + e.message + '</p>';
-      }
-    }
+  desc.value ? link.setAttribute('desc', desc.value) : link.removeAttribute('desc');
+  icon.value ? link.setAttribute('icon', icon.value) : link.removeAttribute('icon');
 
-    function populateSelects() {
-      const catSelect = document.getElementById('catSelect');
-      catSelect.innerHTML = '<option value="">-- 选择一级分类 --</option>';
-      categories.forEach((cat, idx) => {
-        const option = document.createElement('option');
-        option.value = idx;
-        option.textContent = cat.name;
-        catSelect.appendChild(option);
-      });
-      updateSubSelect();
-    }
+  persist();
+}
 
-    function updateSubSelect() {
-      const catIdx = document.getElementById('catSelect').value;
-      const subSelect = document.getElementById('subSelect');
-      subSelect.innerHTML = '<option value="">-- 选择二级分类 --</option>';
-      if (catIdx !== '') {
-        categories[catIdx].subcategories.forEach((sub, sIdx) => {
-          const option = document.createElement('option');
-          option.value = sIdx;
-          option.textContent = sub.name;
-          subSelect.appendChild(option);
-        });
-      }
-    }
+/* ===== 删除 ===== */
+function deleteLink(i) {
+  if (!confirm('确定删除该链接？')) return;
 
-    function populateEditSelects(catIdx, subIdx) {
-      const editCatSelect = document.getElementById('editCatSelect');
-      editCatSelect.innerHTML = '';
-      categories.forEach((cat, idx) => {
-        const option = document.createElement('option');
-        option.value = idx;
-        option.textContent = cat.name;
-        if (idx === catIdx) option.selected = true;
-        editCatSelect.appendChild(option);
-      });
-      updateEditSubSelect(subIdx);
-    }
+  const cat = xmlDoc.querySelectorAll('category')[catSelect.value];
+  const sub = cat.querySelectorAll('subcategory')[subSelect.value];
+  sub.removeChild(sub.querySelectorAll('link')[i]);
 
-    function updateEditSubSelect(selectedSubIdx = -1) {
-      const catIdx = document.getElementById('editCatSelect').value;
-      const editSubSelect = document.getElementById('editSubSelect');
-      editSubSelect.innerHTML = '<option value="">-- 选择二级分类 --</option>';
-      if (catIdx !== '') {
-        categories[catIdx].subcategories.forEach((sub, sIdx) => {
-          const option = document.createElement('option');
-          option.value = sIdx;
-          option.textContent = sub.name;
-          if (sIdx === selectedSubIdx) option.selected = true;
-          editSubSelect.appendChild(option);
-        });
-      }
-    }
+  persist();
+}
 
-    document.getElementById('addForm').onsubmit = (e) => {
-      e.preventDefault();
-      const catIdx = parseInt(document.getElementById('catSelect').value);
-      const subIdx = parseInt(document.getElementById('subSelect').value);
-      if (isNaN(catIdx) || isNaN(subIdx)) return alert('请选择分类');
+/* ===== 写入 KV ===== */
+async function persist() {
+  const xml = new XMLSerializer().serializeToString(xmlDoc);
+  await fetch('/api/save', {
+    method:'POST',
+    headers:{'Content-Type':'text/xml'},
+    body:xml
+  });
+  location.reload();
+}
 
-      const name = document.getElementById('name').value.trim();
-      const url = document.getElementById('url').value.trim();
-      const desc = document.getElementById('desc').value.trim();
-      let icon = document.getElementById('icon').value.trim();
+loadXML();
+</script>
 
-      if (!name || !url) return alert('名称和地址必填');
-
-      allLinks.push({ name, url, desc, icon, catIdx, subIdx });
-      renderLinks();
-      alert('链接已添加到内存！点击“保存到 KV”永久生效。');
-      document.getElementById('addForm').reset();
-      document.getElementById('iconPreview').innerHTML = '';
-    };
-
-    function renderLinks() {
-      const list = document.getElementById('linksList');
-      if (allLinks.length === 0) {
-        list.innerHTML = '<p style="color:#5f6368;">暂无链接</p>';
-        return;
-      }
-
-      list.innerHTML = '';
-      allLinks.forEach((link, idx) => {
-        const div = document.createElement('div');
-        div.className = 'link-item';
-        div.innerHTML = `
-          <div style="display:flex;align-items:center;">
-            ${link.icon ? `<img src="${link.icon}" alt="${link.name}">` : '<div style="width:40px;height:40px;background:#eee;border-radius:6px;margin-right:16px;"></div>'}
-            <div>
-              <strong>${link.name}</strong><br>
-              <span style="color:#666;font-size:14px;">${link.desc || '无描述'} (${categories[link.catIdx]?.name || '未知分类'} - ${categories[link.catIdx]?.subcategories[link.subIdx]?.name || '未知子分类'})</span>
-            </div>
-          </div>
-          <div>
-            <button onclick="startEdit(${idx})">编辑</button>
-            <button class="danger" onclick="deleteLink(${idx})">删除</button>
-          </div>
-        `;
-        list.appendChild(div);
-      });
-    }
-
-    function startEdit(idx) {
-      editingIndex = idx;
-      const link = allLinks[idx];
-
-      document.getElementById('editName').value = link.name;
-      document.getElementById('editUrl').value = link.url;
-      document.getElementById('editDesc').value = link.desc;
-      document.getElementById('editIcon').value = link.icon;
-      document.getElementById('editIconPreview').innerHTML = link.icon ? `<img src="${link.icon}" style="width:80px;height:80px;object-fit:contain;border-radius:8px;">` : '<p>无图标</p>';
-
-      populateEditSelects(link.catIdx, link.subIdx);
-
-      document.getElementById('editForm').classList.add('active');
-      document.getElementById('addForm').style.display = 'none';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function cancelEdit() {
-      editingIndex = -1;
-      document.getElementById('editForm').classList.remove('active');
-      document.getElementById('addForm').style.display = 'block';
-      document.getElementById('editIconPreview').innerHTML = '';
-    }
-
-    function saveEdit() {
-      if (editingIndex === -1) return;
-
-      const catIdx = parseInt(document.getElementById('editCatSelect').value);
-      const subIdx = parseInt(document.getElementById('editSubSelect').value);
-      if (isNaN(catIdx) || isNaN(subIdx)) return alert('请选择分类');
-
-      const name = document.getElementById('editName').value.trim();
-      const url = document.getElementById('editUrl').value.trim();
-      const desc = document.getElementById('editDesc').value.trim();
-      const icon = document.getElementById('editIcon').value.trim();
-
-      if (!name || !url) return alert('名称和地址必填');
-
-      allLinks[editingIndex] = { name, url, desc, icon, catIdx, subIdx };
-      renderLinks();
-      cancelEdit();
-      alert('修改成功！点击“保存到 KV”永久生效。');
-    }
-
-    function deleteLink(idx) {
-      if (confirm('确认删除此链接？')) {
-        allLinks.splice(idx, 1);
-        renderLinks();
-      }
-    }
-
-    async function uploadIcon() {
-      const file = document.getElementById('iconFile').files[0];
-      if (!file) return alert('请选择图片');
-
-      const formData = new FormData();
-      formData.append('file', file);
-      try {
-        const res = await fetch('/api/upload', { method: 'POST', body: formData });
-        if (!res.ok) throw new Error('上传失败');
-        const url = (await res.text()).trim();
-        document.getElementById('icon').value = url;
-        document.getElementById('iconPreview').innerHTML = `<img src="${url}" style="width:80px;height:80px;object-fit:contain;border-radius:8px;">`;
-      } catch (e) {
-        alert('上传失败：' + e.message);
-      }
-    }
-
-    async function uploadEditIcon() {
-      const file = document.getElementById('editIconFile').files[0];
-      if (!file) return alert('请选择图片');
-
-      const formData = new FormData();
-      formData.append('file', file);
-      try {
-        const res = await fetch('/api/upload', { method: 'POST', body: formData });
-        if (!res.ok) throw new Error('上传失败');
-        const url = (await res.text()).trim();
-        document.getElementById('editIcon').value = url;
-        document.getElementById('editIconPreview').innerHTML = `<img src="${url}" style="width:80px;height:80px;object-fit:contain;border-radius:8px;">`;
-      } catch (e) {
-        alert('上传失败：' + e.message);
-      }
-    }
-
-    async function fetchFaviconFromUrl() {
-      const siteUrl = document.getElementById('url').value.trim();
-      await fetchFaviconCommon(siteUrl, 'icon', 'iconPreview');
-    }
-
-    async function fetchFaviconFromEditUrl() {
-      const siteUrl = document.getElementById('editUrl').value.trim();
-      await fetchFaviconCommon(siteUrl, 'editIcon', 'editIconPreview');
-    }
-
-    async function fetchFaviconCommon(siteUrl, iconInputId, previewId) {
-      if (!siteUrl) return alert('请先填写链接地址');
-
-      const paths = [
-        '/favicon.ico',
-        '/favicon.png',
-        '/apple-touch-icon.png',
-        '/apple-touch-icon-precomposed.png',
-        '/assets/favicon.ico',
-        '/images/favicon.ico'
-      ];
-
-      for (const path of paths) {
-        try {
-          const faviconUrl = new URL(path, siteUrl).href;
-          const res = await fetch(faviconUrl, { method: 'HEAD' });
-          if (res.ok) {
-            document.getElementById(iconInputId).value = faviconUrl;
-            document.getElementById(previewId).innerHTML = `<img src="${faviconUrl}" style="width:80px;height:80px;object-fit:contain;border-radius:8px;">`;
-            alert('图标获取成功！');
-            return;
-          }
-        } catch {}
-      }
-      alert('未找到该网站的 favicon，您可以手动上传或输入 URL');
-    }
-
-    // 最终正确 saveToKV：使用内存 categories 和 allLinks 构建 XML
-    async function saveToKV() {
-      if (!confirm('确认保存所有链接到云端？')) return;
-
-      const statusDiv = document.getElementById('saveStatus');
-      statusDiv.textContent = '正在保存...';
-      statusDiv.className = 'status';
-
-      try {
-        const res = await fetch('/api/data');
-        if (!res.ok) throw new Error('读取失败');
-        const originalXml = await res.text();
-        const parser = new DOMParser();
-        const originalDoc = parser.parseFromString(originalXml, 'text/xml');
-
-        const adminNode = originalDoc.querySelector('admin');
-        const adminAttr = adminNode ? ` username="${adminNode.getAttribute('username')}" password="${adminNode.getAttribute('password')}"` : '';
-
-        let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n';
-        if (adminAttr) xml += `  <admin${adminAttr} />\n`;
-
-        // 使用内存 categories 构建分类结构
-        categories.forEach(cat => {
-          xml += `  <category name="${escapeXml(cat.name)}">\n`;
-          cat.subcategories.forEach(sub => {
-            xml += `    <subcategory name="${escapeXml(sub.name)}">\n`;
-            // 放回属于这个分类的链接
-            allLinks.forEach(link => {
-              if (link.catIdx === cat.catIdx && link.subIdx === sub.subIdx) {
-                const desc = link.desc ? ` desc="${escapeXml(link.desc)}"` : '';
-                const icon = link.icon ? ` icon="${escapeXml(link.icon)}"` : '';
-                xml += `      <link name="${escapeXml(link.name)}" url="${escapeXml(link.url)}"${desc}${icon}/>\n`;
-              }
-            });
-            xml += '    </subcategory>\n';
-          });
-          xml += '  </category>\n';
-        });
-
-        xml += '</navigation>';
-
-        const saveRes = await fetch('/api/save', {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/xml' },
-          body: xml
-        });
-
-        if (saveRes.ok) {
-          statusDiv.textContent = '保存成功！';
-          statusDiv.className = 'status success';
-          loadData();
-        } else {
-          throw new Error(await saveRes.text());
-        }
-      } catch (e) {
-        statusDiv.textContent = '保存失败：' + e.message;
-        statusDiv.className = 'status error';
-      }
-    }
-
-    function escapeXml(s) {
-      if (!s) return '';
-      return s.replace(/[<>&"']/g, c => ({
-        '<': '&lt;',
-        '>': '&gt;',
-        '&': '&amp;',
-        '"': '&quot;',
-        "'": '&apos;'
-      })[c]);
-    }
-
-    loadData();
-  </script>
 </body>
 </html>
