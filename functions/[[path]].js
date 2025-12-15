@@ -4,14 +4,13 @@ export async function onRequest(context) {
 
   // 后台登录检查：只对 /admin/ 下除 login.html 外的页面检查
   if (url.pathname.startsWith('/admin/')) {
-    if (url.pathname === '/admin/login.html' || url.pathname === '/admin/login.html/') {
-      // 允许直接访问登录页
+    // 放行 login.html（无论是否带尾斜杠）
+    if (url.pathname.includes('login.html')) {
       return next();
     }
 
     const cookie = request.headers.get('cookie') || '';
     if (!cookie.includes('admin_logged_in=true')) {
-      // 未登录，重定向到登录页
       return Response.redirect(new URL('/admin/login.html', request.url), 302);
     }
   }
