@@ -1,210 +1,308 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <title>导航</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8" />
+<title>导航</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Google AdSense -->
-  <meta name="google-adsense-account" content="ca-pub-9474229114991789">
-  <script async
-    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9474229114991789"
-    crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-9474229114991789">
+<script async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9474229114991789"
+  crossorigin="anonymous"></script>
 
-  <style>
-    * { box-sizing: border-box; }
+<style>
+* { box-sizing: border-box; }
 
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f5f6f7;
-      height: 100vh;
-      overflow: hidden;
-    }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f5f6f7;
+  height: 100vh;
+  overflow: hidden;
+}
 
-    /* ===== 布局 ===== */
-    .layout {
-      display: flex;
-      height: 100%;
-      width: 100%;
-    }
+.layout {
+  display: flex;
+  height: 100%;
+}
 
-    aside {
-      width: 220px;
-      background: #fff;
-      border-right: 1px solid #e5e5e5;
-      display: flex;
-      flex-direction: column;
-    }
+aside {
+  width: 220px;
+  background: #fff;
+  border-right: 1px solid #e5e5e5;
+  display: flex;
+  flex-direction: column;
+}
 
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
+.nav-title {
+  padding: 16px;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
 
-    /* ===== 左侧导航 ===== */
-    .nav-title {
-      padding: 16px;
-      font-size: 18px;
-      font-weight: 600;
-      border-bottom: 1px solid #eee;
-      text-align: center;
-    }
+.nav-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
 
-    .nav-list {
-      flex: 1;
-      overflow-y: auto;
-      padding: 10px;
-    }
+.nav-item {
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
 
-    .nav-item {
-      padding: 8px 10px;
-      cursor: pointer;
-      border-radius: 6px;
-    }
+.nav-item:hover {
+  background: #f0f2f5;
+}
 
-    .nav-item:hover {
-      background: #f0f2f5;
-    }
+.nav-footer {
+  border-top: 1px solid #eee;
+  padding: 10px;
+  font-size: 13px;
+  color: #666;
+}
 
-    .nav-footer {
-      border-top: 1px solid #eee;
-      padding: 10px;
-      font-size: 13px;
-      color: #666;
-    }
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
 
-    /* ===== 顶部广告 ===== */
-    .top-ad {
-      min-height: 90px;
-      background: #fafafa;
-      border-bottom: 1px solid #e5e5e5;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+.top-ad {
+  min-height: 90px;
+  border-bottom: 1px solid #e5e5e5;
+  background: #fafafa;
+}
 
-    /* ===== 内容区 ===== */
-    .content {
-      flex: 1;
-      overflow-y: auto;
-      position: relative;
-    }
+.content {
+  flex: 1;
+  overflow-y: auto;
+}
 
-    /* ===== 搜索首页（核心） ===== */
-    #searchView {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 20px;
-    }
+/* ===== 搜索 ===== */
+#searchView {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
 
-    .search-box {
-      width: 100%;
-      max-width: 560px;
-      padding: 14px 18px;
-      font-size: 16px;
-      border-radius: 24px;
-      border: 1px solid #ddd;
-      outline: none;
-    }
+.search-box {
+  width: 100%;
+  max-width: 560px;
+  padding: 14px 18px;
+  font-size: 16px;
+  border-radius: 24px;
+  border: 1px solid #ddd;
+  outline: none;
+}
 
-    .engines {
-      display: flex;
-      gap: 12px;
-      font-size: 14px;
-    }
+.engines {
+  display: flex;
+  gap: 12px;
+}
 
-    .engine {
-      cursor: pointer;
-      color: #1a73e8;
-    }
+.engine {
+  cursor: pointer;
+  color: #1a73e8;
+}
 
-    .engine.active {
-      font-weight: 600;
-      text-decoration: underline;
-    }
+.engine.active {
+  font-weight: 600;
+  text-decoration: underline;
+}
 
-    /* ===== 分类内容区（Step 2 用） ===== */
-    #contentView {
-      display: none;
-      padding: 20px;
-    }
-  </style>
+/* ===== 分类内容 ===== */
+#contentView {
+  display: none;
+  padding: 20px;
+}
+
+.back {
+  margin-bottom: 20px;
+  color: #1a73e8;
+  cursor: pointer;
+}
+
+.subcat {
+  margin-bottom: 30px;
+}
+
+.subcat-title {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #555;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
+  gap: 14px;
+}
+
+.card {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  background: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+
+.card img {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  background: #eee;
+  flex-shrink: 0;
+}
+
+.card .text {
+  overflow: hidden;
+}
+
+.card .name {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card .desc {
+  font-size: 12px;
+  color: #888;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
 </head>
 
 <body>
 <div class="layout">
 
-  <!-- 左侧 -->
-  <aside>
-    <div class="nav-title">导　　航</div>
-    <div class="nav-list" id="navList">
-      <!-- 一级分类（后续填充） -->
-    </div>
-    <div class="nav-footer">
-      网站提交<br>友情链接<br>关于导航
-    </div>
-  </aside>
+<aside>
+  <div class="nav-title">导　　航</div>
+  <div class="nav-list" id="navList"></div>
+  <div class="nav-footer">
+    网站提交<br>友情链接<br>关于导航
+  </div>
+</aside>
 
-  <!-- 右侧 -->
-  <main>
+<main>
+  <div class="top-ad"></div>
 
-    <!-- 顶部广告 -->
-    <div class="top-ad">
-      <!-- AdSense 自动广告 -->
-    </div>
-
-    <div class="content">
-
-      <!-- 搜索首页（固定，不销毁） -->
-      <div id="searchView">
-        <input id="searchInput" class="search-box" placeholder="搜索你想访问的网站…" />
-        <div class="engines">
-          <span class="engine active" data-engine="google">Google</span>
-          <span class="engine" data-engine="baidu">百度</span>
-          <span class="engine" data-engine="bing">Bing</span>
-        </div>
+  <div class="content">
+    <div id="searchView">
+      <input id="searchInput" class="search-box" placeholder="搜索你想访问的网站…" />
+      <div class="engines">
+        <span class="engine active" data-engine="google">Google</span>
+        <span class="engine" data-engine="baidu">百度</span>
+        <span class="engine" data-engine="bing">Bing</span>
       </div>
-
-      <!-- 分类内容（后续用） -->
-      <div id="contentView"></div>
-
     </div>
-  </main>
+
+    <div id="contentView"></div>
+  </div>
+</main>
+
 </div>
 
 <script>
-  // ===== 搜索引擎逻辑（不会触发重渲染） =====
-  let currentEngine = 'google';
+let currentEngine = 'google';
+let navData = null;
 
-  document.querySelectorAll('.engine').forEach(el => {
-    el.onclick = () => {
-      document.querySelectorAll('.engine').forEach(e => e.classList.remove('active'));
-      el.classList.add('active');
-      currentEngine = el.dataset.engine;
+document.querySelectorAll('.engine').forEach(e=>{
+  e.onclick = ()=>{
+    document.querySelectorAll('.engine').forEach(x=>x.classList.remove('active'));
+    e.classList.add('active');
+    currentEngine = e.dataset.engine;
+  };
+});
+
+searchInput.onkeydown = e=>{
+  if(e.key==='Enter'){
+    const q=e.target.value.trim();
+    if(!q)return;
+    const map={
+      google:'https://www.google.com/search?q=',
+      baidu:'https://www.baidu.com/s?wd=',
+      bing:'https://www.bing.com/search?q='
     };
+    window.open(map[currentEngine]+encodeURIComponent(q),'_blank');
+  }
+};
+
+fetch('/api/data')
+.then(r=>r.text())
+.then(xml=>{
+  const dom=new DOMParser().parseFromString(xml,'text/xml');
+  navData=[...dom.querySelectorAll('category')].map(cat=>({
+    name:cat.getAttribute('name'),
+    subs:[...cat.querySelectorAll('subcategory')].map(sub=>({
+      name:sub.getAttribute('name'),
+      links:[...sub.querySelectorAll('link')].map(l=>({
+        name:l.getAttribute('name'),
+        url:l.getAttribute('url'),
+        icon:l.getAttribute('icon'),
+        desc:l.getAttribute('desc')
+      }))
+    }))
+  }));
+  renderNav();
+});
+
+function renderNav(){
+  navList.innerHTML='';
+  navData.forEach(cat=>{
+    const d=document.createElement('div');
+    d.className='nav-item';
+    d.textContent=cat.name;
+    d.onclick=()=>showCategory(cat);
+    navList.appendChild(d);
   });
+}
 
-  document.getElementById('searchInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      const q = e.target.value.trim();
-      if (!q) return;
+function showCategory(cat){
+  searchView.style.display='none';
+  contentView.style.display='block';
+  contentView.innerHTML='<div class="back" onclick="backHome()">← 返回搜索</div>';
 
-      const urls = {
-        google: 'https://www.google.com/search?q=',
-        baidu: 'https://www.baidu.com/s?wd=',
-        bing: 'https://www.bing.com/search?q='
-      };
-
-      window.open(urls[currentEngine] + encodeURIComponent(q), '_blank');
-    }
+  cat.subs.forEach(sub=>{
+    if(!sub.links.length)return;
+    const s=document.createElement('div');
+    s.className='subcat';
+    s.innerHTML=`<div class="subcat-title">${sub.name}</div><div class="cards"></div>`;
+    const box=s.querySelector('.cards');
+    sub.links.forEach(l=>{
+      const a=document.createElement('a');
+      a.className='card';
+      a.href=l.url;
+      a.target='_blank';
+      a.innerHTML=`
+        <img src="${l.icon||'/icons/default.png'}">
+        <div class="text">
+          <div class="name">${l.name}</div>
+          <div class="desc">${l.desc||''}</div>
+        </div>`;
+      box.appendChild(a);
+    });
+    contentView.appendChild(s);
   });
+}
+
+function backHome(){
+  contentView.style.display='none';
+  searchView.style.display='flex';
+}
 </script>
-
 </body>
 </html>
