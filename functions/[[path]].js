@@ -2,12 +2,16 @@ export async function onRequest(context) {
   const { request, env, next } = context;
   const url = new URL(request.url);
 
-  // 后台登录检查：宽松放行所有包含 login.html 的路径（彻底避免循环）
-  if (url.pathname.includes('login.html')) {
+  /* ===============================
+     一、后台访问控制（仅 Cookie）
+     =============================== */
+
+  // 放行登录页，避免死循环
+  if (url.pathname.startsWith('/admin/login.html')) {
     return next();
   }
 
-  // 其他 /admin/ 路径检查登录
+  // 保护所有 /admin/ 页面
   if (url.pathname.startsWith('/admin/')) {
     const cookie = request.headers.get('cookie') || '';
     if (!cookie.includes('admin_logged_in=true')) {
@@ -15,103 +19,48 @@ export async function onRequest(context) {
     }
   }
 
-  // GET /api/data - 返回正式导航 XML 数据
+  /* ===============================
+     二、读取导航数据（XML）
+     GET /api/data
+     =============================== */
   if (url.pathname === '/api/data' && request.method === 'GET') {
     let xml = await env.NAV_DATA.get('nav_data');
+
+    // KV 为空时，初始化最小可用结构
     if (!xml) {
       xml = `<?xml version="1.0" encoding="UTF-8"?>
 <navigation>
-  <admin username="admin" password="pbkdf2:sha256:600000:example:example" />
+  <admin username="admin"
+         password="pbkdf2:sha256:600000:example:example" />
 </navigation>`;
       await env.NAV_DATA.put('nav_data', xml);
     }
+
     return new Response(xml, {
-      headers: { 'Content-Type': 'text/xml;charset=utf-8' }
+      headers: { 'Content-Type': 'text/xml; charset=utf-8' }
     });
   }
 
-  // POST /api/save - 保存正式导航数据
+  /* ===============================
+     三、保存导航数据（XML 原样写入）
+     POST /api/save
+     =============================== */
   if (url.pathname === '/api/save' && request.method === 'POST') {
     try {
       const body = await request.text();
+
+      // ⚠️ 不解析、不修改、不验证结构
+      // links.html 是唯一合法编辑器
       await env.NAV_DATA.put('nav_data', body);
-      return new Response('保存成功', { status: 200 });
-    } catch (e) {
-      return new Response('保存失败: ' + e.message, { status: 500 });
+
+      return new Response('OK', { status: 200 });
+    } catch (err) {
+      return new Response('保存失败: ' + err.message, { status: 500 });
     }
   }
 
-  // POST /api/upload - 上传图标到 R2
-  if (url.pathname === '/api/upload' && request.method === 'POST') {
-    try {
-      const formData = await request.formData();
-      const file = formData.get('file');
-      if (!file) return new Response('无文件', { status: 400 });
-
-      const key = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-      await env.ICON_BUCKET.put(key, file.stream(), {
-        httpMetadata: { contentType: file.type }
-      });
-
-      const publicUrl = `https://pub-0bb15820dbcd4d9a9c46bffea3806e50.r2.dev/${key}`;
-      return new Response(publicUrl, { status: 200 });
-    } catch (e) {
-      return new Response('上传失败: ' + e.message, { status: 500 });
-    }
-  }
-
-  // GET /api/friendly - 获取友情链接
-  if (url.pathname === '/api/friendly' && request.method === 'GET') {
-    try {
-      let links = await env.NAV_DATA.get('friendly_links');
-      links = links ? JSON.parse(links) : [];
-      return new Response(JSON.stringify(links), {
-        headers: { 'Content-Type': 'application/json' }
-      });
-    } catch (e) {
-      return new Response(JSON.stringify([]), {
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-  }
-
-  // POST /api/friendly - 保存友情链接
-  if (url.pathname === '/api/friendly' && request.method === 'POST') {
-    try {
-      const body = await request.json();
-      await env.NAV_DATA.put('friendly_links', JSON.stringify(body));
-      return new Response('友情链接保存成功', { status: 200 });
-    } catch (e) {
-      return new Response('保存失败: ' + e.message, { status: 500 });
-    }
-  }
-
-  // GET /api/pending - 获取待审核提交
-  if (url.pathname === '/api/pending' && request.method === 'GET') {
-    try {
-      let pending = await env.NAV_DATA.get('pending_submissions');
-      pending = pending ? JSON.parse(pending) : [];
-      return new Response(JSON.stringify(pending), {
-        headers: { 'Content-Type': 'application/json' }
-      });
-    } catch (e) {
-      return new Response(JSON.stringify([]), {
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-  }
-
-  // POST /api/pending - 保存待审核提交
-  if (url.pathname === '/api/pending' && request.method === 'POST') {
-    try {
-      const body = await request.json();
-      await env.NAV_DATA.put('pending_submissions', JSON.stringify(body));
-      return new Response('待审核数据保存成功', { status: 200 });
-    } catch (e) {
-      return new Response('保存失败: ' + e.message, { status: 500 });
-    }
-  }
-
-  // 其他路径交给静态文件
+  /* ===============================
+     四、其他请求交给 Pages
+     =============================== */
   return next();
 }
