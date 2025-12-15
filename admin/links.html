@@ -297,70 +297,81 @@
     }
 
     // 保存到 KV（简化版，保留原有结构，只更新链接）
-    async function saveToKV() {
-      if (!confirm('确认保存所有链接到云端？')) return;
+async function saveToKV() {
+  if (!confirm('确认保存所有链接到云端？')) return;
 
-      const statusDiv = document.getElementById('saveStatus');
-      statusDiv.textContent = '正在保存...';
-      statusDiv.className = 'status';
+  const statusDiv = document.getElementById('saveStatus');
+  statusDiv.textContent = '正在保存...';
+  statusDiv.className = 'status';
 
-      try {
-        const res = await fetch('/api/data');
-        if (!res.ok) throw new Error('读取失败');
-        const originalXml = await res.text();
-        const parser = new DOMParser();
-        const originalDoc = parser.parseFromString(originalXml, 'text/xml');
+  try {
+    const res = await fetch('/api/data');
+    if (!res.ok) throw new Error('读取失败');
+    const originalXml = await res.text();
+    const parser = new DOMParser();
+    const originalDoc = parser.parseFromString(originalXml, 'text/xml');
 
-        const adminNode = originalDoc.querySelector('admin');
-        const adminAttr = adminNode ? ` username="${adminNode.getAttribute('username')}" password="${adminNode.getAttribute('password')}"` : '';
+    const adminNode = originalDoc.querySelector('admin');
+    const adminAttr = adminNode ? ` username="${adminNode.getAttribute('username')}" password="${adminNode.getAttribute('password')}"` : '';
 
-        let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n';
-        if (adminAttr) xml += `  <admin${adminAttr} />\n`;
+    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n';
+    if (adminAttr) xml += `  <admin${adminAttr} />\n`;
 
-        // 保留原有分类结构
-        originalDoc.querySelectorAll('category').forEach(cat => {
-          xml += `  <category name="${escapeXml(cat.getAttribute('name'))}">\n`;
-          cat.querySelectorAll('subcategory').forEach(sub => {
-            xml += `    <subcategory name="${escapeXml(sub.getAttribute('name'))}">\n`;
-            // 清空原有链接
-            xml += '    </subcategory>\n';
-          });
-          xml += '  </category>\n';
+    // 保留原有所有分类和链接
+    originalDoc.querySelectorAll('category').forEach(cat => {
+      xml += `  <category name="${escapeXml(cat.getAttribute('name'))}">\n`;
+      cat.querySelectorAll('subcategory').forEach(sub => {
+        xml += `    <subcategory name="${escapeXml(sub.getAttribute('name'))}">\n`;
+        sub.querySelectorAll('link').forEach(link => {
+          const attrs = ['name', 'url', 'desc', 'icon'].map(attr => {
+            const val = link.getAttribute(attr) || '';
+            return val ? ` ${attr}="${escapeXml(val)}"` : '';
+          }).join('');
+          xml += `      <link${attrs} />\n`;
         });
+        xml += '    </subcategory>\n';
+      });
+      xml += '  </category>\n';
+    });
 
-        // 添加所有链接到第一个分类（简化，实际可优化为记录分类）
-        if (allLinks.length > 0 && originalDoc.querySelector('category')) {
-          const firstCat = originalDoc.querySelector('category');
-          const firstSub = firstCat.querySelector('subcategory') || originalDoc.createElement('subcategory');
-          if (!firstCat.querySelector('subcategory')) firstCat.appendChild(firstSub);
-
-          allLinks.forEach(link => {
-            const desc = link.desc ? ` desc="${escapeXml(link.desc)}"` : '';
-            const icon = link.icon ? ` icon="${escapeXml(link.icon)}"` : '';
-            xml += `      <link name="${escapeXml(link.name)}" url="${escapeXml(link.url)}"${desc}${icon}/>\n`;
-          });
+    // 追加内存中新添加/修改的链接（简单追加到最后一个分类）
+    if (allLinks.length > 0) {
+      const lastCat = originalDoc.querySelector('category:last-child');
+      if (lastCat) {
+        let lastSub = lastCat.querySelector('subcategory:last-child');
+        if (!lastSub) {
+          lastSub = originalDoc.createElement('subcategory');
+          lastSub.setAttribute('name', '默认子分类');
+          lastCat.appendChild(lastSub);
         }
-
-        xml += '</navigation>';
-
-        const saveRes = await fetch('/api/save', {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/xml' },
-          body: xml
+        allLinks.forEach(link => {
+          const desc = link.desc ? ` desc="${escapeXml(link.desc)}"` : '';
+          const icon = link.icon ? ` icon="${escapeXml(link.icon)}"` : '';
+          xml += `      <link name="${escapeXml(link.name)}" url="${escapeXml(link.url)}"${desc}${icon}/>\n`;
         });
-
-        if (saveRes.ok) {
-          statusDiv.textContent = '保存成功！';
-          statusDiv.className = 'status success';
-          loadData(); // 重新加载
-        } else {
-          throw new Error(await saveRes.text());
-        }
-      } catch (e) {
-        statusDiv.textContent = '保存失败：' + e.message;
-        statusDiv.className = 'status error';
       }
     }
+
+    xml += '</navigation>';
+
+    const saveRes = await fetch('/api/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/xml' },
+      body: xml
+    });
+
+    if (saveRes.ok) {
+      statusDiv.textContent = '保存成功！所有原有数据保留，新链接已追加。';
+      statusDiv.className = 'status success';
+      loadData(); // 重新加载
+    } else {
+      throw new Error(await saveRes.text());
+    }
+  } catch (e) {
+    statusDiv.textContent = '保存失败：' + e.message;
+    statusDiv.className = 'status error';
+  }
+}
 
     function escapeXml(s) {
       if (!s) return '';
