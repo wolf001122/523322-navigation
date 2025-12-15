@@ -15,20 +15,27 @@ export async function onRequest(context) {
     }
   }
 
-  // GET /api/data - 返回正式导航 XML 数据
-  if (url.pathname === '/api/data' && request.method === 'GET') {
-    let xml = await env.NAV_DATA.get('nav_data');
-    if (!xml) {
-      xml = `<?xml version="1.0" encoding="UTF-8"?>
+// GET /api/data - 返回正式导航 XML 数据
+if (url.pathname === '/api/data' && request.method === 'GET') {
+  let xml = await env.NAV_DATA.get('nav_data');
+  if (!xml) {
+    // 默认初始化 XML，并设置管理员账号
+    xml = `<?xml version="1.0" encoding="UTF-8"?>
 <navigation>
-  <admin username="admin" password="admin123" />
+  <admin username="admin" password="yourpassword123" />
+  <!-- 可添加默认分类作为示例 -->
+  <category name="常用工具">
+    <subcategory name="AI工具">
+      <link name="DeepSeek" url="https://deepseek.com" desc="国内顶级AI" icon=""/>
+    </subcategory>
+  </category>
 </navigation>`;
-      await env.NAV_DATA.put('nav_data', xml);
-    }
-    return new Response(xml, {
-      headers: { 'Content-Type': 'text/xml;charset=utf-8' }
-    });
+    await env.NAV_DATA.put('nav_data', xml);
   }
+  return new Response(xml, {
+    headers: { 'Content-Type': 'text/xml;charset=utf-8' }
+  });
+}
 
   // POST /api/save - 保存正式导航数据
   if (url.pathname === '/api/save' && request.method === 'POST') {
@@ -115,3 +122,4 @@ export async function onRequest(context) {
   // 其他路径交给静态文件
   return next();
 }
+
