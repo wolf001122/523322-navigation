@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>后台登录</title>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script> <!-- 添加 CryptoJS 用于哈希 -->
   <style>
     body { margin:0; background:#f1f3f4; font-family:'Roboto',Arial,sans-serif; display:flex; align-items:center; justify-content:center; height:100vh; }
     .login-card { background:#fff; width:90%; max-width:400px; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.15); padding:40px; text-align:center; }
@@ -52,16 +53,35 @@
         const parser = new DOMParser();
         const doc = parser.parseFromString(xml, 'text/xml');
         const admin = doc.querySelector('admin');
-        if (!admin) throw new Error('未配置管理员');
+        if (!admin) throw new Error('未配置管理员账号');
 
         const storedUser = admin.getAttribute('username');
-        const storedPass = admin.getAttribute('password'); // 已哈希
+        const storedHash = admin.getAttribute('password');
 
-        // 简单验证（实际生产建议服务器端验证，这里前端模拟）
-        if (username === storedUser && password === storedPass) { // 如果密码明文，需改哈希比对
-          // 设置登录 Cookie（7天有效）
+        if (username !== storedUser) throw new Error('用户名或密码错误');
+
+        // 解析哈希格式: pbkdf2:sha256:iterations:salt:hash
+        if (!storedHash.startsWith('pbkdf2:sha256:')) throw new Error('密码格式错误');
+
+        const parts = storedHash.split(':');
+        if (parts.length !== 5) throw new Error('密码哈希格式错误');
+
+        const iterations = parseInt(parts[2]);
+        const salt = parts[3];
+        const expectedHash = parts[4];
+
+        // 使用 CryptoJS 计算 PBKDF2 哈希
+        const derivedKey = CryptoJS.PBKDF2(password, salt, {
+          keySize: 256/32,
+          iterations: iterations,
+          hasher: CryptoJS.algo.SHA256
+        });
+
+        const calculatedHash = derivedKey.toString(CryptoJS.enc.Hex);
+
+        if (calculatedHash === expectedHash) {
           document.cookie = `admin_logged_in=true; path=/; max-age=${7*24*60*60}; Secure; SameSite=Lax`;
-          showStatus('登录成功，正在跳转...', false);
+          showStatus('登录成功，正在跳转...');
           setTimeout(() => location.href = '/admin/admin.html', 1000);
         } else {
           turnstile.reset();
