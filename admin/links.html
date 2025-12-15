@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>链接管理</title>
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
   <style>
     body { background:#f1f3f4; padding:24px; font-family:'Roboto',Arial,sans-serif; }
     .card { background:#fff; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.12); padding:24px; margin-bottom:24px; }
@@ -21,17 +20,13 @@
     button.secondary { background:#5f6368; margin-left:8px; }
     button.secondary:hover { background:#484c50; }
     .link-list { margin-top:20px; }
-    .link-item { display:flex; align-items:center; justify-content:space-between; padding:16px; background:#f8f9fa; border-radius:8px; margin-bottom:12px; cursor:move; }
-    .link-item:hover { background:#f0f7ff; }
+    .link-item { display:flex; align-items:center; justify-content:space-between; padding:16px; background:#f8f9fa; border-radius:8px; margin-bottom:12px; }
     .link-item img { width:40px; height:40px; object-fit:contain; border-radius:6px; margin-right:16px; }
-    .link-item .drag-handle { margin-right:12px; cursor:grab; color:#9e9e9e; font-size:18px; }
-    .link-item.dragging { opacity:0.5; transform:rotate(5deg); }
     .status { margin-top:12px; padding:12px; border-radius:4px; font-size:14px; text-align:center; }
     .status.success { background:#e6f4ea; color:#137333; border:1px solid #34a853; }
     .status.error { background:#fce8e6; color:#c5221f; border:1px solid #ea4335; }
-    .edit-form { display:none; background:#fff; padding:24px; border-radius:8px; box-shadow:0 4px 15px rgba(0,0,0,0.1); margin-top:20px; }
+    .edit-form { display:none; background:#fff; padding:20px; border-radius:8px; box-shadow:0 4px 15px rgba(0,0,0,0.1); margin-top:20px; }
     .edit-form.active { display:block; }
-    .edit-form h3 { margin-top:0; color:#333; }
   </style>
 </head>
 <body>
@@ -77,7 +72,6 @@
     <!-- 编辑表单 -->
     <div id="editForm" class="edit-form">
       <h3>编辑链接</h3>
-      <button onclick="cancelEdit()" class="secondary">取消编辑</button>
       <div class="form-group">
         <label>链接名称 *</label>
         <input type="text" id="editName" required>
@@ -91,7 +85,7 @@
         <textarea id="editDesc" rows="3"></textarea>
       </div>
       <div class="form-group">
-        <label>图标</label>
+        <label>当前图标</label>
         <div id="editIconPreview"></div>
         <input type="file" id="editIconFile" accept="image/*">
         <button type="button" class="secondary" onclick="uploadEditIcon()">重新上传</button>
@@ -99,6 +93,7 @@
         <input type="url" id="editIcon">
       </div>
       <button onclick="saveEdit()">保存修改</button>
+      <button class="danger" style="margin-left:8px;" onclick="cancelEdit()">取消</button>
     </div>
 
     <h3 style="margin:40px 0 20px;">现有链接</h3>
@@ -108,10 +103,10 @@
   </div>
 
   <script>
-    let allLinks = []; // 所有链接数组
-    let editingIndex = -1; // 当前编辑的链接索引
+    let categories = [];
+    let allLinks = [];
+    let editingIndex = -1;
 
-    // 加载数据
     async function loadData() {
       try {
         const res = await fetch('/api/data?' + new Date().getTime());
@@ -120,18 +115,77 @@
         const parser = new DOMParser();
         const doc = parser.parseFromString(xml, 'text/xml');
 
-        allLinks = Array.from(doc.querySelectorAll('link')).map(l => ({
-          name: l.getAttribute('name') || '未命名链接',
-          url: l.getAttribute('url') || '#',
-          desc: l.getAttribute('desc') || '',
-          icon: l.getAttribute('icon') || ''
-        })).reverse(); // 逆序显示（最新在最上面）
+        categories = Array.from(doc.querySelectorAll('category')).map(cat => ({
+          name: cat.getAttribute('name'),
+          subcategories: Array.from(cat.querySelectorAll('subcategory')).map(sub => ({
+            name: sub.getAttribute('name')
+          })) || [{ name: '默认子分类' }]
+        }));
 
+        // 提取所有现有链接
+        allLinks = [];
+        doc.querySelectorAll('link').forEach(l => {
+          allLinks.push({
+            name: l.getAttribute('name') || '未命名',
+            url: l.getAttribute('url') || '#',
+            desc: l.getAttribute('desc') || '',
+            icon: l.getAttribute('icon') || ''
+          });
+        });
+
+        populateSelects();
         renderLinks();
       } catch (e) {
-        alert('加载链接失败：' + e.message);
+        alert('加载失败：' + e.message);
       }
     }
+
+    function populateSelects() {
+      const catSelect = document.getElementById('catSelect');
+      catSelect.innerHTML = '<option value="">-- 选择一级分类 --</option>';
+      categories.forEach((cat, idx) => {
+        const option = document.createElement('option');
+        option.value = idx;
+        option.textContent = cat.name;
+        catSelect.appendChild(option);
+      });
+      updateSubSelect();
+    }
+
+    function updateSubSelect() {
+      const catIdx = document.getElementById('catSelect').value;
+      const subSelect = document.getElementById('subSelect');
+      subSelect.innerHTML = '<option value="">-- 选择二级分类 --</option>';
+      if (catIdx !== '') {
+        categories[catIdx].subcategories.forEach((sub, sIdx) => {
+          const option = document.createElement('option');
+          option.value = sIdx;
+          option.textContent = sub.name;
+          subSelect.appendChild(option);
+        });
+      }
+    }
+
+    // 添加链接
+    document.getElementById('addForm').onsubmit = (e) => {
+      e.preventDefault();
+      const catIdx = document.getElementById('catSelect').value;
+      const subIdx = document.getElementById('subSelect').value;
+      if (catIdx === '' || subIdx === '') return alert('请选择分类');
+
+      const name = document.getElementById('name').value.trim();
+      const url = document.getElementById('url').value.trim();
+      const desc = document.getElementById('desc').value.trim();
+      let icon = document.getElementById('icon').value.trim();
+
+      if (!name || !url) return alert('名称和地址必填');
+
+      allLinks.push({ name, url, desc, icon });
+      renderLinks();
+      alert('链接已添加到内存！点击“保存到 KV”永久生效。');
+      document.getElementById('addForm').reset();
+      document.getElementById('iconPreview').innerHTML = '';
+    };
 
     // 渲染链接列表
     function renderLinks() {
@@ -145,11 +199,8 @@
       allLinks.forEach((link, idx) => {
         const div = document.createElement('div');
         div.className = 'link-item';
-        div.draggable = true;
-        div.ondragstart = (e) => e.dataTransfer.setData('text/plain', idx);
         div.innerHTML = `
-          <span class="material-icons drag-handle" title="拖拽排序">drag_indicator</span>
-          <div style="display:flex;align-items:center;flex:1;">
+          <div style="display:flex;align-items:center;">
             ${link.icon ? `<img src="${link.icon}" alt="${link.name}">` : '<div style="width:40px;height:40px;background:#eee;border-radius:6px;margin-right:16px;"></div>'}
             <div>
               <strong>${link.name}</strong><br>
@@ -163,90 +214,9 @@
         `;
         list.appendChild(div);
       });
-
-      initDragAndDrop();
     }
 
-    // 初始化拖拽排序
-    function initDragAndDrop() {
-      let draggedElement = null;
-
-      document.querySelectorAll('.link-item').forEach(item => {
-        item.addEventListener('dragstart', (e) => {
-          draggedElement = e.target.closest('.link-item');
-          draggedElement.classList.add('dragging');
-        });
-
-        item.addEventListener('dragend', () => {
-          if (draggedElement) {
-            draggedElement.classList.remove('dragging');
-            draggedElement = null;
-          }
-        });
-
-        item.addEventListener('dragover', (e) => {
-          e.preventDefault();
-          const afterElement = getDragAfterElement(document.querySelector('#linksList'), e.clientY);
-          if (afterElement == null) {
-            document.querySelector('#linksList').appendChild(draggedElement);
-          } else {
-            document.querySelector('#linksList').insertBefore(draggedElement, afterElement);
-          }
-        });
-      });
-    }
-
-    function getDragAfterElement(container, y) {
-      const draggableElements = [...container.querySelectorAll('.link-item:not(.dragging)')];
-      return draggableElements.reduce((closest, child) => {
-        const box = child.getBoundingClientRect();
-        const offset = y - box.top - box.height / 2;
-        if (offset < 0 && offset > closest.offset) {
-          return { offset: offset, element: child };
-        } else {
-          return closest;
-        }
-      }, { offset: Number.NEGATIVE_INFINITY }).element;
-    }
-
-    // 添加链接
-    document.getElementById('addForm').onsubmit = async (e) => {
-      e.preventDefault();
-      const catIdx = document.getElementById('catSelect').value;
-      const subIdx = document.getElementById('subSelect').value;
-      if (catIdx === '' || subIdx === '') return alert('请选择分类');
-
-      const name = document.getElementById('name').value.trim();
-      const url = document.getElementById('url').value.trim();
-      const desc = document.getElementById('desc').value.trim();
-      let icon = document.getElementById('icon').value.trim();
-
-      if (!name || !url) return alert('名称和地址必填');
-
-      // 上传图标
-      const fileInput = document.getElementById('iconFile');
-      if (fileInput.files && fileInput.files[0]) {
-        const formData = new FormData();
-        formData.append('file', fileInput.files[0]);
-        try {
-          const res = await fetch('/api/upload', { method: 'POST', body: formData });
-          if (res.ok) {
-            icon = (await res.text()).trim();
-          }
-        } catch (e) {
-          alert('图标上传失败，但链接已添加');
-        }
-      }
-
-      allLinks.unshift({ name, url, desc, icon }); // 新增到顶部
-      renderLinks();
-      initDragAndDrop();
-      alert('链接已添加！点击"保存到 KV"永久生效。');
-      document.getElementById('addForm').reset();
-      document.getElementById('iconPreview').innerHTML = '';
-    };
-
-    // 开始编辑
+    // 编辑
     function startEdit(idx) {
       editingIndex = idx;
       const link = allLinks[idx];
@@ -255,64 +225,43 @@
       document.getElementById('editUrl').value = link.url;
       document.getElementById('editDesc').value = link.desc;
       document.getElementById('editIcon').value = link.icon;
-      document.getElementById('editIconPreview').innerHTML = link.icon ? `<img src="${link.icon}" style="width:80px;height:80px;object-fit:contain;border-radius:8px;">` : '<p style="color:#666;">无图标</p>';
+      document.getElementById('editIconPreview').innerHTML = link.icon ? `<img src="${link.icon}" style="width:80px;height:80px;object-fit:contain;border-radius:8px;">` : '<p>无图标</p>';
 
       document.getElementById('editForm').classList.add('active');
       document.getElementById('addForm').style.display = 'none';
     }
 
-    // 取消编辑
     function cancelEdit() {
       editingIndex = -1;
       document.getElementById('editForm').classList.remove('active');
       document.getElementById('addForm').style.display = 'block';
-      document.getElementById('editForm').reset();
       document.getElementById('editIconPreview').innerHTML = '';
     }
 
-    // 保存编辑
     function saveEdit() {
       if (editingIndex === -1) return;
 
       const name = document.getElementById('editName').value.trim();
       const url = document.getElementById('editUrl').value.trim();
       const desc = document.getElementById('editDesc').value.trim();
-      let icon = document.getElementById('editIcon').value.trim();
+      const icon = document.getElementById('editIcon').value.trim();
 
       if (!name || !url) return alert('名称和地址必填');
 
-      // 重新上传图标
-      const fileInput = document.getElementById('editIconFile');
-      if (fileInput.files && fileInput.files[0]) {
-        const formData = new FormData();
-        formData.append('file', fileInput.files[0]);
-        try {
-          const res = await fetch('/api/upload', { method: 'POST', body: formData });
-          if (res.ok) {
-            icon = (await res.text()).trim();
-          }
-        } catch (e) {
-          alert('图标上传失败，但修改已保存');
-        }
-      }
-
       allLinks[editingIndex] = { name, url, desc, icon };
       renderLinks();
-      initDragAndDrop();
       cancelEdit();
-      alert('修改成功！点击"保存到 KV"永久生效。');
+      alert('修改成功！点击“保存到 KV”永久生效。');
     }
 
-    // 删除链接
     function deleteLink(idx) {
       if (confirm('确认删除此链接？')) {
         allLinks.splice(idx, 1);
         renderLinks();
-        initDragAndDrop();
       }
     }
 
-    // 上传图标（添加）
+    // 图标上传
     async function uploadIcon() {
       const file = document.getElementById('iconFile').files[0];
       if (!file) return alert('请选择图片');
@@ -330,7 +279,6 @@
       }
     }
 
-    // 重新上传图标（编辑）
     async function uploadEditIcon() {
       const file = document.getElementById('editIconFile').files[0];
       if (!file) return alert('请选择图片');
@@ -348,7 +296,7 @@
       }
     }
 
-    // 保存到 KV
+    // 保存到 KV（简化版，保留原有结构，只更新链接）
     async function saveToKV() {
       if (!confirm('确认保存所有链接到云端？')) return;
 
@@ -366,25 +314,31 @@
         const adminNode = originalDoc.querySelector('admin');
         const adminAttr = adminNode ? ` username="${adminNode.getAttribute('username')}" password="${adminNode.getAttribute('password')}"` : '';
 
-        // 生成新 XML（简单方式：使用 allLinks 作为所有链接）
         let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n';
         if (adminAttr) xml += `  <admin${adminAttr} />\n`;
 
-        // 保持原有分类结构，替换链接
-        const originalCategories = Array.from(originalDoc.querySelectorAll('category'));
-        if (originalCategories.length === 0) {
-          // 如果没有分类，创建一个默认分类
-          xml += `  <category name="所有链接">\n    <subcategory name="默认子分类">\n`;
-        }
-
-        allLinks.forEach(link => {
-          const desc = link.desc ? ` desc="${escapeXml(link.desc)}"` : '';
-          const icon = link.icon ? ` icon="${escapeXml(link.icon)}"` : '';
-          xml += `      <link name="${escapeXml(link.name)}" url="${escapeXml(link.url)}"${desc}${icon}/>\n`;
+        // 保留原有分类结构
+        originalDoc.querySelectorAll('category').forEach(cat => {
+          xml += `  <category name="${escapeXml(cat.getAttribute('name'))}">\n`;
+          cat.querySelectorAll('subcategory').forEach(sub => {
+            xml += `    <subcategory name="${escapeXml(sub.getAttribute('name'))}">\n`;
+            // 清空原有链接
+            xml += '    </subcategory>\n';
+          });
+          xml += '  </category>\n';
         });
 
-        if (originalCategories.length === 0) {
-          xml += `    </subcategory>\n  </category>\n`;
+        // 添加所有链接到第一个分类（简化，实际可优化为记录分类）
+        if (allLinks.length > 0 && originalDoc.querySelector('category')) {
+          const firstCat = originalDoc.querySelector('category');
+          const firstSub = firstCat.querySelector('subcategory') || originalDoc.createElement('subcategory');
+          if (!firstCat.querySelector('subcategory')) firstCat.appendChild(firstSub);
+
+          allLinks.forEach(link => {
+            const desc = link.desc ? ` desc="${escapeXml(link.desc)}"` : '';
+            const icon = link.icon ? ` icon="${escapeXml(link.icon)}"` : '';
+            xml += `      <link name="${escapeXml(link.name)}" url="${escapeXml(link.url)}"${desc}${icon}/>\n`;
+          });
         }
 
         xml += '</navigation>';
@@ -396,9 +350,9 @@
         });
 
         if (saveRes.ok) {
-          statusDiv.textContent = '保存成功！所有链接已永久生效。';
+          statusDiv.textContent = '保存成功！';
           statusDiv.className = 'status success';
-          loadData(); // 刷新数据
+          loadData(); // 重新加载
         } else {
           throw new Error(await saveRes.text());
         }
