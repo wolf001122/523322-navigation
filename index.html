@@ -5,7 +5,7 @@
 <title>导航</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Google AdSense（示例，换成你的） -->
+<!-- Google AdSense -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
      crossorigin="anonymous"></script>
 
@@ -13,130 +13,153 @@
 * { box-sizing: border-box; }
 body {
   margin: 0;
-  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background: #f5f6f7;
-  color: #333;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+  background: #f8f9fa;
+  color: #202124;
 }
 
 /* ===== 顶部 ===== */
 header {
   background: #fff;
-  border-bottom: 1px solid #e5e5e5;
-  padding: 12px 20px;
-  text-align: center;
+  border-bottom: 1px solid #dadce0;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header h1 {
+  font-size: 20px;
+  font-weight: 500;
+  margin: 0;
+  color: #1a73e8;
 }
 
 .top-ad {
-  max-width: 1200px;
-  margin: 10px auto 0;
+  max-width: 728px;
+  margin: 0 auto;
 }
 
-/* ===== 布局 ===== */
-.container {
+/* ===== 主体布局 ===== */
+.layout {
   display: flex;
-  max-width: 1400px;
-  margin: auto;
+  max-width: 1440px;
+  margin: 0 auto;
 }
 
 /* ===== 左侧菜单 ===== */
 .sidebar {
   width: 260px;
   background: #fff;
-  border-right: 1px solid #e5e5e5;
-  padding: 15px;
+  border-right: 1px solid #dadce0;
+  padding: 16px;
 }
 
-.search-box input {
+.sidebar input {
   width: 100%;
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
+  padding: 10px 12px;
+  border-radius: 24px;
+  border: 1px solid #dadce0;
   outline: none;
+  font-size: 14px;
 }
 
-.category-list {
-  margin-top: 15px;
+.category {
+  margin-top: 16px;
 }
 
 .category-item {
-  padding: 8px;
+  padding: 10px 14px;
+  border-radius: 24px;
   cursor: pointer;
-  border-radius: 6px;
+  font-size: 14px;
+  color: #3c4043;
 }
-.category-item:hover,
+
+.category-item:hover {
+  background: #f1f3f4;
+}
+
 .category-item.active {
-  background: #409eff;
-  color: #fff;
+  background: #e8f0fe;
+  color: #1a73e8;
+  font-weight: 500;
 }
 
-/* 底部 3 栏 */
-.footer-links {
-  margin-top: 20px;
-  font-size: 13px;
+/* 底部固定三栏 */
+.sidebar-footer {
+  margin-top: 24px;
+  border-top: 1px solid #dadce0;
+  padding-top: 12px;
 }
-.footer-links a {
+
+.sidebar-footer a {
   display: block;
-  color: #666;
+  font-size: 13px;
+  color: #5f6368;
   text-decoration: none;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
-/* ===== 主内容 ===== */
+/* ===== 主内容区 ===== */
 main {
   flex: 1;
-  padding: 20px;
-  min-height: 600px; /* 防抖动关键 */
+  padding: 24px;
+  min-height: 700px; /* 防抖动 */
 }
 
 /* 搜索首页 */
 .search-home {
+  max-width: 600px;
+  margin: 120px auto;
   text-align: center;
-  margin-top: 80px;
 }
 
 .search-home input {
-  width: 60%;
-  padding: 12px;
+  width: 100%;
+  padding: 14px 18px;
   font-size: 16px;
+  border-radius: 32px;
+  border: 1px solid #dadce0;
 }
 
 /* 分类内容 */
-.subcategory {
-  margin-bottom: 30px;
-}
-.subcategory-title {
-  font-size: 16px;
-  margin-bottom: 10px;
+.sub {
+  margin-bottom: 36px;
 }
 
-.links {
+.sub h2 {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill,minmax(200px,1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fill,minmax(220px,1fr));
+  gap: 16px;
 }
 
 .card {
   background: #fff;
-  border-radius: 8px;
-  padding: 10px;
+  border-radius: 12px;
+  padding: 12px;
   display: flex;
   text-decoration: none;
   color: inherit;
+  box-shadow: 0 1px 2px rgba(60,64,67,.15);
 }
 
 .card img {
-  width: 36px;
-  height: 36px;
-  margin-right: 10px;
-  border-radius: 6px;
-}
-
-.card .text {
-  overflow: hidden;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  margin-right: 12px;
 }
 
 .card .name {
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -144,7 +167,7 @@ main {
 
 .card .desc {
   font-size: 12px;
-  color: #888;
+  color: #5f6368;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -166,15 +189,12 @@ main {
   </div>
 </header>
 
-<div class="container">
+<div class="layout">
   <aside class="sidebar">
-    <div class="search-box">
-      <input placeholder="搜索网站…">
-    </div>
+    <input placeholder="搜索网站…">
+    <div class="category" id="cat"></div>
 
-    <div class="category-list" id="categories"></div>
-
-    <div class="footer-links">
+    <div class="sidebar-footer">
       <a href="#">网站提交</a>
       <a href="#">友情链接</a>
       <a href="#">关于导航</a>
@@ -183,65 +203,51 @@ main {
 
   <main id="main">
     <div class="search-home">
-      <input placeholder="搜索你想要的网站">
+      <input placeholder="搜索你想访问的网站">
     </div>
   </main>
 </div>
 
 <script>
-const xmlApi = '/api/data';
-let parsedData = [];
+fetch('/api/data').then(r=>r.text()).then(xml=>{
+  const doc=new DOMParser().parseFromString(xml,'text/xml');
+  const cats=doc.querySelectorAll('category');
+  const box=document.getElementById('cat');
 
-fetch(xmlApi).then(r=>r.text()).then(parseXML);
-
-function parseXML(xmlText) {
-  const xml = new DOMParser().parseFromString(xmlText,'text/xml');
-  const cats = xml.querySelectorAll('category');
-  const list = document.getElementById('categories');
-
-  cats.forEach((cat,i)=>{
-    const name = cat.getAttribute('name');
-    const div = document.createElement('div');
-    div.className='category-item';
-    div.textContent=name;
-    div.onclick=()=>showCategory(cat,div);
-    list.appendChild(div);
+  cats.forEach(c=>{
+    const d=document.createElement('div');
+    d.className='category-item';
+    d.textContent=c.getAttribute('name');
+    d.onclick=()=>show(c,d);
+    box.appendChild(d);
   });
-}
 
-function showCategory(catNode,el){
-  document.querySelectorAll('.category-item').forEach(i=>i.classList.remove('active'));
-  el.classList.add('active');
-
-  const main = document.getElementById('main');
-  main.innerHTML='';
-
-  catNode.querySelectorAll('subcategory').forEach(sub=>{
-    const links=sub.querySelectorAll('link');
-    if(!links.length) return;
-
-    const box=document.createElement('div');
-    box.className='subcategory';
-    box.innerHTML=`<div class="subcategory-title">${sub.getAttribute('name')}</div><div class="links"></div>`;
-    const grid=box.querySelector('.links');
-
-    links.forEach(l=>{
-      const a=document.createElement('a');
-      a.className='card';
-      a.href=l.getAttribute('url');
-      a.target='_blank';
-      a.innerHTML=`
-        <img src="${l.getAttribute('icon')||''}">
-        <div class="text">
-          <div class="name">${l.getAttribute('name')}</div>
-          <div class="desc">${l.getAttribute('desc')||''}</div>
-        </div>`;
-      grid.appendChild(a);
+  function show(cat,el){
+    document.querySelectorAll('.category-item').forEach(i=>i.classList.remove('active'));
+    el.classList.add('active');
+    const main=document.getElementById('main');
+    main.innerHTML='';
+    cat.querySelectorAll('subcategory').forEach(s=>{
+      const links=s.querySelectorAll('link');
+      if(!links.length) return;
+      const sec=document.createElement('div');
+      sec.className='sub';
+      sec.innerHTML=`<h2>${s.getAttribute('name')}</h2><div class="grid"></div>`;
+      const g=sec.querySelector('.grid');
+      links.forEach(l=>{
+        g.innerHTML+=`
+<a class="card" href="${l.getAttribute('url')}" target="_blank">
+  <img src="${l.getAttribute('icon')||''}">
+  <div>
+    <div class="name">${l.getAttribute('name')}</div>
+    <div class="desc">${l.getAttribute('desc')||''}</div>
+  </div>
+</a>`;
+      });
+      main.appendChild(sec);
     });
-
-    main.appendChild(box);
-  });
-}
+  }
+});
 </script>
 
 </body>
