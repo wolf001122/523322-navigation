@@ -10,7 +10,7 @@
     h2 { font-size:20px; color:#3c4043; margin:0 0 16px; display:flex; justify-content:space-between; align-items:center; }
     .form-group { margin-bottom:20px; }
     label { display:block; margin-bottom:8px; color:#5f6368; font-size:14px; }
-    input, textarea, select { width:100%; padding:12px; border:1px solid #dadce0; border-radius:4px; font-size:16px; }
+    input, textarea, select { width:100%; padding:12px; border:1px solid #dadce0; border-radius:4px; font-size:16px; box-sizing:border-box; }
     button { background:#4285f4; color:white; border:none; padding:12px 24px; border-radius:4px; cursor:pointer; font-size:16px; }
     button:hover { background:#3367d6; }
     button.success { background:#34a853; }
@@ -27,6 +27,11 @@
     .status.error { background:#fce8e6; color:#c5221f; border:1px solid #ea4335; }
     .edit-form { display:none; background:#fff; padding:20px; border-radius:8px; box-shadow:0 4px 15px rgba(0,0,0,0.1); margin-top:20px; }
     .edit-form.active { display:block; }
+    .icon-options { margin-top:12px; }
+    .icon-options p { margin:12px 0 8px; font-size:12px; color:#5f6368; }
+    .icon-options .input-group { display:flex; align-items:center; gap:8px; }
+    .icon-options .input-group input { flex:1; }
+    .icon-options .input-group button { white-space:nowrap; }
   </style>
 </head>
 <body>
@@ -63,11 +68,15 @@
         <input type="file" id="iconFile" accept="image/*">
         <button type="button" class="secondary" onclick="uploadIcon()">上传图标</button>
         <div id="iconPreview" style="margin-top:10px;"></div>
-        <p style="font-size:12px;color:#5f6368;margin-top:8px;">或手动输入图标 URL：</p>
-        <input type="url" id="icon" placeholder="https://example.com/logo.png">
-        <p style="font-size:12px;color:#5f6368;margin-top:8px;">或自动获取网站图标：</p>
-        <input type="url" id="autoIconUrl" placeholder="输入网站地址（如 https://example.com）">
-        <button type="button" class="secondary" onclick="fetchFavicon()">获取图标</button>
+        <div class="icon-options">
+          <p>或手动输入图标 URL：</p>
+          <input type="url" id="icon" placeholder="https://example.com/logo.png">
+          <p>或自动获取网站图标：</p>
+          <div class="input-group">
+            <input type="url" id="autoIconUrl" placeholder="输入网站地址（如 https://example.com）">
+            <button type="button" class="secondary" onclick="fetchFavicon()">获取图标</button>
+          </div>
+        </div>
       </div>
       <button type="submit">添加链接</button>
     </form>
@@ -91,8 +100,10 @@
         <div id="editIconPreview"></div>
         <input type="file" id="editIconFile" accept="image/*">
         <button type="button" class="secondary" onclick="uploadEditIcon()">重新上传</button>
-        <p style="font-size:12px;color:#5f6368;margin-top:8px;">或修改 URL：</p>
-        <input type="url" id="editIcon">
+        <div class="icon-options">
+          <p>或修改 URL：</p>
+          <input type="url" id="editIcon">
+        </div>
       </div>
       <button onclick="saveEdit()">保存修改</button>
       <button class="danger" style="margin-left:8px;" onclick="cancelEdit()">取消</button>
@@ -294,7 +305,6 @@
       }
     }
 
-    // 新增：自动获取网站 favicon
     async function fetchFavicon() {
       const siteUrl = document.getElementById('autoIconUrl').value.trim();
       if (!siteUrl) return alert('请输入网站地址');
@@ -304,8 +314,7 @@
         '/favicon.png',
         '/apple-touch-icon.png',
         '/apple-touch-icon-precomposed.png',
-        '/assets/favicon.ico',
-        '/images/favicon.ico'
+        '/assets/favicon.ico'
       ];
 
       for (const path of paths) {
@@ -323,9 +332,8 @@
       alert('未找到该网站的 favicon，您可以手动上传或输入 URL');
     }
 
-    // 修复后的 saveToKV：使用内存 allLinks 完全替换链接
     async function saveToKV() {
-      if (!confirm('确认保存所有链接到云端？此操作将覆盖原有链接')) return;
+      if (!confirm('确认保存所有链接到云端？')) return;
 
       const statusDiv = document.getElementById('saveStatus');
       statusDiv.textContent = '正在保存...';
@@ -354,7 +362,7 @@
           xml += '  </category>\n';
         });
 
-        // 使用内存 allLinks 替换所有链接（追加到最后一个子分类）
+        // 使用内存 allLinks 完全替换链接
         if (allLinks.length > 0) {
           const lastCat = originalDoc.querySelector('category:last-child');
           if (lastCat) {
@@ -381,9 +389,9 @@
         });
 
         if (saveRes.ok) {
-          statusDiv.textContent = '保存成功！所有链接已更新。';
+          statusDiv.textContent = '保存成功！';
           statusDiv.className = 'status success';
-          loadData(); // 重新加载
+          loadData();
         } else {
           throw new Error(await saveRes.text());
         }
