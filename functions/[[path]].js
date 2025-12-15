@@ -7,13 +7,6 @@ export async function onRequest(context) {
     return next();
   }
 
-  // 其他 /admin/ 路径检查登录
-  if (url.pathname.startsWith('/admin/')) {
-    const cookie = request.headers.get('cookie') || '';
-    if (!cookie.includes('admin_logged_in=true')) {
-      return Response.redirect(new URL('/admin/login.html', request.url), 302);
-    }
-  }
 
   // GET /api/data - 返回正式导航 XML 数据
   if (url.pathname === '/api/data' && request.method === 'GET') {
@@ -115,3 +108,4 @@ export async function onRequest(context) {
   // 其他路径交给静态文件
   return next();
 }
+
