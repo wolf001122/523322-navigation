@@ -85,7 +85,6 @@ form button{padding:10px 20px;background:#1a73e8;color:#fff;border:none;cursor:p
   </div>
 
   <div id="main">
-    <!-- 顶部广告 -->
     <div id="ad-top">
       <ins class="adsbygoogle" style="display:block"
         data-ad-client="ca-pub-9474229114991789"
@@ -93,7 +92,6 @@ form button{padding:10px 20px;background:#1a73e8;color:#fff;border:none;cursor:p
         data-ad-format="auto"></ins>
     </div>
 
-    <!-- 搜索页 -->
     <div id="search-page">
       <div id="search-box">
         <input id="q" placeholder="搜索…" onkeydown="if(event.key==='Enter')go()">
@@ -106,33 +104,16 @@ form button{padding:10px 20px;background:#1a73e8;color:#fff;border:none;cursor:p
       </div>
     </div>
 
-    <!-- 内容页 -->
     <div id="content"></div>
   </div>
 </div>
 
 <script>
 const API='/api/data';
-const DEF_ICON='/icons/default.png';
 let engine='https://www.google.com/search?q=';
 let data;
 
-/* ================= ★ 图标缓存 ================= */
-const iconCache = JSON.parse(localStorage.getItem('iconCache')||'{}');
-function loadIcon(img,url){
-  if(iconCache[url]){
-    img.src = iconCache[url];
-    return;
-  }
-  img.src = url;
-  img.onload = ()=>{
-    iconCache[url]=url;
-    localStorage.setItem('iconCache',JSON.stringify(iconCache));
-  };
-  img.onerror = ()=>{ img.onerror=null; img.src=DEF_ICON; };
-}
-
-/* ================= 分类数据解析 ================= */
+/* ================= 分类数据 ================= */
 fetch(API).then(r=>r.text()).then(t=>{
   const xml=new DOMParser().parseFromString(t,'text/xml');
   data=[...xml.querySelectorAll('category')].map(c=>({
@@ -150,7 +131,7 @@ fetch(API).then(r=>r.text()).then(t=>{
   renderCats();
 });
 
-/* ================= 渲染左侧一级分类 ================= */
+/* ================= 渲染分类 ================= */
 function renderCats(){
   const box=document.getElementById('cats'); box.innerHTML='';
   data.forEach(c=>{
@@ -161,7 +142,7 @@ function renderCats(){
   });
 }
 
-/* ================= 搜索功能 ================= */
+/* ================= 搜索 ================= */
 function go(){
   const q=document.getElementById('q').value.trim();
   if(q) window.open(engine+encodeURIComponent(q),'_blank');
@@ -172,7 +153,7 @@ function setEngine(btn,url){
   btn.classList.add('active');
 }
 
-/* ================= 分类页显示 ================= */
+/* ================= 分类页显示 + 图标失败隐藏（不隐藏文字） ================= */
 function showCategory(c){
   document.getElementById('search-page').style.display='none';
   const cont=document.getElementById('content'); cont.style.display='block';
@@ -192,7 +173,10 @@ function showCategory(c){
     const box=document.getElementById('l'+i);
     s.links.forEach(l=>{
       const a=document.createElement('a'); a.className='card'; a.href=l.url; a.target='_blank';
-      const img=document.createElement('img'); loadIcon(img,l.icon||DEF_ICON);
+      const img=document.createElement('img');
+      img.src=l.icon;
+      // ★ 如果图标加载失败，只隐藏图标，不隐藏文字
+      img.onerror = ()=>{ img.style.display='none'; };
       const t=document.createElement('div'); t.className='text';
       t.innerHTML=`<div class="name">${l.name}</div><div class="desc">${l.desc||''}</div>`;
       a.appendChild(img); a.appendChild(t); box.appendChild(a);
@@ -212,7 +196,7 @@ function back(){
   document.getElementById('search-page').style.display='flex';
 }
 
-/* ================= ★ 网站提交 ================= */
+/* ================= 网站提交 ================= */
 function showSubmit(){
   showPage(`
     <h2>网站提交</h2>
@@ -232,48 +216,32 @@ function showSubmit(){
 function initCats(){
   c1.innerHTML='<option value="">一级分类</option>';
   data.forEach((c,i)=>c1.innerHTML+=`<option value="${i}">${c.name}</option>`);
-  c1.onchange=()=>{
-    c2.innerHTML='<option value="">二级分类</option>';
-    data[c1.value].subs.forEach(s=>c2.innerHTML+=`<option>${s.name}</option>`);
-  };
+  c1.onchange=()=>{c2.innerHTML='<option value="">二级分类</option>'; data[c1.value].subs.forEach(s=>c2.innerHTML+=`<option>${s.name}</option>`);}
 }
 function submitSite(e){
   e.preventDefault();
   if(hp.value) return;
-  fetch('/api/submit',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      cat1:c1.value, cat2:c2.value,
-      name:name.value, url:url.value, desc:desc.value
-    })
-  }).then(()=>msg.textContent='提交成功，等待审核');
+  fetch('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({cat1:c1.value,cat2:c2.value,name:name.value,url:url.value,desc:desc.value})})
+  .then(()=>msg.textContent='提交成功，等待审核');
 }
 
-/* ================= ★ 友情链接 ================= */
+/* ================= 友情链接 ================= */
 function showLinks(){
-  showPage(`
-    <h2>友情链接</h2>
-    <div class="links">
-      <div class="card"><div class="text">
-        <div class="name">虚位以待</div>
-        <div class="desc">欢迎交换友情链接</div>
-      </div></div>
-    </div>
-  `);
+  showPage(`<h2>友情链接</h2><div class="links">
+    <div class="card"><div class="text"><div class="name">虚位以待</div><div class="desc">欢迎交换友情链接</div></div></div>
+  </div>`);
 }
 
-/* ================= ★ 关于导航 ================= */
+/* ================= 关于导航 ================= */
 function showAbout(){
-  showPage(`
-    <h2>关于导航</h2>
+  showPage(`<h2>关于导航</h2>
     <p>本站致力于收录优质、常用的网站资源。</p>
     <p>所有网站均来源于人工整理与用户提交，经审核后上线。</p>
-    <p>如发现不良内容，可联系我们处理。</p>
-  `);
+    <p>如发现不良内容，可联系我们处理。</p>`);
 }
 
-/* ================= 公共显示方法 ================= */
+/* ================= 公共显示 ================= */
 function showPage(html){
   document.getElementById('search-page').style.display='none';
   const c=document.getElementById('content'); c.style.display='block'; c.innerHTML=html;
