@@ -12,7 +12,6 @@ body {
   background:#f5f6f7;
 }
 
-/* ===== 顶部 ===== */
 .topbar {
   position: sticky;
   top: 0;
@@ -20,9 +19,6 @@ body {
   background:#fff;
   border-bottom:1px solid #ddd;
   padding:10px 16px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
 }
 
 .status.saved { color:#2ecc71; }
@@ -45,28 +41,25 @@ button.danger {
   border-color:#e74c3c;
 }
 
-/* ===== 主体布局 ===== */
 .container {
   display:flex;
   gap:16px;
   padding:16px;
 }
 
-/* ===== 左侧编辑卡片 ===== */
+/* ===== 编辑区 ===== */
 .editor {
-  width:300px;
+  width:320px;
   background:#fff;
   border-radius:8px;
   padding:12px;
   box-shadow:0 1px 4px rgba(0,0,0,.08);
   position:sticky;
-  top:70px;
+  top:60px;
   height:fit-content;
 }
 
-.editor h3 {
-  margin-top:0;
-}
+.editor h3 { margin-top:0; }
 
 .editor label {
   font-size:13px;
@@ -80,20 +73,19 @@ button.danger {
   margin-top:4px;
 }
 
-/* ===== 右侧卡片 ===== */
-.list {
-  flex:1;
-}
+/* ===== 列表 ===== */
+.list { flex:1; }
 
 .group {
   margin-bottom:30px;
 }
 
 .group-title {
-  font-size:18px;
+  font-size:16px;
+  margin-bottom:8px;
+  color:#333;
   border-left:4px solid #409eff;
   padding-left:8px;
-  margin-bottom:10px;
 }
 
 .cards {
@@ -116,6 +108,7 @@ button.danger {
   font-weight:600;
   font-size:14px;
 }
+
 .card .url {
   font-size:12px;
   color:#666;
@@ -136,14 +129,13 @@ button.danger {
 
 <div class="topbar">
   <div id="status" class="status saved">✔ 已保存</div>
-  <button onclick="saveKV()">保存到 KV</button>
 </div>
 
 <div class="container">
 
-  <!-- 左侧编辑 -->
+  <!-- 编辑区 -->
   <div class="editor">
-    <h3>编辑链接</h3>
+    <h3 id="editorTitle">新增链接</h3>
 
     <label>一级分类</label>
     <select id="cat1"></select>
@@ -160,40 +152,38 @@ button.danger {
     <label>描述</label>
     <input id="desc">
 
-    <div style="margin-top:10px;display:flex;gap:10px">
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
       <button onclick="applyEdit()">应用修改</button>
       <button class="secondary" onclick="clearEditor()">清空</button>
+      <button class="secondary" onclick="saveKV()">保存到 KV</button>
     </div>
   </div>
 
-  <!-- 右侧列表 -->
+  <!-- 列表 -->
   <div id="list" class="list"></div>
 
 </div>
 
 <script>
-let nav = null;
-let editing = null;
-let dirty = false;
+let nav=null;
+let editing=null; // {i,j,link}
+let dirty=false;
 
-const statusEl = document.getElementById('status');
+const statusEl=document.getElementById('status');
 
-/* ===== 状态 ===== */
 function setDirty(v){
   dirty=v;
-  statusEl.textContent = v ? '⚠ 未保存修改' : '✔ 已保存';
-  statusEl.className = 'status ' + (v?'dirty':'saved');
+  statusEl.textContent=v?'⚠ 未保存修改':'✔ 已保存';
+  statusEl.className='status '+(v?'dirty':'saved');
 }
-window.onbeforeunload = ()=>dirty?'你有未保存修改':null;
+window.onbeforeunload=()=>dirty?'你有未保存修改':null;
 
-/* ===== 加载 XML ===== */
-fetch('/api/data')
-  .then(r=>r.text())
-  .then(parseXML);
+/* ===== 加载 ===== */
+fetch('/api/data').then(r=>r.text()).then(parseXML);
 
 function parseXML(xmlText){
-  const xml = new DOMParser().parseFromString(xmlText,'text/xml');
-  nav = { categories:[] };
+  const xml=new DOMParser().parseFromString(xmlText,'text/xml');
+  nav={categories:[]};
 
   xml.querySelectorAll('category').forEach(cat=>{
     const c1={name:cat.getAttribute('name'),subcategories:[]};
@@ -221,13 +211,16 @@ function render(){
   list.innerHTML='';
 
   nav.categories.forEach((c1,i)=>{
-    const g=document.createElement('div');
-    g.className='group';
-    g.innerHTML=`<div class="group-title">${c1.name}</div>`;
     c1.subcategories.forEach((c2,j)=>{
       if(!c2.links.length)return;
+
+      const g=document.createElement('div');
+      g.className='group';
+      g.innerHTML=`<div class="group-title">${c1.name} / ${c2.name}</div>`;
+
       const cards=document.createElement('div');
       cards.className='cards';
+
       c2.links.forEach(link=>{
         const card=document.createElement('div');
         card.className='card';
@@ -248,9 +241,10 @@ function render(){
         };
         cards.appendChild(card);
       });
+
       g.appendChild(cards);
+      list.appendChild(g);
     });
-    list.appendChild(g);
   });
 }
 
@@ -266,6 +260,7 @@ function initSelectors(){
 
 function startEdit(i,j,link){
   editing={i,j,link};
+  editorTitle.textContent='编辑链接';
   cat1.value=i; cat1.onchange();
   cat2.value=j;
   name.value=link.name;
@@ -273,23 +268,36 @@ function startEdit(i,j,link){
   desc.value=link.desc;
 }
 
-function applyEdit(){
-  if(!editing)return;
-  Object.assign(editing.link,{
-    name:name.value,
-    url:url.value,
-    desc:desc.value
-  });
-  setDirty(true);
-  render();
-}
-
 function clearEditor(){
   editing=null;
+  editorTitle.textContent='新增链接';
   name.value=url.value=desc.value='';
 }
 
-/* ===== 保存 KV ===== */
+/* ===== 应用 ===== */
+function applyEdit(){
+  const i=+cat1.value;
+  const j=+cat2.value;
+
+  if(editing){
+    Object.assign(editing.link,{
+      name:name.value,
+      url:url.value,
+      desc:desc.value
+    });
+  }else{
+    nav.categories[i].subcategories[j].links.push({
+      name:name.value,
+      url:url.value,
+      desc:desc.value
+    });
+  }
+  setDirty(true);
+  clearEditor();
+  render();
+}
+
+/* ===== 保存 ===== */
 function saveKV(){
   let xml=`<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n`;
   nav.categories.forEach(c1=>{
