@@ -12,18 +12,6 @@ body {
   background:#f5f6f7;
 }
 
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background:#fff;
-  border-bottom:1px solid #ddd;
-  padding:10px 16px;
-}
-
-.status.saved { color:#2ecc71; }
-.status.dirty { color:#e67e22; }
-
 button {
   padding:6px 12px;
   border-radius:4px;
@@ -55,7 +43,7 @@ button.danger {
   padding:12px;
   box-shadow:0 1px 4px rgba(0,0,0,.08);
   position:sticky;
-  top:60px;
+  top:16px;
   height:fit-content;
 }
 
@@ -127,10 +115,6 @@ button.danger {
 
 <body>
 
-<div class="topbar">
-  <div id="status" class="status saved">✔ 已保存</div>
-</div>
-
 <div class="container">
 
   <!-- 编辑区 -->
@@ -152,10 +136,13 @@ button.danger {
     <label>描述</label>
     <input id="desc">
 
-    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+    <div style="margin-top:12px;display:flex;gap:8px">
       <button onclick="applyEdit()">应用修改</button>
       <button class="secondary" onclick="clearEditor()">清空</button>
-      <button class="secondary" onclick="saveKV()">保存到 KV</button>
+    </div>
+
+    <div style="margin-top:10px">
+      <button style="width:100%" onclick="saveKV()">保存到 KV</button>
     </div>
   </div>
 
@@ -166,19 +153,8 @@ button.danger {
 
 <script>
 let nav=null;
-let editing=null; // {i,j,link}
-let dirty=false;
+let editing=null; // {i,j,k}
 
-const statusEl=document.getElementById('status');
-
-function setDirty(v){
-  dirty=v;
-  statusEl.textContent=v?'⚠ 未保存修改':'✔ 已保存';
-  statusEl.className='status '+(v?'dirty':'saved');
-}
-window.onbeforeunload=()=>dirty?'你有未保存修改':null;
-
-/* ===== 加载 ===== */
 fetch('/api/data').then(r=>r.text()).then(parseXML);
 
 function parseXML(xmlText){
@@ -221,7 +197,7 @@ function render(){
       const cards=document.createElement('div');
       cards.className='cards';
 
-      c2.links.forEach(link=>{
+      c2.links.forEach((link,k)=>{
         const card=document.createElement('div');
         card.className='card';
         card.innerHTML=`
@@ -231,11 +207,10 @@ function render(){
             <button class="secondary">编辑</button>
             <button class="danger">删除</button>
           </div>`;
-        card.querySelector('.secondary').onclick=()=>startEdit(i,j,link);
+        card.querySelector('.secondary').onclick=()=>startEdit(i,j,k);
         card.querySelector('.danger').onclick=()=>{
           if(confirm('确认删除？')){
-            c2.links=c2.links.filter(l=>l!==link);
-            setDirty(true);
+            c2.links.splice(k,1);
             render();
           }
         };
@@ -258,8 +233,9 @@ function initSelectors(){
   cat1.onchange();
 }
 
-function startEdit(i,j,link){
-  editing={i,j,link};
+function startEdit(i,j,k){
+  editing={i,j,k};
+  const link=nav.categories[i].subcategories[j].links[k];
   editorTitle.textContent='编辑链接';
   cat1.value=i; cat1.onchange();
   cat2.value=j;
@@ -280,11 +256,10 @@ function applyEdit(){
   const j=+cat2.value;
 
   if(editing){
-    Object.assign(editing.link,{
-      name:name.value,
-      url:url.value,
-      desc:desc.value
-    });
+    Object.assign(
+      nav.categories[editing.i].subcategories[editing.j].links[editing.k],
+      {name:name.value,url:url.value,desc:desc.value}
+    );
   }else{
     nav.categories[i].subcategories[j].links.push({
       name:name.value,
@@ -292,9 +267,9 @@ function applyEdit(){
       desc:desc.value
     });
   }
-  setDirty(true);
   clearEditor();
   render();
+  alert('已应用修改（未保存到 KV）');
 }
 
 /* ===== 保存 ===== */
@@ -312,7 +287,9 @@ function saveKV(){
     xml+=`  </category>\n`;
   });
   xml+=`</navigation>`;
-  fetch('/api/save',{method:'POST',body:xml}).then(()=>setDirty(false));
+
+  fetch('/api/save',{method:'POST',body:xml})
+    .then(()=>alert('已成功保存到 KV'));
 }
 </script>
 
