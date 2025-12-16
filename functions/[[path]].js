@@ -28,6 +28,6 @@ export async function onRequest(context) {
     }
   }
 
-  // 其他所有请求直接放行给静态文件
+  // 其他请求交给静态文件
   return await context.next();
 }
