@@ -5,7 +5,7 @@
 <title>导航</title>
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="google-adsense-account" content="ca-pub-9474229114991789">
-
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
 <script async
   src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9474229114991789"
   crossorigin="anonymous"></script>
@@ -112,6 +112,7 @@ form button{padding:10px 20px;background:#1a73e8;color:#fff;border:none;cursor:p
 const API='/api/data';
 let engine='https://www.google.com/search?q=';
 let data;
+const DEF_ICON='/icons/gray.png'; // ★ 失败图标灰色占位
 
 /* ================= 分类数据 ================= */
 fetch(API).then(r=>r.text()).then(t=>{
@@ -153,7 +154,7 @@ function setEngine(btn,url){
   btn.classList.add('active');
 }
 
-/* ================= 分类页显示 + 图标失败隐藏（不隐藏文字） ================= */
+/* ================= 分类页显示 + 图标失败替换为灰色占位 ================= */
 function showCategory(c){
   document.getElementById('search-page').style.display='none';
   const cont=document.getElementById('content'); cont.style.display='block';
@@ -174,9 +175,9 @@ function showCategory(c){
     s.links.forEach(l=>{
       const a=document.createElement('a'); a.className='card'; a.href=l.url; a.target='_blank';
       const img=document.createElement('img');
-      img.src=l.icon;
-      // ★ 如果图标加载失败，只隐藏图标，不隐藏文字
-      img.onerror = ()=>{ img.style.display='none'; };
+      img.src=l.icon||DEF_ICON;
+      // ★ 图标加载失败使用灰色占位，不隐藏卡片或文字
+      img.onerror = ()=>{ img.src=DEF_ICON; };
       const t=document.createElement('div'); t.className='text';
       t.innerHTML=`<div class="name">${l.name}</div><div class="desc">${l.desc||''}</div>`;
       a.appendChild(img); a.appendChild(t); box.appendChild(a);
@@ -238,7 +239,8 @@ function showAbout(){
   showPage(`<h2>关于导航</h2>
     <p>本站致力于收录优质、常用的网站资源。</p>
     <p>所有网站均来源于人工整理与用户提交，经审核后上线。</p>
-    <p>如发现不良内容，可联系我们处理。</p>`);
+    <p>如发现不良内容，可联系我们处理。</p>
+  `);
 }
 
 /* ================= 公共显示 ================= */
