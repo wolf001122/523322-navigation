@@ -1,0 +1,1164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<navigation>
+  <admin username="admin" password="pbkdf2:sha256:600000:b6688978b64829e08a89ef11a0596a36:43b4cb6651f9529b45a68fa81ce54a4f8d1348de36681c39e4bcac00a268ab3f" />
+  
+<category name="搜索引擎">
+    <subcategory name="综合搜索引擎">
+      <link name="Google" url="https://www.google.com" desc="全球最大搜索引擎" icon="https://www.google.com/favicon.ico"/>
+      <link name="百度" url="https://www.baidu.com" desc="中国最大搜索引擎" icon="https://www.baidu.com/favicon.ico"/>
+      <link name="Bing" url="https://www.bing.com" desc="微软搜索引擎" icon="https://www.bing.com/favicon.ico"/>
+      <link name="Yahoo" url="https://www.yahoo.com" desc="老牌门户搜索" icon="https://www.yahoo.com/favicon.ico"/>
+      <link name="Yandex" url="https://yandex.com" desc="俄罗斯搜索引擎" icon="https://yandex.com/favicon.ico"/>
+      <link name="DuckDuckGo" url="https://duckduckgo.com" desc="隐私保护搜索引擎" icon="https://duckduckgo.com/favicon.ico"/>
+      <link name="360搜索" url="https://www.so.com" desc="中国安全搜索引擎" icon="https://www.so.com/favicon.ico"/>
+      <link name="搜狗搜索" url="https://www.sogou.com" desc="中国输入法关联搜索" icon="https://www.sogou.com/favicon.ico"/>
+      <link name="Naver" url="https://www.naver.com" desc="韩国搜索引擎" icon="https://www.naver.com/favicon.ico"/>
+      <link name="Ecosia" url="https://www.ecosia.org" desc="环保搜索引擎" icon="https://www.ecosia.org/favicon.ico"/>
+      <link name="Startpage" url="https://www.startpage.com" desc="匿名谷歌代理搜索" icon="https://www.startpage.com/favicon.ico"/>
+      <link name="Qwant" url="https://www.qwant.com" desc="欧洲隐私搜索引擎" icon="https://www.qwant.com/favicon.ico"/>
+      <link name="Swisscows" url="https://swisscows.com" desc="瑞士家庭友好搜索引擎" icon="https://swisscows.com/favicon.ico"/>
+      <link name="Brave Search" url="https://search.brave.com" desc="独立隐私搜索引擎" icon="https://search.brave.com/favicon.ico"/>
+      <link name="Wolfram Alpha" url="https://www.wolframalpha.com" desc="计算知识引擎" icon="https://www.wolframalpha.com/favicon.ico"/>
+      <link name="Ask.com" url="https://www.ask.com" desc="问答式搜索引擎" icon="https://www.ask.com/favicon.ico"/>
+      <link name="AOL" url="https://www.aol.com" desc="老牌门户搜索" icon="https://www.aol.com/favicon.ico"/>
+      <link name="Mojeek" url="https://www.mojeek.com" desc="独立搜索引擎" icon="https://www.mojeek.com/favicon.ico"/>
+      <link name="Gigablast" url="https://gigablast.com" desc="开源搜索引擎" icon="https://gigablast.com/favicon.ico"/>
+      <link name="Exalead" url="https://www.exalead.com" desc="法国搜索引擎" icon="https://www.exalead.com/favicon.ico"/>
+      <link name="Seznam" url="https://www.seznam.cz" desc="捷克搜索引擎" icon="https://www.seznam.cz/favicon.ico"/>
+      <link name="Daum" url="https://www.daum.net" desc="韩国门户搜索" icon="https://www.daum.net/favicon.ico"/>
+      <link name="Rambler" url="https://www.rambler.ru" desc="俄罗斯门户搜索" icon="https://www.rambler.ru/favicon.ico"/>
+      <link name="Mail.ru" url="https://mail.ru" desc="俄罗斯综合搜索" icon="https://mail.ru/favicon.ico"/>
+      <link name="Sogou" url="https://www.sogou.com" desc="中国搜索" icon="https://www.sogou.com/favicon.ico"/>
+      <link name="Godoc" url="https://godoc.org" desc="Go语言文档搜索" icon="https://godoc.org/favicon.ico"/>
+      <link name="SymbolHound" url="https://symbolhound.com" desc="代码符号搜索" icon="https://symbolhound.com/favicon.ico"/>
+      <link name="SearchCode" url="https://searchcode.com" desc="代码搜索" icon="https://searchcode.com/favicon.ico"/>
+      <link name="PublicWWW" url="https://publicwww.com" desc="网站代码搜索" icon="https://publicwww.com/favicon.ico"/>
+      <link name="NerdyData" url="https://nerdydata.com" desc="网站技术搜索" icon="https://nerdydata.com/favicon.ico"/>
+      <link name="SimilarSites" url="https://www.similarsites.com" desc="相似网站搜索" icon="https://www.similarsites.com/favicon.ico"/>
+      <link name="SitesLike" url="https://siteslike.com" desc="相似网站推荐" icon="https://siteslike.com/favicon.ico"/>
+      <link name="AlternativeTo" url="https://alternativeto.net" desc="软件代替品搜索" icon="https://alternativeto.net/favicon.ico"/>
+      <link name="Product Hunt" url="https://www.producthunt.com" desc="新产品发现" icon="https://www.producthunt.com/favicon.ico"/>
+      <link name="G2" url="https://www.g2.com" desc="软件评论搜索" icon="https://www.g2.com/favicon.ico"/>
+      <link name="Capterra" url="https://www.capterra.com" desc="软件比较" icon="https://www.capterra.com/favicon.ico"/>
+      <link name="Slant" url="https://www.slant.co" desc="产品推荐社区" icon="https://www.slant.co/favicon.ico"/>
+      <link name="LibHunt" url="https://www.libhunt.com" desc="开源库推荐" icon="https://www.libhunt.com/favicon.ico"/>
+      <link name="Awesome Lists" url="https://github.com/sindresorhus/awesome" desc="精选列表集合" icon="https://github.com/favicon.ico"/>
+      <link name="Dev.to" url="https://dev.to" desc="开发者社区搜索" icon="https://dev.to/favicon.ico"/>
+      <link name="Hacker News" url="https://news.ycombinator.com" desc="科技新闻讨论" icon="https://news.ycombinator.com/favicon.ico"/>
+      <link name="Lobsters" url="https://lobste.rs" desc="技术讨论社区" icon="https://lobste.rs/favicon.ico"/>
+      <link name="Indie Hackers" url="https://www.indiehackers.com" desc="独立开发者社区" icon="https://www.indiehackers.com/favicon.ico"/>
+      <link name="BetaList" url="https://betalist.com" desc="新创产品发现" icon="https://betalist.com/favicon.ico"/>
+      <link name="Launchpad" url="https://launchpad.net" desc="开源项目托管" icon="https://launchpad.net/favicon.ico"/>
+      <link name="SourceForge" url="https://sourceforge.net" desc="开源软件目录" icon="https://sourceforge.net/favicon.ico"/>
+      <link name="OSChina" url="https://www.oschina.net" desc="中国开源社区" icon="https://www.oschina.net/favicon.ico"/>
+      <link name="CSDN" url="https://www.csdn.net" desc="中国开发者社区" icon="https://www.csdn.net/favicon.ico"/>
+      <link name="51CTO" url="https://www.51cto.com" desc="中国IT技术社区" icon="https://www.51cto.com/favicon.ico"/>
+      <link name="InfoQ" url="https://www.infoq.com" desc="企业软件开发资讯" icon="https://www.infoq.com/favicon.ico"/>
+      <link name="DZone" url="https://dzone.com" desc="开发者文章" icon="https://dzone.com/favicon.ico"/>
+      <link name="Smashing Magazine" url="https://www.smashingmagazine.com" desc="前端设计资讯" icon="https://www.smashingmagazine.com/favicon.ico"/>
+      <link name="A List Apart" url="https://alistapart.com" desc="网页标准文章" icon="https://alistapart.com/favicon.ico"/>
+      <link name="CSS-Tricks" url="https://css-tricks.com" desc="CSS技巧" icon="https://css-tricks.com/favicon.ico"/>
+      <link name="MDN Web Docs" url="https://developer.mozilla.org" desc="前端文档" icon="https://developer.mozilla.org/favicon.ico"/>
+      <link name="W3Schools" url="https://www.w3schools.com" desc="前端教程" icon="https://www.w3schools.com/favicon.ico"/>
+      <link name="Can I Use" url="https://caniuse.com" desc="浏览器兼容性" icon="https://caniuse.com/favicon.ico"/>
+      <link name="Stack Overflow" url="https://stackoverflow.com" desc="程序员问答" icon="https://stackoverflow.com/favicon.ico"/>
+      <link name="Super User" url="https://superuser.com" desc="电脑技术问答" icon="https://superuser.com/favicon.ico"/>
+      <link name="Server Fault" url="https://serverfault.com" desc="服务器管理问答" icon="https://serverfault.com/favicon.ico"/>
+      <link name="Ask Ubuntu" url="https://askubuntu.com" desc="Ubuntu问答" icon="https://askubuntu.com/favicon.ico"/>
+      <link name="Unix & Linux" url="https://unix.stackexchange.com" desc="Linux问答" icon="https://unix.stackexchange.com/favicon.ico"/>
+      <link name="Webmasters" url="https://webmasters.stackexchange.com" desc="网站管理问答" icon="https://webmasters.stackexchange.com/favicon.ico"/>
+      <link name="Game Development" url="https://gamedev.stackexchange.com" desc="游戏开发问答" icon="https://gamedev.stackexchange.com/favicon.ico"/>
+      <link name="Code Review" url="https://codereview.stackexchange.com" desc="代码审查" icon="https://codereview.stackexchange.com/favicon.ico"/>
+      <link name="Software Engineering" url="https://softwareengineering.stackexchange.com" desc="软件工程问答" icon="https://softwareengineering.stackexchange.com/favicon.ico"/>
+      <link name="Database Administrators" url="https://dba.stackexchange.com" desc="数据库管理" icon="https://dba.stackexchange.com/favicon.ico"/>
+      <link name="Information Security" url="https://security.stackexchange.com" desc="信息安全问答" icon="https://security.stackexchange.com/favicon.ico"/>
+      <link name="Cryptography" url="https://crypto.stackexchange.com" desc="密码学问答" icon="https://crypto.stackexchange.com/favicon.ico"/>
+      <link name="Reverse Engineering" url="https://reverseengineering.stackexchange.com" desc="逆向工程" icon="https://reverseengineering.stackexchange.com/favicon.ico"/>
+      <link name="Arduino" url="https://arduino.stackexchange.com" desc="Arduino问答" icon="https://arduino.stackexchange.com/favicon.ico"/>
+      <link name="Raspberry Pi" url="https://raspberrypi.stackexchange.com" desc="树莓派问答" icon="https://raspberrypi.stackexchange.com/favicon.ico"/>
+      <link name="Android Enthusiasts" url="https://android.stackexchange.com" desc="Android用户问答" icon="https://android.stackexchange.com/favicon.ico"/>
+      <link name="Apple" url="https://apple.stackexchange.com" desc="苹果产品问答" icon="https://apple.stackexchange.com/favicon.ico"/>
+      <link name="Windows Phone" url="https://windowsphone.stackexchange.com" desc="Windows Phone问答" icon="https://windowsphone.stackexchange.com/favicon.ico"/>
+      <link name="Mathematics" url="https://math.stackexchange.com" desc="数学问答" icon="https://math.stackexchange.com/favicon.ico"/>
+      <link name="Physics" url="https://physics.stackexchange.com" desc="物理问答" icon="https://physics.stackexchange.com/favicon.ico"/>
+      <link name="Chemistry" url="https://chemistry.stackexchange.com" desc="化学问答" icon="https://chemistry.stackexchange.com/favicon.ico"/>
+      <link name="Biology" url="https://biology.stackexchange.com" desc="生物问答" icon="https://biology.stackexchange.com/favicon.ico"/>
+      <link name="Psychology & Neuroscience" url="https://psychology.stackexchange.com" desc="心理学问答" icon="https://psychology.stackexchange.com/favicon.ico"/>
+      <link name="Earth Science" url="https://earthscience.stackexchange.com" desc="地球科学问答" icon="https://earthscience.stackexchange.com/favicon.ico"/>
+      <link name="Astronomy" url="https://astronomy.stackexchange.com" desc="天文学问答" icon="https://astronomy.stackexchange.com/favicon.ico"/>
+      <link name="Philosophy" url="https://philosophy.stackexchange.com" desc="哲学问答" icon="https://philosophy.stackexchange.com/favicon.ico"/>
+      <link name="History" url="https://history.stackexchange.com" desc="历史问答" icon="https://history.stackexchange.com/favicon.ico"/>
+      <link name="Politics" url="https://politics.stackexchange.com" desc="政治问答" icon="https://politics.stackexchange.com/favicon.ico"/>
+      <link name="Economics" url="https://economics.stackexchange.com" desc="经济学问答" icon="https://economics.stackexchange.com/favicon.ico"/>
+      <link name="Law" url="https://law.stackexchange.com" desc="法律问答" icon="https://law.stackexchange.com/favicon.ico"/>
+      <link name="Travel" url="https://travel.stackexchange.com" desc="旅行问答" icon="https://travel.stackexchange.com/favicon.ico"/>
+      <link name="Cooking" url="https://cooking.stackexchange.com" desc="烹饪问答" icon="https://cooking.stackexchange.com/favicon.ico"/>
+      <link name="Movies & TV" url="https://movies.stackexchange.com" desc="影视问答" icon="https://movies.stackexchange.com/favicon.ico"/>
+      <link name="Music" url="https://music.stackexchange.com" desc="音乐问答" icon="https://music.stackexchange.com/favicon.ico"/>
+      <link name="Sports" url="https://sports.stackexchange.com" desc="体育问答" icon="https://sports.stackexchange.com/favicon.ico"/>
+      <link name="Board & Card Games" url="https://boardgames.stackexchange.com" desc="桌游问答" icon="https://boardgames.stackexchange.com/favicon.ico"/>
+      <link name="Science Fiction & Fantasy" url="https://scifi.stackexchange.com" desc="科幻奇幻问答" icon="https://scifi.stackexchange.com/favicon.ico"/>
+      <link name="Anime & Manga" url="https://anime.stackexchange.com" desc="动漫问答" icon="https://anime.stackexchange.com/favicon.ico"/>
+      <link name="Arqade" url="https://gaming.stackexchange.com" desc="游戏问答" icon="https://gaming.stackexchange.com/favicon.ico"/>
+      <link name="Seasoned Advice" url="https://cooking.stackexchange.com" desc="专业烹饪" icon="https://cooking.stackexchange.com/favicon.ico"/>
+      <link name="Home Improvement" url="https://diy.stackexchange.com" desc="家居装修" icon="https://diy.stackexchange.com/favicon.ico"/>
+      <link name="Personal Finance & Money" url="https://money.stackexchange.com" desc="个人理财" icon="https://money.stackexchange.com/favicon.ico"/>
+      <link name="Academia" url="https://academia.stackexchange.com" desc="学术问答" icon="https://academia.stackexchange.com/favicon.ico"/>
+      <link name="English Language & Usage" url="https://english.stackexchange.com" desc="英语用法" icon="https://english.stackexchange.com/favicon.ico"/>
+      <link name="English Language Learners" url="https://ell.stackexchange.com" desc="英语学习者" icon="https://ell.stackexchange.com/favicon.ico"/>
+      <link name="Chinese Language" url="https://chinese.stackexchange.com" desc="中文问答" icon="https://chinese.stackexchange.com/favicon.ico"/>
+      <link name="Japanese Language" url="https://japanese.stackexchange.com" desc="日语问答" icon="https://japanese.stackexchange.com/favicon.ico"/>
+      <link name="French Language" url="https://french.stackexchange.com" desc="法语问答" icon="https://french.stackexchange.com/favicon.ico"/>
+      <link name="German Language" url="https://german.stackexchange.com" desc="德语问答" icon="https://german.stackexchange.com/favicon.ico"/>
+      <link name="Spanish Language" url="https://spanish.stackexchange.com" desc="西班牙语问答" icon="https://spanish.stackexchange.com/favicon.ico"/>
+      <link name="Russian Language" url="https://russian.stackexchange.com" desc="俄语问答" icon="https://russian.stackexchange.com/favicon.ico"/>
+      <link name="Islam" url="https://islam.stackexchange.com" desc="伊斯兰问答" icon="https://islam.stackexchange.com/favicon.ico"/>
+      <link name="Christianity" url="https://christianity.stackexchange.com" desc="基督教问答" icon="https://christianity.stackexchange.com/favicon.ico"/>
+      <link name="Judaism" url="https://judaism.stackexchange.com" desc="犹太教问答" icon="https://judaism.stackexchange.com/favicon.ico"/>
+      <link name="Buddhism" url="https://buddhism.stackexchange.com" desc="佛教问答" icon="https://buddhism.stackexchange.com/favicon.ico"/>
+      <link name="Hinduism" url="https://hinduism.stackexchange.com" desc="印度教问答" icon="https://hinduism.stackexchange.com/favicon.ico"/>
+    </subcategory>
+  </category>
+
+  <category name="人工智能（AI）">
+    <subcategory name="对话聊天AI">
+      <link name="ChatGPT" url="https://chatgpt.com" desc="OpenAI最强大对话AI" icon="https://chatgpt.com/favicon.ico"/>
+      <link name="Gemini" url="https://gemini.google.com" desc="谷歌多模态AI助手" icon="https://gemini.google.com/favicon.ico"/>
+      <link name="Grok" url="https://grok.x.com" desc="xAI幽默智能助手" icon="https://grok.x.com/favicon.ico"/>
+      <link name="Claude" url="https://claude.ai" desc="Anthropic最安全AI" icon="https://claude.ai/favicon.ico"/>
+      <link name="Perplexity" url="https://www.perplexity.ai" desc="AI实时搜索聊天" icon="https://www.perplexity.ai/favicon.ico"/>
+      <link name="DeepSeek" url="https://chat.deepseek.com" desc="中国最强开源AI" icon="https://chat.deepseek.com/favicon.ico"/>
+      <link name="Kimi" url="https://kimi.moonshot.cn" desc="月之暗面长文本AI" icon="https://kimi.moonshot.cn/favicon.ico"/>
+      <link name="通义千问" url="https://tongyi.aliyun.com" desc="阿里最大模型" icon="https://tongyi.aliyun.com/favicon.ico"/>
+      <link name="文心一言" url="https://yiyan.baidu.com" desc="百度智能助手" icon="https://yiyan.baidu.com/favicon.ico"/>
+      <link name="豆包" url="https://www.doubao.com" desc="字节跳动AI" icon="https://www.doubao.com/favicon.ico"/>
+      <link name="天工AI" url="https://tiangong.ai" desc="昆仑万维AI" icon="https://tiangong.ai/favicon.ico"/>
+      <link name="讯飞星火" url="https://xinghuo.xfyun.cn" desc="科大讯飞语音AI" icon="https://xinghuo.xfyun.cn/favicon.ico"/>
+      <link name="智谱清言" url="https://chatglm.cn" desc="清华智谱AI" icon="https://chatglm.cn/favicon.ico"/>
+      <link name="月之暗面" url="https://www.moonshot.ai" desc="Kimi母公司" icon="https://www.moonshot.ai/favicon.ico"/>
+      <link name="MiniMax" url="https://www.minimax.chat" desc="中国AI新星" icon="https://www.minimax.chat/favicon.ico"/>
+      <link name="海螺AI" url="https://hailuoai.com" desc="字节海螺AI" icon="https://hailuoai.com/favicon.ico"/>
+      <link name="腾讯元宝" url="https://yuanbao.tencent.com" desc="腾讯AI助手" icon="https://yuanbao.tencent.com/favicon.ico"/>
+      <link name="阿里通义" url="https://tongyi.aliyun.com" desc="阿里通义听悟" icon="https://tongyi.aliyun.com/favicon.ico"/>
+      <link name="百度文心" url="https://yiyan.baidu.com" desc="文心一格" icon="https://yiyan.baidu.com/favicon.ico"/>
+      <link name="字节Coze" url="https://www.coze.com" desc="字节AI应用平台" icon="https://www.coze.com/favicon.ico"/>
+      <link name="硅基流动" url="https://www.siliconflow.cn" desc="国内最快推理" icon="https://www.siliconflow.cn/favicon.ico"/>
+      <link name="ModelScope" url="https://modelscope.cn" desc="阿里魔搭社区" icon="https://modelscope.cn/favicon.ico"/>
+      <link name="Hugging Face" url="https://huggingface.co" desc="全球AI模型社区" icon="https://huggingface.co/favicon.ico"/>
+      <link name="Llama" url="https://llama.meta.com" desc="Meta开源大模型" icon="https://llama.meta.com/favicon.ico"/>
+      <link name="Mistral" url="https://mistral.ai" desc="欧洲最强开源AI" icon="https://mistral.ai/favicon.ico"/>
+      <link name="Cohere" url="https://cohere.com" desc="企业级AI" icon="https://cohere.com/favicon.ico"/>
+      <link name="Anthropic" url="https://anthropic.com" desc="Claude母公司" icon="https://anthropic.com/favicon.ico"/>
+      <link name="OpenAI" url="https://openai.com" desc="GPT系列官方" icon="https://openai.com/favicon.ico"/>
+      <link name="xAI" url="https://x.ai" desc="马斯克AI公司" icon="https://x.ai/favicon.ico"/>
+      <link name="Groq" url="https://groq.com" desc="最快AI推理芯片" icon="https://groq.com/favicon.ico"/>
+      <link name="Together AI" url="https://together.ai" desc="开源模型推理" icon="https://together.ai/favicon.ico"/>
+      <link name="Fireworks" url="https://fireworks.ai" desc="快速部署模型" icon="https://fireworks.ai/favicon.ico"/>
+      <link name="Replicate" url="https://replicate.com" desc="一键部署AI模型" icon="https://replicate.com/favicon.ico"/>
+      <link name="Fal.ai" url="https://fal.ai" desc="AI视频生成" icon="https://fal.ai/favicon.ico"/>
+      <link name="Runway" url="https://runwayml.com" desc="AI视频工具" icon="https://runwayml.com/favicon.ico"/>
+      <link name="Pika" url="https://pika.art" desc="文本转视频" icon="https://pika.art/favicon.ico"/>
+      <link name="Kling" url="https://kling.ai" desc="快手AI视频" icon="https://kling.ai/favicon.ico"/>
+      <link name="Viggle" url="https://viggle.ai" desc="AI动画生成" icon="https://viggle.ai/favicon.ico"/>
+      <link name="Luma Dream Machine" url="https://lumalabs.ai/dream-machine" desc="Luma AI视频" icon="https://lumalabs.ai/favicon.ico"/>
+      <link name="Sora" url="https://openai.com/sora" desc="OpenAI文本转视频" icon="https://openai.com/favicon.ico"/>
+      <link name="Veo" url="https://deepmind.google/technologies/veo" desc="谷歌视频生成" icon="https://deepmind.google/favicon.ico"/>
+      <link name="Phenaki" url="https://phenaki.github.io" desc="Google视频生成" icon="https://phenaki.github.io/favicon.ico"/>
+      <link name="Make-A-Video" url="https://makeavideo.studio" desc="Meta视频生成" icon="https://makeavideo.studio/favicon.ico"/>
+      <link name="VideoPoet" url="https://research.google/blog/video-poet-a-new-ai-model-for-video-generation" desc="谷歌视频诗" icon="https://research.google/favicon.ico"/>
+      <link name="Gen-2" url="https://runwayml.com/gen-2" desc="Runway第二代" icon="https://runwayml.com/favicon.ico"/>
+      <link name="SVD" url="https://stability.ai/stable-video" desc="Stable Video Diffusion" icon="https://stability.ai/favicon.ico"/>
+      <link name="AnimateDiff" url="https://animatediff.github.io" desc="动画扩散模型" icon="https://animatediff.github.io/favicon.ico"/>
+      <link name="Deforum" url="https://deforum.github.io" desc="Stable Diffusion动画" icon="https://deforum.github.io/favicon.ico"/>
+      <link name="ComfyUI" url="https://github.com/comfyanonymous/ComfyUI" desc="Stable Diffusion界面" icon="https://github.com/favicon.ico"/>
+      <link name="Automatic1111" url="https://github.com/AUTOMATIC1111/stable-diffusion-webui" desc="最流行SD界面" icon="https://github.com/favicon.ico"/>
+      <link name="InvokeAI" url="https://invoke.ai" desc="专业SD工具" icon="https://invoke.ai/favicon.ico"/>
+      <link name="Fooocus" url="https://github.com/lllyasviel/Fooocus" desc="傻瓜式AI绘图" icon="https://github.com/favicon.ico"/>
+      <link name="Leonardo" url="https://leonardo.ai" desc="高质量AI艺术" icon="https://leonardo.ai/favicon.ico"/>
+      <link name="Ideogram" url="https://ideogram.ai" desc="文字生成完美图像" icon="https://ideogram.ai/favicon.ico"/>
+      <link name="Flux" url="https://flux1.ai" desc="2025最强开源图像" icon="https://flux1.ai/favicon.ico"/>
+      <link name="Playground" url="https://playground.com" desc="AI设计平台" icon="https://playground.com/favicon.ico"/>
+      <link name="NightCafe" url="https://nightcafe.studio" desc="AI艺术社区" icon="https://nightcafe.studio/favicon.ico"/>
+      <link name="Artbreeder" url="https://www.artbreeder.com" desc="基因混合艺术" icon="https://www.artbreeder.com/favicon.ico"/>
+      <link name="DeepArt" url="https://deepart.io" desc="照片转艺术" icon="https://deepart.io/favicon.ico"/>
+      <link name="NeuralStyler" url="https://neuralstyler.com" desc="神经风格迁移" icon="https://neuralstyler.com/favicon.ico"/>
+      <link name="Deep Dream Generator" url="https://deepdreamgenerator.com" desc="谷歌Deep Dream" icon="https://deepdreamgenerator.com/favicon.ico"/>
+      <link name="Runway Gen-3" url="https://runwayml.com/gen-3" desc="最新AI视频" icon="https://runwayml.com/favicon.ico"/>
+      <link name="Luma Dream Machine" url="https://lumalabs.ai/dream-machine" desc="高质量AI视频" icon="https://lumalabs.ai/favicon.ico"/>
+      <link name="Kling" url="https://kling.kuaishou.com" desc="快手AI视频" icon="https://kling.kuaishou.com/favicon.ico"/>
+      <link name="Viggle" url="https://viggle.ai" desc="AI动画控制" icon="https://viggle.ai/favicon.ico"/>
+      <link name="Pika" url="https://pika.art" desc="文本转视频" icon="https://pika.art/favicon.ico"/>
+      <link name="Haiper" url="https://haiper.ai" desc="AI视频生成" icon="https://haiper.ai/favicon.ico"/>
+      <link name="Kaiber" url="https://kaiber.ai" desc="音乐转视频" icon="https://kaiber.ai/favicon.ico"/>
+      <link name="Synthesia" url="https://www.synthesia.io" desc="AI数字人" icon="https://www.synthesia.io/favicon.ico"/>
+      <link name="HeyGen" url="https://www.heygen.com" desc="AI虚拟人" icon="https://www.heygen.com/favicon.ico"/>
+      <link name="D-ID" url="https://www.d-id.com" desc="照片说话" icon="https://www.d-id.com/favicon.ico"/>
+      <link name="Elai" url="https://elai.io" desc="AI视频旁白" icon="https://elai.io/favicon.ico"/>
+      <link name="Colossyan" url="https://www.colossyan.com" desc="AI培训视频" icon="https://www.colossyan.com/favicon.ico"/>
+      <link name="Hour One" url="https://hourone.ai" desc="AI虚拟主播" icon="https://hourone.ai/favicon.ico"/>
+      <link name="DeepBrain" url="https://www.deepbrain.io" desc="AI数字人" icon="https://www.deepbrain.io/favicon.ico"/>
+      <link name="Tavus" url="https://www.tavus.io" desc="个性化视频" icon="https://www.tavus.io/favicon.ico"/>
+      <link name="Fliki" url="https://fliki.ai" desc="文本转视频" icon="https://fliki.ai/favicon.ico"/>
+      <link name="InVideo" url="https://invideo.io" desc="AI视频编辑" icon="https://invideo.io/favicon.ico"/>
+      <link name="Pictory" url="https://pictory.ai" desc="文章转视频" icon="https://pictory.ai/favicon.ico"/>
+      <link name="Steve AI" url="https://www.steve.ai" desc="AI动画视频" icon="https://www.steve.ai/favicon.ico"/>
+      <link name="Lumen5" url="https://lumen5.com" desc="社交媒体视频" icon="https://lumen5.com/favicon.ico"/>
+      <link name="Synthesys" url="https://synthesys.io" desc="AI语音合成" icon="https://synthesys.io/favicon.ico"/>
+      <link name="ElevenLabs" url="https://elevenlabs.io" desc="最真实AI语音" icon="https://elevenlabs.io/favicon.ico"/>
+      <link name="Murf" url="https://murf.ai" desc="AI语音生成" icon="https://murf.ai/favicon.ico"/>
+      <link name="Play.ht" url="https://play.ht" desc="文字转语音" icon="https://play.ht/favicon.ico"/>
+      <link name="Respeecher" url="https://www.respeecher.com" desc="声音克隆" icon="https://www.respeecher.com/favicon.ico"/>
+      <link name="Voicemod" url="https://www.voicemod.net" desc="实时变声" icon="https://www.voicemod.net/favicon.ico"/>
+      <link name="Descript" url="https://www.descript.com" desc="音频视频编辑" icon="https://www.descript.com/favicon.ico"/>
+      <link name="Adobe Podcast" url="https://podcast.adobe.com" desc="AI音频增强" icon="https://podcast.adobe.com/favicon.ico"/>
+      <link name="Auphonic" url="https://auphonic.com" desc="音频后期处理" icon="https://auphonic.com/favicon.ico"/>
+      <link name="Cleanvoice" url="https://cleanvoice.ai" desc="AI去杂音" icon="https://cleanvoice.ai/favicon.ico"/>
+      <link name="Krisp" url="https://krisp.ai" desc="实时降噪" icon="https://krisp.ai/favicon.ico"/>
+      <link name="Otter.ai" url="https://otter.ai" desc="会议转文字" icon="https://otter.ai/favicon.ico"/>
+      <link name="Fireflies" url="https://fireflies.ai" desc="AI会议记录" icon="https://fireflies.ai/favicon.ico"/>
+      <link name="Gong" url="https://www.gong.io" desc="销售会议分析" icon="https://www.gong.io/favicon.ico"/>
+      <link name="Chorus" url="https://www.chorus.ai" desc="销售AI洞察" icon="https://www.chorus.ai/favicon.ico"/>
+      <link name="Grain" url="https://www.grain.com" desc="视频会议剪辑" icon="https://www.grain.com/favicon.ico"/>
+      <link name="Tldv" url="https://tldv.io" desc="会议总结" icon="https://tldv.io/favicon.ico"/>
+      <link name="MeetGeek" url="https://meetgeek.ai" desc="AI会议助手" icon="https://meetgeek.ai/favicon.ico"/>
+      <link name="Fathom" url="https://fathom.video" desc="Zoom会议AI" icon="https://fathom.video/favicon.ico"/>
+      <link name="Avoma" url="https://www.avoma.com" desc="会议智能" icon="https://www.avoma.com/favicon.ico"/>
+      <link name="Notta" url="https://www.notta.ai" desc="实时转录" icon="https://www.notta.ai/favicon.ico"/>
+      <link name="Sonix" url="https://sonix.ai" desc="AI转录翻译" icon="https://sonix.ai/favicon.ico"/>
+      <link name="Rev" url="https://www.rev.com" desc="人工+AI转录" icon="https://www.rev.com/favicon.ico"/>
+      <link name="Trint" url="https://trint.com" desc="协作转录" icon="https://trint.com/favicon.ico"/>
+      <link name="Descript" url="https://www.descript.com" desc="音频视频编辑" icon="https://www.descript.com/favicon.ico"/>
+      <link name="Adobe Podcast" url="https://podcast.adobe.com" desc="AI音频增强" icon="https://podcast.adobe.com/favicon.ico"/>
+      <link name="Riverside" url="https://riverside.fm" desc="高质量录音" icon="https://riverside.fm/favicon.ico"/>
+      <link name="Zencastr" url="https://zencastr.com" desc="播客录音" icon="https://zencastr.com/favicon.ico"/>
+      <link name="SquadCast" url="https://squadcast.fm" desc="远程录音" icon="https://squadcast.fm/favicon.ico"/>
+      <link name="StreamYard" url="https://streamyard.com" desc="直播录制" icon="https://streamyard.com/favicon.ico"/>
+      <link name="Restream" url="https://restream.io" desc="多平台直播" icon="https://restream.io/favicon.ico"/>
+      <link name="OBS Studio" url="https://obsproject.com" desc="免费直播软件" icon="https://obsproject.com/favicon.ico"/>
+      <link name="XSplit" url="https://www.xsplit.com" desc="专业直播" icon="https://www.xsplit.com/favicon.ico"/>
+      <link name="Lightstream" url="https://golightstream.com" desc="浏览器直播" icon="https://golightstream.com/favicon.ico"/>
+      <link name="Ecamm Live" url="https://ecamm.com" desc="Mac直播" icon="https://ecamm.com/favicon.ico"/>
+      <link name="Wirecast" url="https://www.telestream.net/wirecast" desc="专业直播软件" icon="https://www.telestream.net/favicon.ico"/>
+      <link name="vMix" url="https://www.vmix.com" desc="直播制作" icon="https://www.vmix.com/favicon.ico"/>
+      <link name="TriCaster" url="https://www.newtek.com/tricaster" desc="硬件直播" icon="https://www.newtek.com/favicon.ico"/>
+      <link name="Blackmagic ATEM" url="https://www.blackmagicdesign.com/products/atem" desc="硬件切换台" icon="https://www.blackmagicdesign.com/favicon.ico"/>
+      <link name="Roland VR" url="https://www.roland.com/global/products/vr-1hd" desc="视频切换器" icon="https://www.roland.com/favicon.ico"/>
+      <link name="YoloLiv" url="https://www.yololiv.com" desc="便携直播" icon="https://www.yololiv.com/favicon.ico"/>
+      <link name="Mevo" url="https://mevo.com" desc="无线直播相机" icon="https://mevo.com/favicon.ico"/>
+      <link name="Hollyland" url="https://www.hollyland.com" desc="无线传输" icon="https://www.hollyland.com/favicon.ico"/>
+      <link name="Accsoon" url="https://www.accsoon.com" desc="视频传输" icon="https://www.accsoon.com/favicon.ico"/>
+      <link name="Teradek" url="https://teradek.com" desc="专业无线视频" icon="https://teradek.com/favicon.ico"/>
+      <link name="LiveU" url="https://www.liveu.tv" desc="移动直播" icon="https://www.liveu.tv/favicon.ico"/>
+      <link name="Bond" url="https://bond.tech" desc="手机直播" icon="https://bond.tech/favicon.ico"/>
+      <link name="Cinegy" url="https://cinegy.com" desc="专业视频软件" icon="https://cinegy.com/favicon.ico"/>
+      <link name="Vizrt" url="https://www.vizrt.com" desc="广播图形" icon="https://www.vizrt.com/favicon.ico"/>
+      <link name="ChyronHego" url="https://chyronhego.com" desc="播出系统" icon="https://chyronhego.com/favicon.ico"/>
+      <link name="Ross Video" url="https://www.rossvideo.com" desc="视频切换" icon="https://www.rossvideo.com/favicon.ico"/>
+      <link name="Grass Valley" url="https://www.grassvalley.com" desc="广播设备" icon="https://www.grassvalley.com/favicon.ico"/>
+      <link name="Evertz" url="https://evertz.com" desc="广播解决方案" icon="https://evertz.com/favicon.ico"/>
+      <link name="Harmonic" url="https://www.harmonicinc.com" desc="视频压缩" icon="https://www.harmonicinc.com/favicon.ico"/>
+      <link name="Imagine Communications" url="https://www.imaginecommunications.com" desc="媒体处理" icon="https://www.imaginecommunications.com/favicon.ico"/>
+      <link name="Sencore" url="https://www.sencore.com" desc="视频测试" icon="https://www.sencore.com/favicon.ico"/>
+      <link name="Dektec" url="https://www.dektec.com" desc="流媒体卡" icon="https://www.dektec.com/favicon.ico"/>
+      <link name="Magewell" url="https://www.magewell.com" desc="采集卡" icon="https://www.magewell.com/favicon.ico"/>
+      <link name="Blackmagic" url="https://www.blackmagicdesign.com" desc="视频设备" icon="https://www.blackmagicdesign.com/favicon.ico"/>
+      <link name="AJA" url="https://www.aja.com" desc="视频接口" icon="https://www.aja.com/favicon.ico"/>
+      <link name="Matrox" url="https://www.matrox.com" desc="视频采集" icon="https://www.matrox.com/favicon.ico"/>
+      <link name="Bluefish444" url="https://www.bluefish444.com" desc="专业采集卡" icon="https://www.bluefish444.com/favicon.ico"/>
+      <link name="Lianhe" url="https://www.lianhe.com" desc="中国采集卡" icon="https://www.lianhe.com/favicon.ico"/>
+      <link name="Yuan" url="https://www.yuancctv.com" desc="中国视频卡" icon="https://www.yuancctv.com/favicon.ico"/>
+      <link name="Dahua" url="https://www.dahuasecurity.com" desc="安防监控" icon="https://www.dahuasecurity.com/favicon.ico"/>
+      <link name="Hikvision" url="https://www.hikvision.com" desc="海康威视监控" icon="https://www.hikvision.com/favicon.ico"/>
+      <link name="Axis" url="https://www.axis.com" desc="网络摄像头" icon="https://www.axis.com/favicon.ico"/>
+      <link name="Bosch" url="https://www.boschsecurity.com" desc="博世安防" icon="https://www.boschsecurity.com/favicon.ico"/>
+      <link name="Hanwha" url="https://hanwhasecurity.com" desc="三星安防" icon="https://hanwhasecurity.com/favicon.ico"/>
+      <link name="Avigilon" url="https://www.avigilon.com" desc="高清监控" icon="https://www.avigilon.com/favicon.ico"/>
+      <link name="Verkada" url="https://www.verkada.com" desc="云监控" icon="https://www.verkada.com/favicon.ico"/>
+      <link name="Eagle Eye" url="https://www.een.com" desc="云视频监控" icon="https://www.een.com/favicon.ico"/>
+      <link name="Rhombus" url="https://www.rhombus.com" desc="AI安防" icon="https://www.rhombus.com/favicon.ico"/>
+      <link name="Spot AI" url="https://www.spot.ai" desc="AI视频分析" icon="https://www.spot.ai/favicon.ico"/>
+      <link name="Verkada" url="https://www.verkada.com" desc="云端AI监控" icon="https://www.verkada.com/favicon.ico"/>
+    </subcategory>
+  </category>
+
+  <category name="视频与音乐流媒体">
+    <subcategory name="长视频平台">
+      <link name="YouTube" url="https://www.youtube.com" desc="全球最大视频平台" icon="https://www.youtube.com/favicon.ico"/>
+      <link name="Netflix" url="https://www.netflix.com" desc="全球流媒体影视" icon="https://www.netflix.com/favicon.ico"/>
+      <link name="Disney+" url="https://www.disneyplus.com" desc="迪士尼独家内容" icon="https://www.disneyplus.com/favicon.ico"/>
+      <link name="Hulu" url="https://www.hulu.com" desc="美国热门剧集" icon="https://www.hulu.com/favicon.ico"/>
+      <link name="Prime Video" url="https://www.primevideo.com" desc="亚马逊影视" icon="https://www.primevideo.com/favicon.ico"/>
+      <link name="HBO Max" url="https://www.max.com" desc="HBO高端剧集" icon="https://www.max.com/favicon.ico"/>
+      <link name="Paramount+" url="https://www.paramountplus.com" desc="派拉蒙影视" icon="https://www.paramountplus.com/favicon.ico"/>
+      <link name="Peacock" url="https://www.peacocktv.com" desc="NBC影视" icon="https://www.peacocktv.com/favicon.ico"/>
+      <link name="Apple TV+" url="https://tv.apple.com" desc="苹果原创剧" icon="https://tv.apple.com/favicon.ico"/>
+      <link name="腾讯视频" url="https://v.qq.com" desc="中国热门剧综艺" icon="https://v.qq.com/favicon.ico"/>
+      <link name="爱奇艺" url="https://www.iqiyi.com" desc="高清正版影视" icon="https://www.iqiyi.com/favicon.ico"/>
+      <link name="优酷" url="https://www.youku.com" desc="阿里系视频" icon="https://www.youku.com/favicon.ico"/>
+      <link name="芒果TV" url="https://www.mgtv.com" desc="湖南卫视独播" icon="https://www.mgtv.com/favicon.ico"/>
+      <link name="哔哩哔哩" url="https://www.bilibili.com" desc="弹幕知识视频" icon="https://www.bilibili.com/favicon.ico"/>
+      <link name="AcFun" url="https://www.acfun.cn" desc="弹幕视频社区" icon="https://www.acfun.cn/favicon.ico"/>
+      <link name="土豆视频" url="https://www.tudou.com" desc="老牌视频平台" icon="https://www.tudou.com/favicon.ico"/>
+      <link name="乐视视频" url="https://www.le.com" desc="影视资源" icon="https://www.le.com/favicon.ico"/>
+      <link name="PPTV" url="https://www.pptv.com" desc="体育直播影视" icon="https://www.pptv.com/favicon.ico"/>
+      <link name="风行视频" url="https://www.fun.tv" desc="高清影视" icon="https://www.fun.tv/favicon.ico"/>
+      <link name="1905电影网" url="https://www.1905.com" desc="电影正版播放" icon="https://www.1905.com/favicon.ico"/>
+      <link name="Vimeo" url="https://vimeo.com" desc="高质量创意视频" icon="https://vimeo.com/favicon.ico"/>
+      <link name="Dailymotion" url="https://www.dailymotion.com" desc="欧洲视频平台" icon="https://www.dailymotion.com/favicon.ico"/>
+      <link name="Rumble" url="https://rumble.com" desc="自由言论视频" icon="https://rumble.com/favicon.ico"/>
+      <link name="Odysee" url="https://odysee.com" desc="去中心化视频" icon="https://odysee.com/favicon.ico"/>
+      <link name="PeerTube" url="https://joinpeertube.org" desc="联邦视频平台" icon="https://joinpeertube.org/favicon.ico"/>
+      <link name="Newgrounds" url="https://www.newgrounds.com" desc="独立动画游戏" icon="https://www.newgrounds.com/favicon.ico"/>
+      <link name="9GAG TV" url="https://9gag.com/tv" desc="搞笑视频" icon="https://9gag.com/favicon.ico"/>
+      <link name="Funny or Die" url="https://funnyordie.com" desc="喜剧视频" icon="https://funnyordie.com/favicon.ico"/>
+      <link name="Crackle" url="https://www.crackle.com" desc="免费影视" icon="https://www.crackle.com/favicon.ico"/>
+      <link name="Tubi" url="https://tubitv.com" desc="免费广告影视" icon="https://tubitv.com/favicon.ico"/>
+      <link name="Pluto TV" url="https://pluto.tv" desc="免费直播频道" icon="https://pluto.tv/favicon.ico"/>
+      <link name="Freevee" url="https://www.amazon.com/freevee" desc="亚马逊免费视频" icon="https://www.amazon.com/favicon.ico"/>
+      <link name="Kanopy" url="https://www.kanopy.com" desc="图书馆影视" icon="https://www.kanopy.com/favicon.ico"/>
+      <link name="Hoopla" url="https://www.hoopladigital.com" desc="图书馆媒体" icon="https://www.hoopladigital.com/favicon.ico"/>
+      <link name="Crunchyroll" url="https://www.crunchyroll.com" desc="动漫平台" icon="https://www.crunchyroll.com/favicon.ico"/>
+      <link name="Funimation" url="https://www.funimation.com" desc="动漫配音" icon="https://www.funimation.com/favicon.ico"/>
+      <link name="Hidive" url="https://www.hidive.com" desc="动漫流媒体" icon="https://www.hidive.com/favicon.ico"/>
+      <link name="RetroCrush" url="https://www.retrocrush.com" desc="经典动漫" icon="https://www.retrocrush.com/favicon.ico"/>
+      <link name="VRV" url="https://vrv.co" desc="动漫合集" icon="https://vrv.co/favicon.ico"/>
+      <link name="AnimeLab" url="https://www.animelab.com" desc="澳洲动漫" icon="https://www.animelab.com/favicon.ico"/>
+      <link name="Wakanim" url="https://www.wakanim.tv" desc="欧洲动漫" icon="https://www.wakanim.tv/favicon.ico"/>
+      <link name="iQIYI International" url="https://www.iq.com" desc="国际版爱奇艺" icon="https://www.iq.com/favicon.ico"/>
+      <link name="Viki" url="https://www.viki.com" desc="亚洲剧多语言字幕" icon="https://www.viki.com/favicon.ico"/>
+      <link name="WeTV" url="https://wetv.vip" desc="腾讯海外剧" icon="https://wetv.vip/favicon.ico"/>
+      <link name="iflix" url="https://www.iflix.com" desc="东南亚影视" icon="https://www.iflix.com/favicon.ico"/>
+      <link name="Zee5" url="https://www.zee5.com" desc="印度影视" icon="https://www.zee5.com/favicon.ico"/>
+      <link name="Hotstar" url="https://www.hotstar.com" desc="印度迪士尼" icon="https://www.hotstar.com/favicon.ico"/>
+      <link name="Shahid" url="https://shahid.mbc.net" desc="阿拉伯影视" icon="https://shahid.mbc.net/favicon.ico"/>
+      <link name="Viaplay" url="https://viaplay.com" desc="北欧影视" icon="https://viaplay.com/favicon.ico"/>
+      <link name="BritBox" url="https://www.britbox.com" desc="英国剧集" icon="https://www.britbox.com/favicon.ico"/>
+      <link name="Acorn TV" url="https://acorn.tv" desc="英国澳洲剧" icon="https://acorn.tv/favicon.ico"/>
+      <link name="Shudder" url="https://www.shudder.com" desc="恐怖片专区" icon="https://www.shudder.com/favicon.ico"/>
+      <link name="Mubi" url="https://mubi.com" desc="艺术电影" icon="https://mubi.com/favicon.ico"/>
+      <link name="Criterion Channel" url="https://www.criterionchannel.com" desc="经典电影" icon="https://www.criterionchannel.com/favicon.ico"/>
+      <link name="Kanopy" url="https://www.kanopy.com" desc="教育纪录片" icon="https://www.kanopy.com/favicon.ico"/>
+      <link name="DocuBay" url="https://www.docubay.com" desc="纪录片平台" icon="https://www.docubay.com/favicon.ico"/>
+      <link name="Curiosity Stream" url="https://curiositystream.com" desc="科学纪录片" icon="https://curiositystream.com/favicon.ico"/>
+      <link name="MagellanTV" url="https://www.magellantv.com" desc="历史纪录片" icon="https://www.magellantv.com/favicon.ico"/>
+      <link name="History Vault" url="https://www.historyvault.com" desc="历史频道" icon="https://www.historyvault.com/favicon.ico"/>
+      <link name="Smithsonian Channel" url="https://www.smithsonianchannel.com" desc="史密森尼纪录片" icon="https://www.smithsonianchannel.com/favicon.ico"/>
+      <link name="National Geographic" url="https://www.nationalgeographic.com/tv" desc="国家地理" icon="https://www.nationalgeographic.com/favicon.ico"/>
+      <link name="Discovery+" url="https://www.discoveryplus.com" desc="探索频道" icon="https://www.discoveryplus.com/favicon.ico"/>
+      <link name="Animal Planet" url="https://www.animalplanet.com" desc="动物世界" icon="https://www.animalplanet.com/favicon.ico"/>
+      <link name="Food Network" url="https://www.foodnetwork.com" desc="美食频道" icon="https://www.foodnetwork.com/favicon.ico"/>
+      <link name="HGTV" url="https://www.hgtv.com" desc="家居装修" icon="https://www.hgtv.com/favicon.ico"/>
+      <link name="TLC" url="https://www.tlc.com" desc="生活方式" icon="https://www.tlc.com/favicon.ico"/>
+      <link name="Travel Channel" url="https://www.travelchannel.com" desc="旅行探索" icon="https://www.travelchannel.com/favicon.ico"/>
+      <link name="MotorTrend" url="https://www.motortrend.com" desc="汽车频道" icon="https://www.motortrend.com/favicon.ico"/>
+      <link name="ESPN" url="https://www.espn.com" desc="体育新闻" icon="https://www.espn.com/favicon.ico"/>
+      <link name="DAZN" url="https://www.dazn.com" desc="体育直播" icon="https://www.dazn.com/favicon.ico"/>
+      <link name="FuboTV" url="https://www.fubo.tv" desc="体育流媒体" icon="https://www.fubo.tv/favicon.ico"/>
+      <link name="Sling TV" url="https://www.sling.com" desc="电视直播" icon="https://www.sling.com/favicon.ico"/>
+      <link name="YouTube TV" url="https://tv.youtube.com" desc="云端电视" icon="https://tv.youtube.com/favicon.ico"/>
+      <link name="Philo" url="https://www.philo.com" desc="低价电视直播" icon="https://www.philo.com/favicon.ico"/>
+      <link name="Twitch" url="https://www.twitch.tv" desc="全球游戏直播" icon="https://www.twitch.tv/favicon.ico"/>
+      <link name="Kick" url="https://kick.com" desc="新兴直播平台" icon="https://kick.com/favicon.ico"/>
+      <link name="Caffeine" url="https://www.caffeine.tv" desc="互动直播" icon="https://www.caffeine.tv/favicon.ico"/>
+      <link name="Trovo" url="https://trovo.live" desc="腾讯海外直播" icon="https://trovo.live/favicon.ico"/>
+      <link name="斗鱼" url="https://www.douyu.com" desc="中国游戏直播" icon="https://www.douyu.com/favicon.ico"/>
+      <link name="虎牙" url="https://www.huya.com" desc="中国电竞直播" icon="https://www.huya.com/favicon.ico"/>
+      <link name="CC直播" url="https://cc.163.com" desc="网易直播" icon="https://cc.163.com/favicon.ico"/>
+      <link name="花椒直播" url="https://www.huajiao.com" desc="娱乐直播" icon="https://www.huajiao.com/favicon.ico"/>
+      <link name="一直播" url="https://www.yizhibo.com" desc="微博直播" icon="https://www.yizhibo.com/favicon.ico"/>
+      <link name="映客" url="https://www.inke.cn" desc="移动直播" icon="https://www.inke.cn/favicon.ico"/>
+      <link name="NOW直播" url="https://now.qq.com" desc="腾讯直播" icon="https://now.qq.com/favicon.ico"/>
+      <link name="快手直播" url="https://live.kuaishou.com" desc="快手直播" icon="https://live.kuaishou.com/favicon.ico"/>
+      <link name="抖音直播" url="https://live.douyin.com" desc="抖音直播" icon="https://live.douyin.com/favicon.ico"/>
+      <link name="淘宝直播" url="https://live.taobao.com" desc="电商直播" icon="https://live.taobao.com/favicon.ico"/>
+      <link name="京东直播" url="https://live.jd.com" desc="京东直播" icon="https://live.jd.com/favicon.ico"/>
+      <link name="拼多多直播" url="https://mobile.yangkeduo.com/live.html" desc="拼多多直播" icon="https://mobile.yangkeduo.com/favicon.ico"/>
+    </subcategory>
+    <subcategory name="音乐流媒体">
+      <link name="Spotify" url="https://www.spotify.com" desc="全球最大音乐流媒体" icon="https://www.spotify.com/favicon.ico"/>
+      <link name="Apple Music" url="https://music.apple.com" desc="苹果高品质音乐" icon="https://music.apple.com/favicon.ico"/>
+      <link name="网易云音乐" url="https://music.163.com" desc="中国评论音乐平台" icon="https://music.163.com/favicon.ico"/>
+      <link name="QQ音乐" url="https://y.qq.com" desc="腾讯音乐旗舰" icon="https://y.qq.com/favicon.ico"/>
+      <link name="YouTube Music" url="https://music.youtube.com" desc="YouTube音乐服务" icon="https://music.youtube.com/favicon.ico"/>
+      <link name="Tidal" url="https://tidal.com" desc="无损高保真音乐" icon="https://tidal.com/favicon.ico"/>
+      <link name="Deezer" url="https://www.deezer.com" desc="法国音乐流媒体" icon="https://www.deezer.com/favicon.ico"/>
+      <link name="Pandora" url="https://www.pandora.com" desc="个性化电台" icon="https://www.pandora.com/favicon.ico"/>
+      <link name="SoundCloud" url="https://soundcloud.com" desc="独立音乐分享" icon="https://soundcloud.com/favicon.ico"/>
+      <link name="Bandcamp" url="https://bandcamp.com" desc="独立音乐购买" icon="https://bandcamp.com/favicon.ico"/>
+      <link name="Amazon Music" url="https://music.amazon.com" desc="亚马逊音乐" icon="https://music.amazon.com/favicon.ico"/>
+      <link name="iHeartRadio" url="https://www.iheart.com" desc="美国电台音乐" icon="https://www.iheart.com/favicon.ico"/>
+      <link name="SiriusXM" url="https://www.siriusxm.com" desc="卫星电台" icon="https://www.siriusxm.com/favicon.ico"/>
+      <link name="TuneIn" url="https://tunein.com" desc="全球电台直播" icon="https://tunein.com/favicon.ico"/>
+      <link name="Audacy" url="https://www.audacy.com" desc="美国电台" icon="https://www.audacy.com/favicon.ico"/>
+      <link name="酷狗音乐" url="https://www.kugou.com" desc="中国海量音乐" icon="https://www.kugou.com/favicon.ico"/>
+      <link name="酷我音乐" url="https://www.kuwo.cn" desc="中国音乐平台" icon="https://www.kuwo.cn/favicon.ico"/>
+      <link name="咪咕音乐" url="https://music.migu.cn" desc="中国移动音乐" icon="https://music.migu.cn/favicon.ico"/>
+      <link name="JioSaavn" url="https://www.jiosaavn.com" desc="印度音乐" icon="https://www.jiosaavn.com/favicon.ico"/>
+      <link name="Gaana" url="https://gaana.com" desc="印度音乐流媒体" icon="https://gaana.com/favicon.ico"/>
+      <link name="Anghami" url="https://www.anghami.com" desc="阿拉伯音乐" icon="https://www.anghami.com/favicon.ico"/>
+      <link name="Boomplay" url="https://www.boomplay.com" desc="非洲音乐" icon="https://www.boomplay.com/favicon.ico"/>
+      <link name="Yandex Music" url="https://music.yandex.com" desc="俄罗斯音乐" icon="https://music.yandex.com/favicon.ico"/>
+      <link name="VK Music" url="https://vk.com/audio" desc="俄罗斯社交音乐" icon="https://vk.com/favicon.ico"/>
+      <link name="Naver Vibe" url="https://vibe.naver.com" desc="韩国音乐" icon="https://vibe.naver.com/favicon.ico"/>
+      <link name="Melon" url="https://www.melon.com" desc="韩国音乐平台" icon="https://www.melon.com/favicon.ico"/>
+      <link name="Genie Music" url="https://www.genie.co.kr" desc="韩国音乐" icon="https://www.genie.co.kr/favicon.ico"/>
+      <link name="Bugs" url="https://music.bugs.co.kr" desc="韩国音乐" icon="https://music.bugs.co.kr/favicon.ico"/>
+      <link name="Flo" url="https://www.music-flo.com" desc="韩国高保真音乐" icon="https://www.music-flo.com/favicon.ico"/>
+      <link name="KKBOX" url="https://www.kkbox.com" desc="亚洲音乐" icon="https://www.kkbox.com/favicon.ico"/>
+      <link name="Joox" url="https://www.joox.com" desc="腾讯东南亚音乐" icon="https://www.joox.com/favicon.ico"/>
+      <link name="NetEase Cloud Music International" url="https://music.163.com/st/music" desc="网易海外版" icon="https://music.163.com/favicon.ico"/>
+    </subcategory>
+  </category>
+  <category name="电商购物">
+    <subcategory name="综合电商平台">
+      <link name="Amazon" url="https://www.amazon.com" desc="全球最大综合电商" icon="https://www.amazon.com/favicon.ico"/>
+      <link name="淘宝" url="https://www.taobao.com" desc="中国C2C购物平台" icon="https://www.taobao.com/favicon.ico"/>
+      <link name="天猫" url="https://www.tmall.com" desc="中国品牌正品电商" icon="https://www.tmall.com/favicon.ico"/>
+      <link name="京东" url="https://www.jd.com" desc="中国自营电商" icon="https://www.jd.com/favicon.ico"/>
+      <link name="拼多多" url="https://www.pinduoduo.com" desc="中国社交团购电商" icon="https://www.pinduoduo.com/favicon.ico"/>
+      <link name="eBay" url="https://www.ebay.com" desc="全球拍卖电商" icon="https://www.ebay.com/favicon.ico"/>
+      <link name="AliExpress" url="https://www.aliexpress.com" desc="阿里巴巴跨境零售" icon="https://www.aliexpress.com/favicon.ico"/>
+      <link name="Walmart" url="https://www.walmart.com" desc="美国大型零售电商" icon="https://www.walmart.com/favicon.ico"/>
+      <link name="Target" url="https://www.target.com" desc="美国时尚生活电商" icon="https://www.target.com/favicon.ico"/>
+      <link name="Best Buy" url="https://www.bestbuy.com" desc="美国电子产品电商" icon="https://www.bestbuy.com/favicon.ico"/>
+      <link name="Costco" url="https://www.costco.com" desc="美国会员制仓储电商" icon="https://www.costco.com/favicon.ico"/>
+      <link name="Home Depot" url="https://www.homedepot.com" desc="美国家居建材电商" icon="https://www.homedepot.com/favicon.ico"/>
+      <link name="Lowe's" url="https://www.lowes.com" desc="美国家居改善电商" icon="https://www.lowes.com/favicon.ico"/>
+      <link name="Macy's" url="https://www.macys.com" desc="美国百货电商" icon="https://www.macys.com/favicon.ico"/>
+      <link name="Nordstrom" url="https://www.nordstrom.com" desc="美国高端时尚电商" icon="https://www.nordstrom.com/favicon.ico"/>
+      <link name="Saks Fifth Avenue" url="https://www.saksfifthavenue.com" desc="美国奢侈品电商" icon="https://www.saksfifthavenue.com/favicon.ico"/>
+      <link name="Neiman Marcus" url="https://www.neimanmarcus.com" desc="美国高端百货" icon="https://www.neimanmarcus.com/favicon.ico"/>
+      <link name="Bloomingdale's" url="https://www.bloomingdales.com" desc="美国时尚百货" icon="https://www.bloomingdales.com/favicon.ico"/>
+      <link name="Shein" url="https://www.shein.com" desc="全球快时尚电商" icon="https://www.shein.com/favicon.ico"/>
+      <link name="Temu" url="https://www.temu.com" desc="拼多多跨境低价电商" icon="https://www.temu.com/favicon.ico"/>
+      <link name="Shopee" url="https://shopee.com" desc="东南亚最大电商" icon="https://shopee.com/favicon.ico"/>
+      <link name="Lazada" url="https://www.lazada.com" desc="阿里巴巴东南亚电商" icon="https://www.lazada.com/favicon.ico"/>
+      <link name="Tokopedia" url="https://www.tokopedia.com" desc="印尼电商" icon="https://www.tokopedia.com/favicon.ico"/>
+      <link name="Mercado Libre" url="https://www.mercadolibre.com" desc="拉美最大电商" icon="https://www.mercadolibre.com/favicon.ico"/>
+      <link name="Flipkart" url="https://www.flipkart.com" desc="印度最大电商" icon="https://www.flipkart.com/favicon.ico"/>
+      <link name="Jumia" url="https://www.jumia.com" desc="非洲电商" icon="https://www.jumia.com/favicon.ico"/>
+      <link name="Noon" url="https://www.noon.com" desc="中东电商" icon="https://www.noon.com/favicon.ico"/>
+      <link name="Souq" url="https://www.souq.com" desc="中东亚马逊" icon="https://www.souq.com/favicon.ico"/>
+      <link name="Daraz" url="https://www.daraz.com" desc="南亚电商" icon="https://www.daraz.com/favicon.ico"/>
+      <link name="Wildberries" url="https://www.wildberries.ru" desc="俄罗斯电商" icon="https://www.wildberries.ru/favicon.ico"/>
+      <link name="Ozon" url="https://www.ozon.ru" desc="俄罗斯综合电商" icon="https://www.ozon.ru/favicon.ico"/>
+      <link name="Rakuten" url="https://www.rakuten.co.jp" desc="日本积分电商" icon="https://www.rakuten.co.jp/favicon.ico"/>
+      <link name="Yahoo Japan Shopping" url="https://shopping.yahoo.co.jp" desc="日本购物" icon="https://shopping.yahoo.co.jp/favicon.ico"/>
+      <link name="Zozotown" url="https://zozo.jp" desc="日本时尚电商" icon="https://zozo.jp/favicon.ico"/>
+      <link name="Mercari" url="https://www.mercari.com" desc="日本二手电商" icon="https://www.mercari.com/favicon.ico"/>
+      <link name="Coupang" url="https://www.coupang.com" desc="韩国火箭配送电商" icon="https://www.coupang.com/favicon.ico"/>
+      <link name="11st" url="https://www.11st.co.kr" desc="韩国电商" icon="https://www.11st.co.kr/favicon.ico"/>
+      <link name="Gmarket" url="https://www.gmarket.co.kr" desc="韩国拍卖电商" icon="https://www.gmarket.co.kr/favicon.ico"/>
+      <link name="Lottee" url="https://www.lotteon.com" desc="韩国乐天电商" icon="https://www.lotteon.com/favicon.ico"/>
+      <link name="Blibli" url="https://www.blibli.com" desc="印尼电商" icon="https://www.blibli.com/favicon.ico"/>
+      <link name="Bukalapak" url="https://www.bukalapak.com" desc="印尼C2C电商" icon="https://www.bukalapak.com/favicon.ico"/>
+      <link name="Carrefour" url="https://www.carrefour.com" desc="法国超市电商" icon="https://www.carrefour.com/favicon.ico"/>
+      <link name="Tesco" url="https://www.tesco.com" desc="英国超市电商" icon="https://www.tesco.com/favicon.ico"/>
+      <link name="Sainsbury's" url="https://www.sainsburys.co.uk" desc="英国超市" icon="https://www.sainsburys.co.uk/favicon.ico"/>
+      <link name="ASDA" url="https://www.asda.com" desc="英国沃尔玛超市" icon="https://www.asda.com/favicon.ico"/>
+      <link name="Ocado" url="https://www.ocado.com" desc="英国在线超市" icon="https://www.ocado.com/favicon.ico"/>
+      <link name="Auchan" url="https://www.auchan.fr" desc="法国超市" icon="https://www.auchan.fr/favicon.ico"/>
+      <link name="Leclerc" url="https://www.e.leclerc" desc="法国超市" icon="https://www.e.leclerc/favicon.ico"/>
+      <link name="Intermarché" url="https://www.intermarche.com" desc="法国超市" icon="https://www.intermarche.com/favicon.ico"/>
+      <link name="Lidl" url="https://www.lidl.com" desc="德国折扣超市" icon="https://www.lidl.com/favicon.ico"/>
+      <link name="Aldi" url="https://www.aldi.com" desc="德国折扣超市" icon="https://www.aldi.com/favicon.ico"/>
+      <link name="Edeka" url="https://www.edeka.de" desc="德国超市" icon="https://www.edeka.de/favicon.ico"/>
+      <link name="Rewe" url="https://www.rewe.de" desc="德国超市" icon="https://www.rewe.de/favicon.ico"/>
+      <link name="Coles" url="https://www.coles.com.au" desc="澳大利亚超市" icon="https://www.coles.com.au/favicon.ico"/>
+      <link name="Woolworths" url="https://www.woolworths.com.au" desc="澳大利亚超市" icon="https://www.woolworths.com.au/favicon.ico"/>
+      <link name="Countdown" url="https://www.countdown.co.nz" desc="新西兰超市" icon="https://www.countdown.co.nz/favicon.ico"/>
+      <link name="New World" url="https://www.newworld.co.nz" desc="新西兰超市" icon="https://www.newworld.co.nz/favicon.ico"/>
+      <link name="Pak'nSave" url="https://www.paknsave.co.nz" desc="新西兰折扣超市" icon="https://www.paknsave.co.nz/favicon.ico"/>
+      <link name="Carousell" url="https://www.carousell.com" desc="东南亚二手电商" icon="https://www.carousell.com/favicon.ico"/>
+      <link name="Gumtree" url="https://www.gumtree.com" desc="英国分类广告" icon="https://www.gumtree.com/favicon.ico"/>
+      <link name="Craigslist" url="https://www.craigslist.org" desc="美国分类广告" icon="https://www.craigslist.org/favicon.ico"/>
+      <link name="OLX" url="https://www.olx.com" desc="全球分类广告" icon="https://www.olx.com/favicon.ico"/>
+      <link name="Avito" url="https://www.avito.ru" desc="俄罗斯分类广告" icon="https://www.avito.ru/favicon.ico"/>
+      <link name="Leboncoin" url="https://www.leboncoin.fr" desc="法国分类广告" icon="https://www.leboncoin.fr/favicon.ico"/>
+      <link name="Subito" url="https://www.subito.it" desc="意大利分类广告" icon="https://www.subito.it/favicon.ico"/>
+      <link name="Milanuncios" url="https://www.milanuncios.com" desc="西班牙分类广告" icon="https://www.milanuncios.com/favicon.ico"/>
+      <link name="Kijiji" url="https://www.kijiji.ca" desc="加拿大分类广告" icon="https://www.kijiji.ca/favicon.ico"/>
+      <link name="Facebook Marketplace" url="https://www.facebook.com/marketplace" desc="Facebook二手交易" icon="https://www.facebook.com/favicon.ico"/>
+      <link name="Etsy" url="https://www.etsy.com" desc="全球手工艺品电商" icon="https://www.etsy.com/favicon.ico"/>
+      <link name="Depop" url="https://www.depop.com" desc="时尚二手交易" icon="https://www.depop.com/favicon.ico"/>
+      <link name="Vinted" url="https://www.vinted.com" desc="欧洲二手时尚" icon="https://www.vinted.com/favicon.ico"/>
+      <link name="Poshmark" url="https://poshmark.com" desc="美国时尚二手" icon="https://poshmark.com/favicon.ico"/>
+      <link name="ThredUp" url="https://www.thredup.com" desc="二手服装" icon="https://www.thredup.com/favicon.ico"/>
+      <link name="StockX" url="https://stockx.com" desc="球鞋潮流转售" icon="https://stockx.com/favicon.ico"/>
+      <link name="GOAT" url="https://www.goat.com" desc="球鞋认证交易" icon="https://www.goat.com/favicon.ico"/>
+      <link name="Flight Club" url="https://www.flightclub.com" desc="高端球鞋" icon="https://www.flightclub.com/favicon.ico"/>
+      <link name="Farfetch" url="https://www.farfetch.com" desc="全球奢侈品电商" icon="https://www.farfetch.com/favicon.ico"/>
+      <link name="Net-a-Porter" url="https://www.net-a-porter.com" desc="高端女装" icon="https://www.net-a-porter.com/favicon.ico"/>
+      <link name="Mr Porter" url="https://www.mrporter.com" desc="高端男装" icon="https://www.mrporter.com/favicon.ico"/>
+      <link name="MatchesFashion" url="https://www.matchesfashion.com" desc="奢侈时尚" icon="https://www.matchesfashion.com/favicon.ico"/>
+      <link name="SSENSE" url="https://www.ssense.com" desc="潮流奢侈品" icon="https://www.ssense.com/favicon.ico"/>
+      <link name="Mytheresa" url="https://www.mytheresa.com" desc="奢侈品电商" icon="https://www.mytheresa.com/favicon.ico"/>
+      <link name="Luisaviaroma" url="https://www.luisaviaroma.com" desc="意大利奢侈品" icon="https://www.luisaviaroma.com/favicon.ico"/>
+      <link name="Browns" url="https://www.brownsfashion.com" desc="英国潮流奢侈" icon="https://www.brownsfashion.com/favicon.ico"/>
+      <link name="Selfridges" url="https://www.selfridges.com" desc="英国百货奢侈" icon="https://www.selfridges.com/favicon.ico"/>
+      <link name="Harrods" url="https://www.harrods.com" desc="伦敦奢侈百货" icon="https://www.harrods.com/favicon.ico"/>
+      <link name="Galeries Lafayette" url="https://www.galerieslafayette.com" desc="巴黎百货" icon="https://www.galerieslafayette.com/favicon.ico"/>
+      <link name="Printemps" url="https://www.printemps.com" desc="巴黎时尚百货" icon="https://www.printemps.com/favicon.ico"/>
+      <link name="KaDeWe" url="https://www.kadewe.de" desc="柏林奢侈百货" icon="https://www.kadewe.de/favicon.ico"/>
+      <link name="El Corte Inglés" url="https://www.elcorteingles.es" desc="西班牙百货" icon="https://www.elcorteingles.es/favicon.ico"/>
+      <link name="La Rinascente" url="https://www.rinascente.it" desc="意大利百货" icon="https://www.rinascente.it/favicon.ico"/>
+      <link name="Takashimaya" url="https://www.takashimaya.co.jp" desc="日本高端百货" icon="https://www.takashimaya.co.jp/favicon.ico"/>
+      <link name="Isetan" url="https://www.isetan.mistore.jp" desc="日本时尚百货" icon="https://www.isetan.mistore.jp/favicon.ico"/>
+      <link name="Lane Crawford" url="https://www.lanecrawford.com" desc="香港奢侈百货" icon="https://www.lanecrawford.com/favicon.ico"/>
+      <link name="Harvey Nichols" url="https://www.harveynichols.com" desc="英国高端百货" icon="https://www.harveynichols.com/favicon.ico"/>
+      <link name="Bergdorf Goodman" url="https://www.bergdorfgoodman.com" desc="纽约奢侈百货" icon="https://www.bergdorfgoodman.com/favicon.ico"/>
+      <link name="Barneys" url="https://www.barneys.com" desc="纽约时尚百货" icon="https://www.barneys.com/favicon.ico"/>
+    </subcategory>
+  </category>
+  <category name="新闻资讯">
+    <subcategory name="综合新闻">
+      <link name="CNN" url="https://www.cnn.com" desc="美国主流新闻" icon="https://www.cnn.com/favicon.ico"/>
+      <link name="BBC" url="https://www.bbc.com" desc="英国全球新闻" icon="https://www.bbc.com/favicon.ico"/>
+      <link name="Reuters" url="https://www.reuters.com" desc="国际财经新闻" icon="https://www.reuters.com/favicon.ico"/>
+      <link name="The New York Times" url="https://www.nytimes.com" desc="美国高端新闻" icon="https://www.nytimes.com/favicon.ico"/>
+      <link name="The Guardian" url="https://www.theguardian.com" desc="英国独立新闻" icon="https://www.theguardian.com/favicon.ico"/>
+      <link name="The Washington Post" url="https://www.washingtonpost.com" desc="美国政治新闻" icon="https://www.washingtonpost.com/favicon.ico"/>
+      <link name="The Wall Street Journal" url="https://www.wsj.com" desc="美国财经新闻" icon="https://www.wsj.com/favicon.ico"/>
+      <link name="Fox News" url="https://www.foxnews.com" desc="美国保守派新闻" icon="https://www.foxnews.com/favicon.ico"/>
+      <link name="Al Jazeera" url="https://www.aljazeera.com" desc="中东新闻" icon="https://www.aljazeera.com/favicon.ico"/>
+      <link name="RT" url="https://www.rt.com" desc="俄罗斯国际新闻" icon="https://www.rt.com/favicon.ico"/>
+      <link name="South China Morning Post" url="https://www.scmp.com" desc="香港英文新闻" icon="https://www.scmp.com/favicon.ico"/>
+      <link name="The Times of India" url="https://timesofindia.indiatimes.com" desc="印度主流新闻" icon="https://timesofindia.indiatimes.com/favicon.ico"/>
+      <link name="The Hindu" url="https://www.thehindu.com" desc="印度高端新闻" icon="https://www.thehindu.com/favicon.ico"/>
+      <link name="Le Monde" url="https://www.lemonde.fr" desc="法国权威新闻" icon="https://www.lemonde.fr/favicon.ico"/>
+      <link name="Le Figaro" url="https://www.lefigaro.fr" desc="法国主流新闻" icon="https://www.lefigaro.fr/favicon.ico"/>
+      <link name="El País" url="https://elpais.com" desc="西班牙主流新闻" icon="https://elpais.com/favicon.ico"/>
+      <link name="Corriere della Sera" url="https://www.corriere.it" desc="意大利新闻" icon="https://www.corriere.it/favicon.ico"/>
+      <link name="Der Spiegel" url="https://www.spiegel.de" desc="德国新闻杂志" icon="https://www.spiegel.de/favicon.ico"/>
+      <link name="Die Zeit" url="https://www.zeit.de" desc="德国周报" icon="https://www.zeit.de/favicon.ico"/>
+      <link name="NHK" url="https://www3.nhk.or.jp" desc="日本公共新闻" icon="https://www3.nhk.or.jp/favicon.ico"/>
+      <link name="Asahi Shimbun" url="https://www.asahi.com" desc="日本主流新闻" icon="https://www.asahi.com/favicon.ico"/>
+      <link name="Yomiuri Shimbun" url="https://www.yomiuri.co.jp" desc="日本大报" icon="https://www.yomiuri.co.jp/favicon.ico"/>
+      <link name="腾讯新闻" url="https://news.qq.com" desc="中国实时热点" icon="https://news.qq.com/favicon.ico"/>
+      <link name="新浪新闻" url="https://news.sina.com.cn" desc="中国滚动新闻" icon="https://news.sina.com.cn/favicon.ico"/>
+      <link name="网易新闻" url="https://news.163.com" desc="中国有态度新闻" icon="https://news.163.com/favicon.ico"/>
+      <link name="今日头条" url="https://www.toutiao.com" desc="中国算法推荐" icon="https://www.toutiao.com/favicon.ico"/>
+      <link name="凤凰网" url="https://www.ifeng.com" desc="中国深度报道" icon="https://www.ifeng.com/favicon.ico"/>
+      <link name="新华网" url="http://www.news.cn" desc="中国官方新闻" icon="http://www.news.cn/favicon.ico"/>
+      <link name="人民网" url="http://www.people.com.cn" desc="人民日报" icon="http://www.people.com.cn/favicon.ico"/>
+      <link name="央视网" url="https://www.cctv.com" desc="中央电视台" icon="https://www.cctv.com/favicon.ico"/>
+      <link name="环球时报" url="https://www.huanqiu.com" desc="中国国际新闻" icon="https://www.huanqiu.com/favicon.ico"/>
+      <link name="参考消息" url="http://www.cankaoxiaoxi.com" desc="中国外媒编译" icon="http://www.cankaoxiaoxi.com/favicon.ico"/>
+      <link name="财新网" url="https://www.caixin.com" desc="中国财经新闻" icon="https://www.caixin.com/favicon.ico"/>
+      <link name="第一财经" url="https://www.yicai.com" desc="中国财经媒体" icon="https://www.yicai.com/favicon.ico"/>
+      <link name="澎湃新闻" url="https://www.thepaper.cn" desc="中国深度新闻" icon="https://www.thepaper.cn/favicon.ico"/>
+      <link name="观察者网" url="https://www.guancha.cn" desc="中国时事评论" icon="https://www.guancha.cn/favicon.ico"/>
+      <link name="界面新闻" url="https://www.jiemian.com" desc="中国商业新闻" icon="https://www.jiemian.com/favicon.ico"/>
+      <link name="经济观察网" url="https://www.eeo.com.cn" desc="中国经济新闻" icon="https://www.eeo.com.cn/favicon.ico"/>
+      <link name="21世纪经济报道" url="https://www.21jingji.com" desc="中国财经" icon="https://www.21jingji.com/favicon.ico"/>
+      <link name="证券时报" url="http://www.stcn.com" desc="中国证券新闻" icon="http://www.stcn.com/favicon.ico"/>
+      <link name="每日经济新闻" url="http://www.nbd.com.cn" desc="中国经济新闻" icon="http://www.nbd.com.cn/favicon.ico"/>
+      <link name="中国经营报" url="http://www.cb.com.cn" desc="中国商业新闻" icon="http://www.cb.com.cn/favicon.ico"/>
+      <link name="南方周末" url="https://www.infzm.com" desc="中国深度报道" icon="https://www.infzm.com/favicon.ico"/>
+      <link name="新京报" url="https://www.bjnews.com.cn" desc="北京新闻" icon="https://www.bjnews.com.cn/favicon.ico"/>
+      <link name="京报网" url="http://www.bjnews.com.cn" desc="北京新闻" icon="http://www.bjnews.com.cn/favicon.ico"/>
+      <link name="北京青年报" url="http://bj.bjd.com.cn" desc="北京青年新闻" icon="http://bj.bjd.com.cn/favicon.ico"/>
+      <link name="东方网" url="https://www.eastday.com" desc="上海新闻" icon="https://www.eastday.com/favicon.ico"/>
+      <link name="文汇报" url="http://www.whb.cn" desc="上海新闻" icon="http://www.whb.cn/favicon.ico"/>
+      <link name="广州日报" url="http://www.gzdaily.cn" desc="广州新闻" icon="http://www.gzdaily.cn/favicon.ico"/>
+    </subcategory>
+  </category>
+  <category name="开发者工具">
+    <subcategory name="代码托管与协作">
+      <link name="GitHub" url="https://github.com" desc="全球代码托管平台" icon="https://github.com/favicon.ico"/>
+      <link name="GitLab" url="https://gitlab.com" desc="开源代码托管" icon="https://gitlab.com/favicon.ico"/>
+      <link name="Gitee" url="https://gitee.com" desc="中国码云" icon="https://gitee.com/favicon.ico"/>
+      <link name="Bitbucket" url="https://bitbucket.org" desc="Atlassian代码托管" icon="https://bitbucket.org/favicon.ico"/>
+      <link name="SourceForge" url="https://sourceforge.net" desc="开源项目托管" icon="https://sourceforge.net/favicon.ico"/>
+      <link name="Codeberg" url="https://codeberg.org" desc="去中心化Git" icon="https://codeberg.org/favicon.ico"/>
+      <link name="GitKraken" url="https://www.gitkraken.com" desc="Git客户端" icon="https://www.gitkraken.com/favicon.ico"/>
+      <link name="Trello" url="https://trello.com" desc="项目管理工具" icon="https://trello.com/favicon.ico"/>
+      <link name="Jira" url="https://www.atlassian.com/software/jira" desc="敏捷项目管理" icon="https://www.atlassian.com/favicon.ico"/>
+      <link name="Asana" url="https://asana.com" desc="团队协作工具" icon="https://asana.com/favicon.ico"/>
+      <link name="Notion" url="https://www.notion.so" desc="笔记与项目管理" icon="https://www.notion.so/favicon.ico"/>
+      <link name="ClickUp" url="https://clickup.com" desc="生产力工具" icon="https://clickup.com/favicon.ico"/>
+      <link name="Monday.com" url="https://monday.com" desc="工作管理平台" icon="https://monday.com/favicon.ico"/>
+      <link name="Basecamp" url="https://basecamp.com" desc="团队项目管理" icon="https://basecamp.com/favicon.ico"/>
+      <link name="Slack" url="https://slack.com" desc="团队沟通工具" icon="https://slack.com/favicon.ico"/>
+      <link name="Microsoft Teams" url="https://www.microsoft.com/en-us/microsoft-teams" desc="企业团队协作" icon="https://www.microsoft.com/favicon.ico"/>
+      <link name="Mattermost" url="https://mattermost.com" desc="开源团队沟通" icon="https://mattermost.com/favicon.ico"/>
+      <link name="Rocket.Chat" url="https://rocket.chat" desc="开源聊天工具" icon="https://rocket.chat/favicon.ico"/>
+      <link name="Zoho Projects" url="https://www.zoho.com/projects" desc="项目管理软件" icon="https://www.zoho.com/favicon.ico"/>
+      <link name="Redmine" url="https://www.redmine.org" desc="开源项目管理" icon="https://www.redmine.org/favicon.ico"/>
+      <link name="Trac" url="https://trac.edgewall.org" desc="轻量级项目管理" icon="https://trac.edgewall.org/favicon.ico"/>
+      <link name="Phabricator" url="https://www.phacility.com" desc="代码审查工具" icon="https://www.phacility.com/favicon.ico"/>
+      <link name="Gitea" url="https://gitea.io" desc="轻量级Git服务" icon="https://gitea.io/favicon.ico"/>
+      <link name="Launchpad" url="https://launchpad.net" desc="开源项目协作" icon="https://launchpad.net/favicon.ico"/>
+      <link name="Savannah" url="https://savannah.gnu.org" desc="GNU项目托管" icon="https://savannah.gnu.org/favicon.ico"/>
+      <link name="Pagure" url="https://pagure.io" desc="Fedora Git服务" icon="https://pagure.io/favicon.ico"/>
+      <link name="GitBucket" url="https://gitbucket.github.io" desc="轻量级Git" icon="https://gitbucket.github.io/favicon.ico"/>
+      <link name="Gitolite" url="https://gitolite.com" desc="Git权限管理" icon="https://gitolite.com/favicon.ico"/>
+      <link name="Gitosis" url="https://gitosis.org" desc="Git服务器管理" icon="https://gitosis.org/favicon.ico"/>
+      <link name="GitPrep" url="https://github.com/yuki-kimoto/gitprep" desc="轻量Git服务" icon="https://github.com/favicon.ico"/>
+      <link name="Gogs" url="https://gogs.io" desc="轻量Git服务" icon="https://gogs.io/favicon.ico"/>
+      <link name="Forgejo" url="https://forgejo.org" desc="Gitea分支" icon="https://forgejo.org/favicon.ico"/>
+      <link name="GitHub Actions" url="https://github.com/features/actions" desc="GitHub工作流" icon="https://github.com/favicon.ico"/>
+      <link name="GitLab CI/CD" url="https://about.gitlab.com/stages-devops-lifecycle" desc="GitLab持续集成" icon="https://about.gitlab.com/favicon.ico"/>
+      <link name="Jenkins" url="https://www.jenkins.io" desc="开源CI/CD" icon="https://www.jenkins.io/favicon.ico"/>
+      <link name="CircleCI" url="https://circleci.com" desc="云端CI/CD" icon="https://circleci.com/favicon.ico"/>
+      <link name="Travis CI" url="https://www.travis-ci.com" desc="开源CI服务" icon="https://www.travis-ci.com/favicon.ico"/>
+      <link name="Buddy" url="https://buddy.works" desc="CI/CD平台" icon="https://buddy.works/favicon.ico"/>
+      <link name="Buildkite" url="https://buildkite.com" desc="自定义CI/CD" icon="https://buildkite.com/favicon.ico"/>
+      <link name="TeamCity" url="https://www.jetbrains.com/teamcity" desc="企业CI/CD" icon="https://www.jetbrains.com/favicon.ico"/>
+      <link name="Bamboo" url="https://www.atlassian.com/software/bamboo" desc="Atlassian CI/CD" icon="https://www.atlassian.com/favicon.ico"/>
+      <link name="GitHub Pages" url="https://pages.github.com" desc="静态网站托管" icon="https://pages.github.com/favicon.ico"/>
+      <link name="Netlify" url="https://www.netlify.com" desc="静态网站部署" icon="https://www.netlify.com/favicon.ico"/>
+      <link name="Vercel" url="https://vercel.com" desc="前端部署平台" icon="https://vercel.com/favicon.ico"/>
+      <link name="Render" url="https://render.com" desc="全栈部署" icon="https://render.com/favicon.ico"/>
+      <link name="Heroku" url="https://www.heroku.com" desc="PaaS平台" icon="https://www.heroku.com/favicon.ico"/>
+      <link name="DigitalOcean" url="https://www.digitalocean.com" desc="云服务器" icon="https://www.digitalocean.com/favicon.ico"/>
+      <link name="Linode" url="https://www.linode.com" desc="云主机" icon="https://www.linode.com/favicon.ico"/>
+      <link name="Vultr" url="https://www.vultr.com" desc="云服务器" icon="https://www.vultr.com/favicon.ico"/>
+    </subcategory>
+  </category>
+  <category name="教育与学习">
+    <subcategory name="在线课程平台">
+      <link name="Coursera" url="https://www.coursera.org" desc="全球大学在线课程" icon="https://www.coursera.org/favicon.ico"/>
+      <link name="edX" url="https://www.edx.org" desc="哈佛MIT免费课程" icon="https://www.edx.org/favicon.ico"/>
+      <link name="Udemy" url="https://www.udemy.com" desc="技能付费课程" icon="https://www.udemy.com/favicon.ico"/>
+      <link name="Khan Academy" url="https://www.khanacademy.org" desc="免费K12教育" icon="https://www.khanacademy.org/favicon.ico"/>
+      <link name="FutureLearn" url="https://www.futurelearn.com" desc="英国大学课程" icon="https://www.futurelearn.com/favicon.ico"/>
+      <link name="Udacity" url="https://www.udacity.com" desc="科技纳米学位" icon="https://www.udacity.com/favicon.ico"/>
+      <link name="Skillshare" url="https://www.skillshare.com" desc="创意技能学习" icon="https://www.skillshare.com/favicon.ico"/>
+      <link name="MasterClass" url="https://www.masterclass.com" desc="名人大师课" icon="https://www.masterclass.com/favicon.ico"/>
+      <link name="LinkedIn Learning" url="https://learning.linkedin.com" desc="职场技能课程" icon="https://learning.linkedin.com/favicon.ico"/>
+      <link name="Pluralsight" url="https://www.pluralsight.com" desc="IT技能学习" icon="https://www.pluralsight.com/favicon.ico"/>
+      <link name="Treehouse" url="https://teamtreehouse.com" desc="编程设计学习" icon="https://teamtreehouse.com/favicon.ico"/>
+      <link name="Codecademy" url="https://www.codecademy.com" desc="交互式编程学习" icon="https://www.codecademy.com/favicon.ico"/>
+      <link name="freeCodeCamp" url="https://www.freecodecamp.org" desc="免费编程证书" icon="https://www.freecodecamp.org/favicon.ico"/>
+      <link name="The Odin Project" url="https://www.theodinproject.com" desc="免费全栈开发" icon="https://www.theodinproject.com/favicon.ico"/>
+      <link name="CS50" url="https://cs50.harvard.edu" desc="哈佛计算机课程" icon="https://cs50.harvard.edu/favicon.ico"/>
+      <link name="MIT OpenCourseWare" url="https://ocw.mit.edu" desc="MIT公开课" icon="https://ocw.mit.edu/favicon.ico"/>
+      <link name="Stanford Online" url="https://online.stanford.edu" desc="斯坦福在线课程" icon="https://online.stanford.edu/favicon.ico"/>
+      <link name="Open Yale Courses" url="https://oyc.yale.edu" desc="耶鲁公开课" icon="https://oyc.yale.edu/favicon.ico"/>
+      <link name="学而思网校" url="https://www.xueersi.com" desc="中国K12在线教育" icon="https://www.xueersi.com/favicon.ico"/>
+      <link name="新东方在线" url="https://www.koolearn.com" desc="中国考试培训" icon="https://www.koolearn.com/favicon.ico"/>
+      <link name="猿辅导" url="https://www.yuanfudao.com" desc="中国在线小班课" icon="https://www.yuanfudao.com/favicon.ico"/>
+      <link name="作业帮" url="https://www.zybang.com" desc="中国拍照搜题" icon="https://www.zybang.com/favicon.ico"/>
+      <link name="好未来" url="https://www.tal.com" desc="中国教育集团" icon="https://www.tal.com/favicon.ico"/>
+      <link name="VIPKid" url="https://www.vipkid.com" desc="中国少儿英语" icon="https://www.vipkid.com/favicon.ico"/>
+      <link name="DaDa" url="https://www.dadaabc.com" desc="中国在线少儿英语" icon="https://www.dadaabc.com/favicon.ico"/>
+      <link name="51Talk" url="https://www.51talk.com" desc="中国成人英语" icon="https://www.51talk.com/favicon.ico"/>
+      <link name="腾讯课堂" url="https://ke.qq.com" desc="腾讯在线课程" icon="https://ke.qq.com/favicon.ico"/>
+      <link name="网易公开课" url="https://open.163.com" desc="中国公开课" icon="https://open.163.com/favicon.ico"/>
+      <link name="中国大学MOOC" url="https://www.icourse163.org" desc="中国慕课平台" icon="https://www.icourse163.org/favicon.ico"/>
+      <link name="学堂在线" url="https://www.xuetangx.com" desc="清华慕课" icon="https://www.xuetangx.com/favicon.ico"/>
+      <link name="慕课网" url="https://www.imooc.com" desc="中国IT技能课程" icon="https://www.imooc.com/favicon.ico"/>
+      <link name="极客时间" url="https://time.geekbang.org" desc="中国技术专栏" icon="https://time.geekbang.org/favicon.ico"/>
+      <link name="拉勾教育" url="https://kaiwu.lagou.com" desc="中国职场培训" icon="https://kaiwu.lagou.com/favicon.ico"/>
+      <link name="实验楼" url="https://www.shiyanlou.com" desc="中国在线实验" icon="https://www.shiyanlou.com/favicon.ico"/>
+      <link name="Runoob" url="https://www.runoob.com" desc="中国编程教程" icon="https://www.runoob.com/favicon.ico"/>
+      <link name="菜鸟教程" url="https://www.runoob.com" desc="编程入门教程" icon="https://www.runoob.com/favicon.ico"/>
+      <link name="W3School" url="https://www.w3school.com.cn" desc="中国前端教程" icon="https://www.w3school.com.cn/favicon.ico"/>
+      <link name="Bilibili 教育" url="https://www.bilibili.com/cheese" desc="B站知识区" icon="https://www.bilibili.com/favicon.ico"/>
+      <link name="Duolingo" url="https://www.duolingo.com" desc="游戏化语言学习" icon="https://www.duolingo.com/favicon.ico"/>
+      <link name="Memrise" url="https://www.memrise.com" desc="记忆法语言学习" icon="https://www.memrise.com/favicon.ico"/>
+      <link name="Busuu" url="https://www.busuu.com" desc="社区语言学习" icon="https://www.busuu.com/favicon.ico"/>
+      <link name="Babbel" url="https://www.babbel.com" desc="对话式语言课程" icon="https://www.babbel.com/favicon.ico"/>
+      <link name="Rosetta Stone" url="https://www.rosettastone.com" desc="沉浸式语言学习" icon="https://www.rosettastone.com/favicon.ico"/>
+      <link name="italki" url="https://www.italki.com" desc="一对一语言老师" icon="https://www.italki.com/favicon.ico"/>
+      <link name="Preply" url="https://preply.com" desc="在线家教平台" icon="https://preply.com/favicon.ico"/>
+      <link name="HelloTalk" url="https://www.hellotalk.com" desc="语言交换App" icon="https://www.hellotalk.com/favicon.ico"/>
+      <link name="Tandem" url="https://www.tandem.net" desc="语言交换" icon="https://www.tandem.net/favicon.ico"/>
+      <link name="HiNative" url="https://hinative.com" desc="母语者问答" icon="https://hinative.com/favicon.ico"/>
+      <link name="FluentU" url="https://www.fluentu.com" desc="视频语言学习" icon="https://www.fluentu.com/favicon.ico"/>
+      <link name="Yabla" url="https://www.yabla.com" desc="沉浸式视频学习" icon="https://www.yabla.com/favicon.ico"/>
+      <link name="Lingodeer" url="https://www.lingodeer.com" desc="亚洲语言学习" icon="https://www.lingodeer.com/favicon.ico"/>
+      <link name="Drops" url="https://languagedrops.com" desc="视觉词汇学习" icon="https://languagedrops.com/favicon.ico"/>
+      <link name="Mondly" url="https://www.mondly.com" desc="AR语言学习" icon="https://www.mondly.com/favicon.ico"/>
+      <link name="Clozemaster" url="https://www.clozemaster.com" desc="填空学句子" icon="https://www.clozemaster.com/favicon.ico"/>
+      <link name="AnkiWeb" url="https://ankiweb.net" desc="间隔重复闪卡" icon="https://ankiweb.net/favicon.ico"/>
+      <link name="Quizlet" url="https://quizlet.com" desc="学习闪卡工具" icon="https://quizlet.com/favicon.ico"/>
+      <link name="Brainscape" url="https://www.brainscape.com" desc="科学闪卡" icon="https://www.brainscape.com/favicon.ico"/>
+      <link name="Brilliant" url="https://brilliant.org" desc="数学科学互动学习" icon="https://brilliant.org/favicon.ico"/>
+      <link name="IXL" url="https://www.ixl.com" desc="K12练习题" icon="https://www.ixl.com/favicon.ico"/>
+      <link name="Duolingo ABC" url="https://www.duolingo.com/abc" desc="儿童识字" icon="https://www.duolingo.com/favicon.ico"/>
+      <link name="ABCmouse" url="https://www.abcmouse.com" desc="美国儿童教育" icon="https://www.abcmouse.com/favicon.ico"/>
+      <link name="Starfall" url="https://www.starfall.com" desc="儿童阅读" icon="https://www.starfall.com/favicon.ico"/>
+    </subcategory>
+  </category>
+  <category name="金融理财">
+    <subcategory name="银行与支付">
+      <link name="支付宝" url="https://www.alipay.com" desc="中国移动支付" icon="https://www.alipay.com/favicon.ico"/>
+      <link name="微信支付" url="https://pay.weixin.qq.com" desc="微信支付" icon="https://pay.weixin.qq.com/favicon.ico"/>
+      <link name="PayPal" url="https://www.paypal.com" desc="全球在线支付" icon="https://www.paypal.com/favicon.ico"/>
+      <link name="Stripe" url="https://stripe.com" desc="开发者支付" icon="https://stripe.com/favicon.ico"/>
+      <link name="Square" url="https://squareup.com" desc="小企业支付" icon="https://squareup.com/favicon.ico"/>
+      <link name="Venmo" url="https://venmo.com" desc="美国社交支付" icon="https://venmo.com/favicon.ico"/>
+      <link name="Cash App" url="https://cash.app" desc="美国移动支付" icon="https://cash.app/favicon.ico"/>
+      <link name="Zelle" url="https://www.zellepay.com" desc="美国银行转账" icon="https://www.zellepay.com/favicon.ico"/>
+      <link name="Revolut" url="https://www.revolut.com" desc="欧洲数字银行" icon="https://www.revolut.com/favicon.ico"/>
+      <link name="N26" url="https://n26.com" desc="德国移动银行" icon="https://n26.com/favicon.ico"/>
+      <link name="Monzo" url="https://monzo.com" desc="英国数字银行" icon="https://monzo.com/favicon.ico"/>
+      <link name="Chase" url="https://www.chase.com" desc="美国大银行" icon="https://www.chase.com/favicon.ico"/>
+      <link name="Bank of America" url="https://www.bankofamerica.com" desc="美国银行" icon="https://www.bankofamerica.com/favicon.ico"/>
+      <link name="Wells Fargo" url="https://www.wellsfargo.com" desc="美国银行" icon="https://www.wellsfargo.com/favicon.ico"/>
+      <link name="Citibank" url="https://www.citibank.com" desc="花旗银行" icon="https://www.citibank.com/favicon.ico"/>
+      <link name="HSBC" url="https://www.hsbc.com" desc="汇丰银行" icon="https://www.hsbc.com/favicon.ico"/>
+      <link name="中国银行" url="https://www.boc.cn" desc="中国国有银行" icon="https://www.boc.cn/favicon.ico"/>
+      <link name="工商银行" url="https://www.icbc.com.cn" desc="全球最大银行" icon="https://www.icbc.com.cn/favicon.ico"/>
+      <link name="建设银行" url="https://www.ccb.com" desc="中国建设银行" icon="https://www.ccb.com/favicon.ico"/>
+      <link name="农业银行" url="https://www.abchina.com" desc="中国农业银行" icon="https://www.abchina.com/favicon.ico"/>
+    </subcategory>
+    <subcategory name="投资理财">
+      <link name="雪球" url="https://xueqiu.com" desc="中国投资社区" icon="https://xueqiu.com/favicon.ico"/>
+      <link name="东方财富" url="https://www.eastmoney.com" desc="中国股票行情" icon="https://www.eastmoney.com/favicon.ico"/>
+      <link name="同花顺" url="https://www.10jqka.com.cn" desc="中国炒股软件" icon="https://www.10jqka.com.cn/favicon.ico"/>
+      <link name="Investing.com" url="https://www.investing.com" desc="全球实时行情" icon="https://www.investing.com/favicon.ico"/>
+      <link name="Yahoo Finance" url="https://finance.yahoo.com" desc="全球财经新闻" icon="https://finance.yahoo.com/favicon.ico"/>
+      <link name="Bloomberg" url="https://www.bloomberg.com" desc="全球财经媒体" icon="https://www.bloomberg.com/favicon.ico"/>
+      <link name="CNBC" url="https://www.cnbc.com" desc="美国财经新闻" icon="https://www.cnbc.com/favicon.ico"/>
+      <link name="TradingView" url="https://www.tradingview.com" desc="高级图表工具" icon="https://www.tradingview.com/favicon.ico"/>
+      <link name="Robinhood" url="https://robinhood.com" desc="美国零佣金炒股" icon="https://robinhood.com/favicon.ico"/>
+      <link name="Webull" url="https://www.webull.com" desc="美股交易App" icon="https://www.webull.com/favicon.ico"/>
+      <link name="eToro" url="https://www.etoro.com" desc="社交交易平台" icon="https://www.etoro.com/favicon.ico"/>
+      <link name="Interactive Brokers" url="https://www.interactivebrokers.com" desc="专业经纪商" icon="https://www.interactivebrokers.com/favicon.ico"/>
+      <link name="Charles Schwab" url="https://www.schwab.com" desc="美国经纪商" icon="https://www.schwab.com/favicon.ico"/>
+      <link name="Fidelity" url="https://www.fidelity.com" desc="美国投资平台" icon="https://www.fidelity.com/favicon.ico"/>
+      <link name="Vanguard" url="https://www.vanguard.com" desc="指数基金巨头" icon="https://www.vanguard.com/favicon.ico"/>
+      <link name="BlackRock" url="https://www.blackrock.com" desc="全球资产管理" icon="https://www.blackrock.com/favicon.ico"/>
+      <link name="Coinbase" url="https://www.coinbase.com" desc="加密货币交易所" icon="https://www.coinbase.com/favicon.ico"/>
+      <link name="Binance" url="https://www.binance.com" desc="全球最大加密交易所" icon="https://www.binance.com/favicon.ico"/>
+      <link name="Kraken" url="https://www.kraken.com" desc="安全加密交易所" icon="https://www.kraken.com/favicon.ico"/>
+      <link name="OKX" url="https://www.okx.com" desc="加密交易平台" icon="https://www.okx.com/favicon.ico"/>
+    </subcategory>
+  </category>
+  <category name="生活服务">
+    <subcategory name="外卖与团购">
+      <link name="美团" url="https://www.meituan.com" desc="中国外卖团购酒店" icon="https://www.meituan.com/favicon.ico"/>
+      <link name="饿了么" url="https://www.ele.me" desc="阿里外卖配送" icon="https://www.ele.me/favicon.ico"/>
+      <link name="大众点评" url="https://www.dianping.com" desc="美食评价预订" icon="https://www.dianping.com/favicon.ico"/>
+      <link name="口碑" url="https://www.koubei.com" desc="阿里本地生活" icon="https://www.koubei.com/favicon.ico"/>
+      <link name="饿了么星选" url="https://www.ele.me/xuan" desc="高端外卖" icon="https://www.ele.me/favicon.ico"/>
+      <link name="美团优选" url="https://youxuan.meituan.com" desc="社区团购" icon="https://youxuan.meituan.com/favicon.ico"/>
+      <link name="多多买菜" url="https://mai.pinduoduo.com" desc="拼多多社区团购" icon="https://mai.pinduoduo.com/favicon.ico"/>
+      <link name="京东到家" url="https://daojia.jd.com" desc="京东小时达" icon="https://daojia.jd.com/favicon.ico"/>
+      <link name="盒马鲜生" url="https://www.freshippo.com" desc="阿里新零售超市" icon="https://www.freshippo.com/favicon.ico"/>
+      <link name="叮咚买菜" url="https://www.ddmc.cn" desc="前置仓生鲜" icon="https://www.ddmc.cn/favicon.ico"/>
+      <link name="每日优鲜" url="https://www.mryx.cn" desc="生鲜电商" icon="https://www.mryx.cn/favicon.ico"/>
+      <link name="朴朴超市" url="https://www.pupumall.com" desc="30分钟达生鲜" icon="https://www.pupumall.com/favicon.ico"/>
+      <link name="永辉生活" url="https://www.yonghui.com.cn" desc="超市到家" icon="https://www.yonghui.com.cn/favicon.ico"/>
+      <link name="山姆会员商店" url="https://www.samsclub.cn" desc="沃尔玛会员店" icon="https://www.samsclub.cn/favicon.ico"/>
+      <link name="Costco" url="https://www.costco.com.cn" desc="开市客中国" icon="https://www.costco.com.cn/favicon.ico"/>
+    </subcategory>
+    <subcategory name="家政与维修">
+      <link name="58到家" url="https://www.58daojia.com" desc="家政保洁" icon="https://www.58daojia.com/favicon.ico"/>
+      <link name="阿姨来了" url="https://www.ayi.com" desc="高端家政" icon="https://www.ayi.com/favicon.ico"/>
+      <link name="e家洁" url="https://www.ejiajie.com" desc="保洁服务" icon="https://www.ejiajie.com/favicon.ico"/>
+      <link name="天鹅到家" url="https://www.tianeedaojia.com" desc="58家政品牌" icon="https://www.tianeedaojia.com/favicon.ico"/>
+      <link name="鲁班到家" url="https://www.lubandaojia.com" desc="家具安装维修" icon="https://www.lubandaojia.com/favicon.ico"/>
+      <link name="齐家网" url="https://www.jia.com" desc="装修平台" icon="https://www.jia.com/favicon.ico"/>
+      <link name="土巴兔" url="https://www.to8to.com" desc="装修招标" icon="https://www.to8to.com/favicon.ico"/>
+      <link name="安居客" url="https://www.anjuke.com" desc="二手房租房" icon="https://www.anjuke.com/favicon.ico"/>
+      <link name="贝壳找房" url="https://www.ke.com" desc="新房二手房" icon="https://www.ke.com/favicon.ico"/>
+      <link name="链家" url="https://www.lianjia.com" desc="房产交易" icon="https://www.lianjia.com/favicon.ico"/>
+      <link name="自如" url="https://www.ziroom.com" desc="长租公寓" icon="https://www.ziroom.com/favicon.ico"/>
+      <link name="蛋壳公寓" url="https://www.danke.com" desc="青年公寓" icon="https://www.danke.com/favicon.ico"/>
+      <link name="青客公寓" url="https://www.qk365.com" desc="白领公寓" icon="https://www.qk365.com/favicon.ico"/>
+      <link name="相寓" url="https://xiangyu.ziroom.com" desc="自如公寓" icon="https://xiangyu.ziroom.com/favicon.ico"/>
+      <link name="泊寓" url="https://www.magappartment.com" desc="万科长租" icon="https://www.magappartment.com/favicon.ico"/>
+    </subcategory>
+  </category>
+
+  <category name="健康医疗">
+    <subcategory name="在线问诊与预约">
+      <link name="好大夫在线" url="https://www.haodf.com" desc="找医生预约挂号" icon="https://www.haodf.com/favicon.ico"/>
+      <link name="微医" url="https://www.guahao.com" desc="互联网医院挂号" icon="https://www.guahao.com/favicon.ico"/>
+      <link name="平安好医生" url="https://www.pingan.com/health" desc="在线问诊" icon="https://www.pingan.com/favicon.ico"/>
+      <link name="阿里健康" url="https://www.alihealth.cn" desc="阿里医疗服务" icon="https://www.alihealth.cn/favicon.ico"/>
+      <link name="春雨医生" url="https://www.chunyuyisheng.com" desc="轻问诊" icon="https://www.chunyuyisheng.com/favicon.ico"/>
+      <link name="丁香医生" url="https://www.dxy.cn" desc="专业医疗咨询" icon="https://www.dxy.cn/favicon.ico"/>
+      <link name="39健康网" url="https://www.39.net" desc="健康资讯问诊" icon="https://www.39.net/favicon.ico"/>
+      <link name="有来医生" url="https://www.youlai.cn" desc="名医问诊" icon="https://www.youlai.cn/favicon.ico"/>
+      <link name="医脉通" url="https://www.medlive.cn" desc="医生社区" icon="https://www.medlive.cn/favicon.ico"/>
+      <link name="快速问医生" url="https://www.120ask.com" desc="快速问诊" icon="https://www.120ask.com/favicon.ico"/>
+      <link name="寻医问药" url="https://www.xywy.com" desc="健康问答" icon="https://www.xywy.com/favicon.ico"/>
+      <link name="WebMD" url="https://www.webmd.com" desc="全球健康信息" icon="https://www.webmd.com/favicon.ico"/>
+      <link name="Mayo Clinic" url="https://www.mayoclinic.org" desc="权威医疗信息" icon="https://www.mayoclinic.org/favicon.ico"/>
+      <link name="Healthline" url="https://www.healthline.com" desc="健康生活资讯" icon="https://www.healthline.com/favicon.ico"/>
+      <link name="NHS" url="https://www.nhs.uk" desc="英国国家医疗服务" icon="https://www.nhs.uk/favicon.ico"/>
+      <link name="CDC" url="https://www.cdc.gov" desc="美国疾控中心" icon="https://www.cdc.gov/favicon.ico"/>
+      <link name="WHO" url="https://www.who.int" desc="世界卫生组织" icon="https://www.who.int/favicon.ico"/>
+      <link name="Medscape" url="https://www.medscape.com" desc="医生专业资源" icon="https://www.medscape.com/favicon.ico"/>
+      <link name="UpToDate" url="https://www.uptodate.com" desc="临床决策支持" icon="https://www.uptodate.com/favicon.ico"/>
+      <link name="PubMed" url="https://pubmed.ncbi.nlm.nih.gov" desc="医学文献" icon="https://pubmed.ncbi.nlm.nih.gov/favicon.ico"/>
+    </subcategory>
+  </category>
+
+  <category name="出行旅游">
+    <subcategory name="机票酒店预订">
+      <link name="携程" url="https://www.ctrip.com" desc="综合旅游预订" icon="https://www.ctrip.com/favicon.ico"/>
+      <link name="去哪儿" url="https://www.qunar.com" desc="比价搜索" icon="https://www.qunar.com/favicon.ico"/>
+      <link name="飞猪" url="https://www.fliggy.com" desc="阿里旅行" icon="https://www.fliggy.com/favicon.ico"/>
+      <link name="同程旅行" url="https://www.ly.com" desc="特价机票酒店" icon="https://www.ly.com/favicon.ico"/>
+      <link name="马蜂窝" url="https://www.mafengwo.cn" desc="旅游攻略社区" icon="https://www.mafengwo.cn/favicon.ico"/>
+      <link name="途牛" url="https://www.tuniu.com" desc="跟团游" icon="https://www.tuniu.com/favicon.ico"/>
+      <link name="Booking" url="https://www.booking.com" desc="全球酒店预订" icon="https://www.booking.com/favicon.ico"/>
+      <link name="Agoda" url="https://www.agoda.com" desc="亚洲酒店预订" icon="https://www.agoda.com/favicon.ico"/>
+      <link name="Hotels.com" url="https://www.hotels.com" desc="酒店预订" icon="https://www.hotels.com/favicon.ico"/>
+      <link name="Expedia" url="https://www.expedia.com" desc="全球旅行预订" icon="https://www.expedia.com/favicon.ico"/>
+      <link name="Trip.com" url="https://www.trip.com" desc="携程国际版" icon="https://www.trip.com/favicon.ico"/>
+      <link name="Kayak" url="https://www.kayak.com" desc="旅行比价" icon="https://www.kayak.com/favicon.ico"/>
+      <link name="Skyscanner" url="https://www.skyscanner.net" desc="机票比价" icon="https://www.skyscanner.net/favicon.ico"/>
+      <link name="Google Flights" url="https://www.google.com/flights" desc="谷歌机票搜索" icon="https://www.google.com/favicon.ico"/>
+      <link name="Airbnb" url="https://www.airbnb.com" desc="民宿短租" icon="https://www.airbnb.com/favicon.ico"/>
+      <link name="小猪短租" url="https://www.xiaozhu.com" desc="中国民宿" icon="https://www.xiaozhu.com/favicon.ico"/>
+      <link name="途家" url="https://www.tujia.com" desc="中国民宿公寓" icon="https://www.tujia.com/favicon.ico"/>
+      <link name="木鸟短租" url="https://www.muniao.com" desc="中国短租" icon="https://www.muniao.com/favicon.ico"/>
+      <link name="Vrbo" url="https://www.vrbo.com" desc="度假屋租赁" icon="https://www.vrbo.com/favicon.ico"/>
+      <link name="HomeAway" url="https://www.homeaway.com" desc="度假租赁" icon="https://www.homeaway.com/favicon.ico"/>
+      <link name="Turo" url="https://turo.com" desc="租车平台" icon="https://turo.com/favicon.ico"/>
+      <link name="Getaround" url="https://www.getaround.com" desc="共享租车" icon="https://www.getaround.com/favicon.ico"/>
+      <link name="Zipcar" url="https://www.zipcar.com" desc="小时租车" icon="https://www.zipcar.com/favicon.ico"/>
+      <link name="神州租车" url="https://www.zuche.com" desc="中国租车" icon="https://www.zuche.com/favicon.ico"/>
+      <link name="一嗨租车" url="https://www.1hai.cn" desc="中国自驾租车" icon="https://www.1hai.cn/favicon.ico"/>
+      <link name="滴滴出行" url="https://www.didiglobal.com" desc="网约车" icon="https://www.didiglobal.com/favicon.ico"/>
+      <link name="Uber" url="https://www.uber.com" desc="全球网约车" icon="https://www.uber.com/favicon.ico"/>
+      <link name="Lyft" url="https://www.lyft.com" desc="美国网约车" icon="https://www.lyft.com/favicon.ico"/>
+      <link name="高德地图" url="https://www.amap.com" desc="中国地图导航" icon="https://www.amap.com/favicon.ico"/>
+      <link name="百度地图" url="https://map.baidu.com" desc="中国地图" icon="https://map.baidu.com/favicon.ico"/>
+      <link name="Google Maps" url="https://maps.google.com" desc="全球地图" icon="https://maps.google.com/favicon.ico"/>
+      <link name="Apple Maps" url="https://maps.apple.com" desc="苹果地图" icon="https://maps.apple.com/favicon.ico"/>
+      <link name="Waze" url="https://www.waze.com" desc="社区导航" icon="https://www.waze.com/favicon.ico"/>
+      <link name="MapQuest" url="https://www.mapquest.com" desc="美国地图" icon="https://www.mapquest.com/favicon.ico"/>
+      <link name="OpenStreetMap" url="https://www.openstreetmap.org" desc="开源地图" icon="https://www.openstreetmap.org/favicon.ico"/>
+      <link name="Citymapper" url="https://citymapper.com" desc="城市公共交通" icon="https://citymapper.com/favicon.ico"/>
+      <link name="Moovit" url="https://moovitapp.com" desc="公共交通导航" icon="https://moovitapp.com/favicon.ico"/>
+      <link name="Transit" url="https://transitapp.com" desc="实时公交地铁" icon="https://transitapp.com/favicon.ico"/>
+      <link name="Rome2Rio" url="https://www.rome2rio.com" desc="多模式旅行规划" icon="https://www.rome2rio.com/favicon.ico"/>
+      <link name="Trainline" url="https://www.thetrainline.com" desc="欧洲火车票" icon="https://www.thetrainline.com/favicon.ico"/>
+    </subcategory>
+  </category>
+
+  <category name="阅读书籍">
+    <subcategory name="电子书与小说">
+      <link name="微信读书" url="https://weread.qq.com" desc="腾讯无限卡阅读" icon="https://weread.qq.com/favicon.ico"/>
+      <link name="掌阅" url="https://www.ireader.com" desc="小说电子书" icon="https://www.ireader.com/favicon.ico"/>
+      <link name="起点中文网" url="https://www.qidian.com" desc="网络文学" icon="https://www.qidian.com/favicon.ico"/>
+      <link name="纵横中文网" url="https://www.zongheng.com" desc="原创小说" icon="https://www.zongheng.com/favicon.ico"/>
+      <link name="晋江文学城" url="https://www.jjwxc.net" desc="女性向小说" icon="https://www.jjwxc.net/favicon.ico"/>
+      <link name="17K小说网" url="https://www.17k.com" desc="原创文学" icon="https://www.17k.com/favicon.ico"/>
+      <link name="番茄小说" url="https://fanqienovel.com" desc="免费小说" icon="https://fanqienovel.com/favicon.ico"/>
+      <link name="七猫小说" url="https://www.qimao.com" desc="免费阅读" icon="https://www.qimao.com/favicon.ico"/>
+      <link name="Kindle" url="https://www.amazon.cn/kindle" desc="亚马逊电子书" icon="https://www.amazon.cn/favicon.ico"/>
+      <link name="多看阅读" url="https://www.duokan.com" desc="小米电子书" icon="https://www.duokan.com/favicon.ico"/>
+      <link name="咪咕阅读" url="https://book.migu.cn" desc="中国移动阅读" icon="https://book.migu.cn/favicon.ico"/>
+      <link name="书旗小说" url="https://ubook.reader.qq.com" desc="阿里文学" icon="https://ubook.reader.qq.com/favicon.ico"/>
+      <link name="塔读文学" url="https://www.tadu.com" desc="原创小说" icon="https://www.tadu.com/favicon.ico"/>
+      <link name="笔趣阁" url="https://www.biquge.com.cn" desc="小说聚合" icon="https://www.biquge.com.cn/favicon.ico"/>
+      <link name="Z-Library" url="https://z-library.se" desc="全球电子书库" icon="https://z-library.se/favicon.ico"/>
+      <link name="Project Gutenberg" url="https://www.gutenberg.org" desc="免费公共版权书籍" icon="https://www.gutenberg.org/favicon.ico"/>
+      <link name="Open Library" url="https://openlibrary.org" desc="互联网档案馆图书" icon="https://openlibrary.org/favicon.ico"/>
+      <link name="Libgen" url="https://libgen.is" desc="学术图书" icon="https://libgen.is/favicon.ico"/>
+      <link name="Anna's Archive" url="https://annas-archive.org" desc="图书镜像" icon="https://annas-archive.org/favicon.ico"/>
+      <link name="BookSC" url="https://booksc.org" desc="科学图书" icon="https://booksc.org/favicon.ico"/>
+      <link name="PDF Drive" url="https://www.pdfdrive.com" desc="PDF图书搜索" icon="https://www.pdfdrive.com/favicon.ico"/>
+      <link name="GetFreeEbooks" url="https://www.getfreeebooks.com" desc="免费电子书" icon="https://www.getfreeebooks.com/favicon.ico"/>
+      <link name="ManyBooks" url="https://manybooks.net" desc="免费经典书籍" icon="https://manybooks.net/favicon.ico"/>
+      <link name="Free-Ebooks.net" url="https://www.free-ebooks.net" desc="免费电子书" icon="https://www.free-ebooks.net/favicon.ico"/>
+      <link name="Ocean of PDF" url="https://oceanofpdf.com" desc="PDF图书" icon="https://oceanofpdf.com/favicon.ico"/>
+      <link name="BookBoon" url="https://bookboon.com" desc="商业教科书" icon="https://bookboon.com/favicon.ico"/>
+      <link name="O'Reilly" url="https://www.oreilly.com" desc="技术图书" icon="https://www.oreilly.com/favicon.ico"/>
+      <link name="Humble Bundle" url="https://www.humblebundle.com/books" desc="图书捆绑包" icon="https://www.humblebundle.com/favicon.ico"/>
+      <link name="Goodreads" url="https://www.goodreads.com" desc="图书推荐社区" icon="https://www.goodreads.com/favicon.ico"/>
+      <link name="Douban Books" url="https://book.douban.com" desc="中文图书评价" icon="https://book.douban.com/favicon.ico"/>
+      <link name="当当云阅读" url="https://e.dangdang.com" desc="当当电子书" icon="https://e.dangdang.com/favicon.ico"/>
+      <link name="京东读书" url="https://e.jd.com" desc="京东电子书" icon="https://e.jd.com/favicon.ico"/>
+      <link name="掌上书苑" url="https://www.zhangshangshuyuan.com" desc="小说阅读" icon="https://www.zhangshangshuyuan.com/favicon.ico"/>
+      <link name="宜搜小说" url="https://www.yisou.com" desc="小说搜索" icon="https://www.yisou.com/favicon.ico"/>
+      <link name="顶点小说" url="https://www.dingdianzw.com" desc="小说聚合" icon="https://www.dingdianzw.com/favicon.ico"/>
+      <link name="书海小说网" url="https://www.shuhai.com" desc="小说阅读" icon="https://www.shuhai.com/favicon.ico"/>
+      <link name="飞卢小说网" url="https://b.faloo.com" desc="爽文小说" icon="https://b.faloo.com/favicon.ico"/>
+      <link name="刺猬猫阅读" url="https://www.ciweimao.com" desc="二次元小说" icon="https://www.ciweimao.com/favicon.ico"/>
+      <link name="SF轻小说" url="https://book.sfacg.com" desc="轻小说" icon="https://book.sfacg.com/favicon.ico"/>
+      <link name="哔哩哔哩漫画" url="https://manga.bilibili.com" desc="漫画阅读" icon="https://manga.bilibili.com/favicon.ico"/>
+      <link name="腾讯动漫" url="https://ac.qq.com" desc="中国漫画" icon="https://ac.qq.com/favicon.ico"/>
+      <link name="快看漫画" url="https://www.kuaikanmanhua.com" desc="条漫" icon="https://www.kuaikanmanhua.com/favicon.ico"/>
+      <link name="漫画堆" url="https://www.manhuadui.com" desc="漫画聚合" icon="https://www.manhuadui.com/favicon.ico"/>
+      <link name="看漫画" url="https://www.manhuaren.com" desc="漫画阅读" icon="https://www.manhuaren.com/favicon.ico"/>
+      <link name="Webtoon" url="https://www.webtoons.com" desc="全球条漫" icon="https://www.webtoons.com/favicon.ico"/>
+      <link name="Tapas" url="https://tapas.io" desc="独立漫画" icon="https://tapas.io/favicon.ico"/>
+      <link name="ComiXology" url="https://www.comixology.com" desc="数字漫画" icon="https://www.comixology.com/favicon.ico"/>
+      <link name="Marvel Unlimited" url="https://www.marvel.com/comics/unlimited" desc="漫威漫画" icon="https://www.marvel.com/favicon.ico"/>
+      <link name="DC Universe Infinite" url="https://www.dcuniverseinfinite.com" desc="DC漫画" icon="https://www.dcuniverseinfinite.com/favicon.ico"/>
+    </subcategory>
+  </category>
+
+  <category name="游戏娱乐">
+    <subcategory name="游戏平台">
+      <link name="Steam" url="https://store.steampowered.com" desc="全球PC游戏平台" icon="https://store.steampowered.com/favicon.ico"/>
+      <link name="Epic Games" url="https://store.epicgames.com" desc="Epic游戏商店" icon="https://store.epicgames.com/favicon.ico"/>
+      <link name="GOG" url="https://www.gog.com" desc="无DRM游戏" icon="https://www.gog.com/favicon.ico"/>
+      <link name="Origin" url="https://www.origin.com" desc="EA游戏平台" icon="https://www.origin.com/favicon.ico"/>
+      <link name="Uplay" url="https://uplay.ubisoft.com" desc="育碧游戏" icon="https://uplay.ubisoft.com/favicon.ico"/>
+      <link name="Battle.net" url="https://us.battle.net" desc="暴雪游戏" icon="https://us.battle.net/favicon.ico"/>
+      <link name="Xbox Game Pass" url="https://www.xbox.com/xbox-game-pass" desc="微软订阅游戏" icon="https://www.xbox.com/favicon.ico"/>
+      <link name="PlayStation Store" url="https://store.playstation.com" desc="索尼游戏商店" icon="https://store.playstation.com/favicon.ico"/>
+      <link name="Nintendo eShop" url="https://www.nintendo.com/store" desc="任天堂游戏" icon="https://www.nintendo.com/favicon.ico"/>
+      <link name="腾讯游戏" url="https://game.qq.com" desc="王者荣耀等" icon="https://game.qq.com/favicon.ico"/>
+      <link name="网易游戏" url="https://game.163.com" desc="梦幻西游等" icon="https://game.163.com/favicon.ico"/>
+      <link name="米哈游" url="https://www.mihoyo.com" desc="原神崩坏" icon="https://www.mihoyo.com/favicon.ico"/>
+      <link name="完美世界" url="https://www.wanmei.com" desc="完美游戏" icon="https://www.wanmei.com/favicon.ico"/>
+      <link name="莉莉丝" url="https://www.lilith.com" desc="万国觉醒" icon="https://www.lilith.com/favicon.ico"/>
+      <link name="TapTap" url="https://www.taptap.com" desc="游戏发现社区" icon="https://www.taptap.com/favicon.ico"/>
+      <link name="9Game" url="https://www.9game.cn" desc="中国手游下载" icon="https://www.9game.cn/favicon.ico"/>
+      <link name="当游网" url="https://www.dangyou.com" desc="手游平台" icon="https://www.dangyou.com/favicon.ico"/>
+      <link name="Itch.io" url="https://itch.io" desc="独立游戏平台" icon="https://itch.io/favicon.ico"/>
+      <link name="Humble Bundle" url="https://www.humblebundle.com" desc="游戏捆绑包" icon="https://www.humblebundle.com/favicon.ico"/>
+      <link name="Fanatical" url="https://www.fanatical.com" desc="游戏折扣" icon="https://www.fanatical.com/favicon.ico"/>
+      <link name="Green Man Gaming" url="https://www.greenmangaming.com" desc="游戏密钥" icon="https://www.greenmangaming.com/favicon.ico"/>
+      <link name="Gamesplanet" url="https://www.gamesplanet.com" desc="游戏商店" icon="https://www.gamesplanet.com/favicon.ico"/>
+      <link name="IndieGala" url="https://www.indiegala.com" desc="独立游戏捆绑" icon="https://www.indiegala.com/favicon.ico"/>
+      <link name="Game Jolt" url="https://gamejolt.com" desc="独立游戏社区" icon="https://gamejolt.com/favicon.ico"/>
+      <link name="Kongregate" url="https://www.kongregate.com" desc="网页游戏" icon="https://www.kongregate.com/favicon.ico"/>
+      <link name="Armor Games" url="https://armorgames.com" desc="网页游戏" icon="https://armorgames.com/favicon.ico"/>
+      <link name="Newgrounds" url="https://www.newgrounds.com" desc="Flash独立游戏" icon="https://www.newgrounds.com/favicon.ico"/>
+      <link name="Miniclip" url="https://www.miniclip.com" desc="休闲网页游戏" icon="https://www.miniclip.com/favicon.ico"/>
+      <link name="CrazyGames" url="https://www.crazygames.com" desc="HTML5游戏" icon="https://www.crazygames.com/favicon.ico"/>
+      <link name="Poki" url="https://poki.com" desc="免费在线游戏" icon="https://poki.com/favicon.ico"/>
+      <link name="Agame" url="https://www.agame.com" desc="休闲游戏" icon="https://www.agame.com/favicon.ico"/>
+      <link name="Y8" url="https://www.y8.com" desc="网页游戏" icon="https://www.y8.com/favicon.ico"/>
+      <link name="Addicting Games" url="https://www.addictinggames.com" desc="上瘾游戏" icon="https://www.addictinggames.com/favicon.ico"/>
+      <link name="CoolMath Games" url="https://www.coolmathgames.com" desc="数学休闲游戏" icon="https://www.coolmathgames.com/favicon.ico"/>
+      <link name="Friv" url="https://www.friv.com" desc="儿童游戏" icon="https://www.friv.com/favicon.ico"/>
+      <link name="Roblox" url="https://www.roblox.com" desc="用户创作游戏" icon="https://www.roblox.com/favicon.ico"/>
+      <link name="Minecraft" url="https://www.minecraft.net" desc="沙盒游戏" icon="https://www.minecraft.net/favicon.ico"/>
+      <link name="Fortnite" url="https://www.fortnite.com" desc="大逃杀游戏" icon="https://www.fortnite.com/favicon.ico"/>
+      <link name="League of Legends" url="https://www.leagueoflegends.com" desc="英雄联盟" icon="https://www.leagueoflegends.com/favicon.ico"/>
+      <link name="Valorant" url="https://playvalorant.com" desc="Valorant射击" icon="https://playvalorant.com/favicon.ico"/>
+      <link name="Genshin Impact" url="https://genshin.hoyoverse.com" desc="原神" icon="https://genshin.hoyoverse.com/favicon.ico"/>
+      <link name="Honkai Star Rail" url="https://hsr.hoyoverse.com" desc="崩坏星穹铁道" icon="https://hsr.hoyoverse.com/favicon.ico"/>
+      <link name="PUBG" url="https://pubg.com" desc="绝地求生" icon="https://pubg.com/favicon.ico"/>
+      <link name="Call of Duty" url="https://www.callofduty.com" desc="使命召唤" icon="https://www.callofduty.com/favicon.ico"/>
+      <link name="Apex Legends" url="https://www.ea.com/games/apex-legends" desc="Apex英雄" icon="https://www.ea.com/favicon.ico"/>
+      <link name="Overwatch" url="https://overwatch.blizzard.com" desc="守望先锋" icon="https://overwatch.blizzard.com/favicon.ico"/>
+      <link name="Dota 2" url="https://www.dota2.com" desc="刀塔2" icon="https://www.dota2.com/favicon.ico"/>
+      <link name="CS:GO" url="https://www.counterstrike.net" desc="反恐精英" icon="https://www.counterstrike.net/favicon.ico"/>
+    </subcategory>
+  </category>
+
+  <category name="其他热门">
+    <subcategory name="地图导航与天气">
+      <link name="高德地图" url="https://www.amap.com" desc="中国地图导航" icon="https://www.amap.com/favicon.ico"/>
+      <link name="百度地图" url="https://map.baidu.com" desc="中国实时路况" icon="https://map.baidu.com/favicon.ico"/>
+      <link name="腾讯地图" url="https://map.qq.com" desc="腾讯地图" icon="https://map.qq.com/favicon.ico"/>
+      <link name="Google Maps" url="https://maps.google.com" desc="全球地图" icon="https://maps.google.com/favicon.ico"/>
+      <link name="Apple Maps" url="https://maps.apple.com" desc="苹果地图" icon="https://maps.apple.com/favicon.ico"/>
+      <link name="Waze" url="https://www.waze.com" desc="社区实时路况" icon="https://www.waze.com/favicon.ico"/>
+      <link name="MapQuest" url="https://www.mapquest.com" desc="美国地图导航" icon="https://www.mapquest.com/favicon.ico"/>
+      <link name="OpenStreetMap" url="https://www.openstreetmap.org" desc="开源地图" icon="https://www.openstreetmap.org/favicon.ico"/>
+      <link name="Here WeGo" url="https://wego.here.com" desc="Here地图" icon="https://wego.here.com/favicon.ico"/>
+      <link name="Petrol Map" url="https://www.petrolmap.co.uk" desc="英国加油站地图" icon="https://www.petrolmap.co.uk/favicon.ico"/>
+      <link name="中国天气网" url="http://www.weather.com.cn" desc="官方天气预报" icon="http://www.weather.com.cn/favicon.ico"/>
+      <link name="墨迹天气" url="https://tianqi.moji.com" desc="中国天气App" icon="https://tianqi.moji.com/favicon.ico"/>
+      <link name="AccuWeather" url="https://www.accuweather.com" desc="全球精准天气" icon="https://www.accuweather.com/favicon.ico"/>
+      <link name="Weather.com" url="https://weather.com" desc="美国天气频道" icon="https://weather.com/favicon.ico"/>
+      <link name="BBC Weather" url="https://www.bbc.co.uk/weather" desc="英国天气" icon="https://www.bbc.co.uk/favicon.ico"/>
+      <link name="Windy" url="https://www.windy.com" desc="全球风力地图" icon="https://www.windy.com/favicon.ico"/>
+      <link name="Ventusky" url="https://www.ventusky.com" desc="3D天气可视化" icon="https://www.ventusky.com/favicon.ico"/>
+      <link name="RainViewer" url="https://www.rainviewer.com" desc="雷达降雨地图" icon="https://www.rainviewer.com/favicon.ico"/>
+      <link name="Flightradar24" url="https://www.flightradar24.com" desc="实时航班跟踪" icon="https://www.flightradar24.com/favicon.ico"/>
+      <link name="MarineTraffic" url="https://www.marinetraffic.com" desc="船舶实时跟踪" icon="https://www.marinetraffic.com/favicon.ico"/>
+    </subcategory>
+    <subcategory name="快递物流与招聘求职">
+      <link name="顺丰速运" url="https://www.sf-express.com" desc="中国快递" icon="https://www.sf-express.com/favicon.ico"/>
+      <link name="京东快递" url="https://www.jd-ex.com" desc="京东物流" icon="https://www.jd-ex.com/favicon.ico"/>
+      <link name="菜鸟裹裹" url="https://www.cainiao.com" desc="阿里快递查询" icon="https://www.cainiao.com/favicon.ico"/>
+      <link name="快递100" url="https://www.kuaidi100.com" desc="多快递查询" icon="https://www.kuaidi100.com/favicon.ico"/>
+      <link name="UPS" url="https://www.ups.com" desc="全球快递" icon="https://www.ups.com/favicon.ico"/>
+      <link name="FedEx" url="https://www.fedex.com" desc="联邦快递" icon="https://www.fedex.com/favicon.ico"/>
+      <link name="DHL" url="https://www.dhl.com" desc="国际快递" icon="https://www.dhl.com/favicon.ico"/>
+      <link name="Boss直聘" url="https://www.zhipin.com" desc="中国招聘" icon="https://www.zhipin.com/favicon.ico"/>
+      <link name="前程无忧" url="https://www.51job.com" desc="中国求职" icon="https://www.51job.com/favicon.ico"/>
+      <link name="智联招聘" url="https://www.zhaopin.com" desc="中国招聘平台" icon="https://www.zhaopin.com/favicon.ico"/>
+      <link name="拉勾网" url="https://www.lagou.com" desc="IT招聘" icon="https://www.lagou.com/favicon.ico"/>
+      <link name="猎聘" url="https://www.liepin.com" desc="高端人才" icon="https://www.liepin.com/favicon.ico"/>
+      <link name="Indeed" url="https://www.indeed.com" desc="全球求职" icon="https://www.indeed.com/favicon.ico"/>
+      <link name="Monster" url="https://www.monster.com" desc="美国招聘" icon="https://www.monster.com/favicon.ico"/>
+      <link name="Glassdoor" url="https://www.glassdoor.com" desc="公司评价求职" icon="https://www.glassdoor.com/favicon.ico"/>
+      <link name="CareerBuilder" url="https://www.careerbuilder.com" desc="美国求职" icon="https://www.careerbuilder.com/favicon.ico"/>
+      <link name="Naukri" url="https://www.naukri.com" desc="印度招聘" icon="https://www.naukri.com/favicon.ico"/>
+      <link name="Seek" url="https://www.seek.com.au" desc="澳洲招聘" icon="https://www.seek.com.au/favicon.ico"/>
+      <link name="JobStreet" url="https://www.jobstreet.com" desc="东南亚招聘" icon="https://www.jobstreet.com/favicon.ico"/>
+      <link name="104人力银行" url="https://www.104.com.tw" desc="台湾招聘" icon="https://www.104.com.tw/favicon.ico"/>
+    </subcategory>
+    <subcategory name="二手交易与宠物美妆">
+      <link name="闲鱼" url="https://2.taobao.com" desc="阿里二手交易" icon="https://2.taobao.com/favicon.ico"/>
+      <link name="转转" url="https://www.zhuanzhuan.com" desc="58二手" icon="https://www.zhuanzhuan.com/favicon.ico"/>
+      <link name="58同城" url="https://www.58.com" desc="本地分类信息" icon="https://www.58.com/favicon.ico"/>
+      <link name="赶集网" url="https://www.ganji.com" desc="本地生活" icon="https://www.ganji.com/favicon.ico"/>
+      <link name="Facebook Marketplace" url="https://www.facebook.com/marketplace" desc="Facebook二手" icon="https://www.facebook.com/favicon.ico"/>
+      <link name="Craigslist" url="https://www.craigslist.org" desc="美国分类广告" icon="https://www.craigslist.org/favicon.ico"/>
+      <link name="Gumtree" url="https://www.gumtree.com" desc="英国分类" icon="https://www.gumtree.com/favicon.ico"/>
+      <link name="小红书美妆" url="https://www.xiaohongshu.com/explore" desc="美妆分享" icon="https://www.xiaohongshu.com/favicon.ico"/>
+      <link name="什么值得买" url="https://www.smzdm.com" desc="优惠促销" icon="https://www.smzdm.com/favicon.ico"/>
+      <link name="返利网" url="https://www.fanli.com" desc="购物返现" icon="https://www.fanli.com/favicon.ico"/>
+      <link name="Honey" url="https://www.joinhoney.com" desc="自动优惠券" icon="https://www.joinhoney.com/favicon.ico"/>
+      <link name="Rakuten" url="https://www.rakuten.com" desc="美国返现" icon="https://www.rakuten.com/favicon.ico"/>
+      <link name="TopCashback" url="https://www.topcashback.com" desc="高返现" icon="https://www.topcashback.com/favicon.ico"/>
+      <link name="Petfinder" url="https://www.petfinder.com" desc="领养宠物" icon="https://www.petfinder.com/favicon.ico"/>
+      <link name="Adopt-a-Pet" url="https://www.adoptapet.com" desc="美国宠物领养" icon="https://www.adoptapet.com/favicon.ico"/>
+      <link name="波奇网" url="https://www.boqii.com" desc="中国宠物用品" icon="https://www.boqii.com/favicon.ico"/>
+      <link name="E宠商城" url="https://www.epet.com" desc="宠物电商" icon="https://www.epet.com/favicon.ico"/>
+      <link name="Chewy" url="https://www.chewy.com" desc="美国宠物用品" icon="https://www.chewy.com/favicon.ico"/>
+      <link name="Petco" url="https://www.petco.com" desc="美国宠物连锁" icon="https://www.petco.com/favicon.ico"/>
+      <link name="Petsmart" url="https://www.petsmart.com" desc="美国宠物超市" icon="https://www.petsmart.com/favicon.ico"/>
+      <link name="Sephora" url="https://www.sephora.com" desc="全球美妆" icon="https://www.sephora.com/favicon.ico"/>
+      <link name="Ulta Beauty" url="https://www.ulta.com" desc="美国美妆" icon="https://www.ulta.com/favicon.ico"/>
+      <link name="Douglas" url="https://www.douglas.de" desc="欧洲美妆" icon="https://www.douglas.de/favicon.ico"/>
+      <link name="丝芙兰中国" url="https://www.sephora.cn" desc="丝芙兰中国" icon="https://www.sephora.cn/favicon.ico"/>
+      <link name="小红书美妆" url="https://www.xiaohongshu.com" desc="美妆笔记" icon="https://www.xiaohongshu.com/favicon.ico"/>
+      <link name="完美日记" url="https://www.perfectdiary.com" desc="中国彩妆品牌" icon="https://www.perfectdiary.com/favicon.ico"/>
+      <link name="花西子" url="https://www.florasis.com" desc="中国风彩妆" icon="https://www.florasis.com/favicon.ico"/>
+      <link name="Colorkey" url="https://www.colorkey.com" desc="中国彩妆" icon="https://www.colorkey.com/favicon.ico"/>
+      <link name="3CE" url="https://www.3ce.com" desc="韩国彩妆" icon="https://www.3ce.com/favicon.ico"/>
+      <link name="Romand" url="https://www.romand.co.kr" desc="韩国唇妆" icon="https://www.romand.co.kr/favicon.ico"/>
+      <link name="Etude House" url="https://www.etudehouse.com" desc="韩国可爱妆" icon="https://www.etudehouse.com/favicon.ico"/>
+      <link name="Innisfree" url="https://www.innisfree.com" desc="韩国自然护肤" icon="https://www.innisfree.com/favicon.ico"/>
+      <link name="Laneige" url="https://www.laneige.com" desc="韩国水光肌" icon="https://www.laneige.com/favicon.ico"/>
+      <link name="Sulwhasoo" url="https://www.sulwhasoo.com" desc="韩国高端护肤" icon="https://www.sulwhasoo.com/favicon.ico"/>
+      <link name="The Ordinary" url="https://theordinary.com" desc="平价成分护肤" icon="https://theordinary.com/favicon.ico"/>
+      <link name="CeraVe" url="https://www.cerave.com" desc="药妆护肤" icon="https://www.cerave.com/favicon.ico"/>
+      <link name="La Roche-Posay" url="https://www.laroche-posay.com" desc="敏感肌护肤" icon="https://www.laroche-posay.com/favicon.ico"/>
+      <link name="Vichy" url="https://www.vichy.com" desc="温泉水护肤" icon="https://www.vichy.com/favicon.ico"/>
+      <link name="Avene" url="https://www.avene.com" desc="雅漾喷雾" icon="https://www.avene.com/favicon.ico"/>
+      <link name="Bioderma" url="https://www.bioderma.com" desc="卸妆水" icon="https://www.bioderma.com/favicon.ico"/>
+      <link name="Drunk Elephant" url="https://www.drunkelephant.com" desc="清洁护肤" icon="https://www.drunkelephant.com/favicon.ico"/>
+      <link name="Paula's Choice" url="https://www.paulaschoice.com" desc="成分党护肤" icon="https://www.paulaschoice.com/favicon.ico"/>
+      <link name="Cosrx" url="https://www.cosrx.com" desc="韩国痘肌护理" icon="https://www.cosrx.com/favicon.ico"/>
+      <link name="Some By Mi" url="https://somebymi.com" desc="韩国AHA BHA" icon="https://somebymi.com/favicon.ico"/>
+      <link name="Beauty of Joseon" url="https://beautyofjoseon.com" desc="韩方护肤" icon="https://beautyofjoseon.com/favicon.ico"/>
+      <link name="Anua" url="https://anua.com" desc="韩国桃心瓶" icon="https://anua.com/favicon.ico"/>
+      <link name="Round Lab" url="https://roundlab.com" desc="韩国桦树汁" icon="https://roundlab.com/favicon.ico"/>
+      <link name="Torriden" url="https://torriden.com" desc="韩国透明质酸" icon="https://torriden.com/favicon.ico"/>
+      <link name="Isntree" url="https://isntree.com" desc="韩国绿茶" icon="https://isntree.com/favicon.ico"/>
+      <link name="Skin1004" url="https://skin1004.com" desc="韩国积雪草" icon="https://skin1004.com/favicon.ico"/>
+      <link name="Medicube" url="https://medicube.co.kr" desc="韩国美容仪" icon="https://medicube.co.kr/favicon.ico"/>
+      <link name="Cellreturn" url="https://cellreturn.com" desc="韩国LED面罩" icon="https://cellreturn.com/favicon.ico"/>
+      <link name="NuFACE" url="https://www.mynuface.com" desc="微电流美容仪" icon="https://www.mynuface.com/favicon.ico"/>
+      <link name="Foreo" url="https://www.foreo.com" desc="硅胶洁面仪" icon="https://www.foreo.com/favicon.ico"/>
+      <link name="PMD" url="https://pmdbeauty.com" desc="微针美容" icon="https://pmdbeauty.com/favicon.ico"/>
+      <link name="Tripollar" url="https://www.mytripollar.com" desc="射频美容仪" icon="https://www.mytripollar.com/favicon.ico"/>
+      <link name="Ya-Man" url="https://www.ya-man.com" desc="日本美容仪" icon="https://www.ya-man.com/favicon.ico"/>
+      <link name="ReFa" url="https://www.mtgec.jp" desc="日本滚轮美容" icon="https://www.mtgec.jp/favicon.ico"/>
+      <link name="Ulike" url="https://www.ulike.com" desc="家用脱毛仪" icon="https://www.ulike.com/favicon.ico"/>
+      <link name="Braun" url="https://www.braun.com" desc="德国脱毛" icon="https://www.braun.com/favicon.ico"/>
+      <link name="Philips Lumea" url="https://www.philips.com/lumea" desc="飞利浦脱毛" icon="https://www.philips.com/favicon.ico"/>
+      <link name="Tria" url="https://www.triabeauty.com" desc="激光脱毛" icon="https://www.triabeauty.com/favicon.ico"/>
+    </subcategory>
+    <subcategory name="网盘云存储与会员共享">
+      <link name="百度网盘" url="https://pan.baidu.com" desc="中国云存储" icon="https://pan.baidu.com/favicon.ico"/>
+      <link name="阿里云盘" url="https://www.aliyundrive.com" desc="阿里高速网盘" icon="https://www.aliyundrive.com/favicon.ico"/>
+      <link name="腾讯微云" url="https://www.weiyun.com" desc="腾讯网盘" icon="https://www.weiyun.com/favicon.ico"/>
+      <link name="115网盘" url="https://115.com" desc="中国网盘" icon="https://115.com/favicon.ico"/>
+      <link name="天翼云盘" url="https://cloud.189.cn" desc="中国电信网盘" icon="https://cloud.189.cn/favicon.ico"/>
+      <link name="Google Drive" url="https://drive.google.com" desc="谷歌云盘" icon="https://drive.google.com/favicon.ico"/>
+      <link name="OneDrive" url="https://onedrive.live.com" desc="微软云盘" icon="https://onedrive.live.com/favicon.ico"/>
+      <link name="Dropbox" url="https://www.dropbox.com" desc="老牌云同步" icon="https://www.dropbox.com/favicon.ico"/>
+      <link name="Mega" url="https://mega.nz" desc="加密大容量网盘" icon="https://mega.nz/favicon.ico"/>
+      <link name="pCloud" url="https://www.pcloud.com" desc="终身买断云盘" icon="https://www.pcloud.com/favicon.ico"/>
+      <link name="Sync.com" url="https://www.sync.com" desc="零知识加密云盘" icon="https://www.sync.com/favicon.ico"/>
+      <link name="Icedrive" url="https://icedrive.net" desc="现代云盘" icon="https://icedrive.net/favicon.ico"/>
+      <link name="Filen" url="https://filen.io" desc="加密云存储" icon="https://filen.io/favicon.ico"/>
+      <link name="Proton Drive" url="https://drive.proton.me" desc="隐私云盘" icon="https://drive.proton.me/favicon.ico"/>
+      <link name="会员共享" url="https://www.v2ray.com" desc="机场订阅共享" icon="https://www.v2ray.com/favicon.ico"/> <!-- 示例，实际可替换热门共享平台 -->
+      <link name="爱奇艺VIP共享" url="https://vip.iqiyi.com" desc="影视会员" icon="https://vip.iqiyi.com/favicon.ico"/>
+      <link name="腾讯视频VIP" url="https://film.qq.com" desc="腾讯VIP" icon="https://film.qq.com/favicon.ico"/>
+      <link name="优酷VIP" url="https://vip.youku.com" desc="优酷会员" icon="https://vip.youku.com/favicon.ico"/>
+      <link name="网易云音乐黑胶VIP" url="https://music.163.com/vip" desc="无损音乐" icon="https://music.163.com/favicon.ico"/>
+      <link name="Spotify Premium共享" url="https://www.spotify.com/premium" desc="无广告音乐" icon="https://www.spotify.com/favicon.ico"/>
+    </subcategory>
+    <subcategory name="打折优惠与比价">
+      <link name="什么值得买" url="https://www.smzdm.com" desc="优惠促销聚合" icon="https://www.smzdm.com/favicon.ico"/>
+      <link name="卷王" url="https://www.juanwang.com" desc="优惠信息" icon="https://www.juanwang.com/favicon.ico"/>
+      <link name="返利网" url="https://www.fanli.com" desc="购物返现" icon="https://www.fanli.com/favicon.ico"/>
+      <link name="慢慢买" url="https://www.manmanmai.com" desc="历史价格比价" icon="https://www.manmanmai.com/favicon.ico"/>
+      <link name="比价网" url="https://www.bijia.com" desc="商品比价" icon="https://www.bijia.com/favicon.ico"/>
+      <link name="Honey" url="https://www.joinhoney.com" desc="自动优惠券" icon="https://www.joinhoney.com/favicon.ico"/>
+      <link name="Rakuten" url="https://www.rakuten.com" desc="美国返现" icon="https://www.rakuten.com/favicon.ico"/>
+      <link name="Capital One Shopping" url="https://capitaloneshopping.com" desc="比价扩展" icon="https://capitaloneshopping.com/favicon.ico"/>
+      <link name="CamelCamelCamel" url="https://camelcamelcamel.com" desc="亚马逊价格追踪" icon="https://camelcamelcamel.com/favicon.ico"/>
+      <link name="Keepa" url="https://keepa.com" desc="亚马逊价格图" icon="https://keepa.com/favicon.ico"/>
+      <link name="Slickdeals" url="https://slickdeals.net" desc="美国优惠社区" icon="https://slickdeals.net/favicon.ico"/>
+      <link name="Dealabs" url="https://www.dealabs.com" desc="法国优惠" icon="https://www.dealabs.com/favicon.ico"/>
+      <link name="HotUKDeals" url="https://www.hotukdeals.com" desc="英国优惠" icon="https://www.hotukdeals.com/favicon.ico"/>
+      <link name="OzBargain" url="https://www.ozbargain.com.au" desc="澳洲优惠" icon="https://www.ozbargain.com.au/favicon.ico"/>
+      <link name="Pepper" url="https://www.pepper.pl" desc="波兰优惠" icon="https://www.pepper.pl/favicon.ico"/>
+    </subcategory>
+    <subcategory name="表情包与壁纸">
+      <link name="表情包工厂" url="https://www.doutula.com" desc="斗图表情包" icon="https://www.doutula.com/favicon.ico"/>
+      <link name="斗图啦" url="https://www.doutula.com" desc="表情包搜索" icon="https://www.doutula.com/favicon.ico"/>
+      <link name="Biaoqingbao" url="https://www.biaoqingbao.net" desc="表情包大全" icon="https://www.biaoqingbao.net/favicon.ico"/>
+      <link name="Wallhaven" url="https://wallhaven.cc" desc="高清壁纸" icon="https://wallhaven.cc/favicon.ico"/>
+      <link name="Wallpaper Abyss" url="https://wall.alphacoders.com" desc="动漫壁纸" icon="https://wall.alphacoders.com/favicon.ico"/>
+      <link name="Unsplash" url="https://unsplash.com/wallpapers" desc="免费壁纸" icon="https://unsplash.com/favicon.ico"/>
+      <link name="Pexels Wallpapers" url="https://www.pexels.com/wallpapers" desc="壁纸下载" icon="https://www.pexels.com/favicon.ico"/>
+      <link name="Wallpapercave" url="https://wallpapercave.com" desc="分类壁纸" icon="https://wallpapercave.com/favicon.ico"/>
+      <link name="Zedge" url="https://www.zedge.net" desc="手机壁纸铃声" icon="https://www.zedge.net/favicon.ico"/>
+      <link name="InterfaceLIFT" url="https://interfacelift.com" desc="高清自然壁纸" icon="https://interfacelift.com/favicon.ico"/>
+      <link name="Simple Desktops" url="https://simpledesktops.com" desc="极简壁纸" icon="https://simpledesktops.com/favicon.ico"/>
+      <link name="Desktoppr" url="https://desktoppr.co" desc="社区壁纸" icon="https://desktoppr.co/favicon.ico"/>
+      <link name="WallpapersWide" url="https://wallpaperswide.com" desc="宽屏壁纸" icon="https://wallpaperswide.com/favicon.ico"/>
+      <link name="4K Wallpapers" url="https://www.uhdpaper.com" desc="4K壁纸" icon="https://www.uhdpaper.com/favicon.ico"/>
+      <link name="Himawari8" url="https://himawari8.nict.go.jp" desc="地球实时壁纸" icon="https://himawari8.nict.go.jp/favicon.ico"/>
+    </subcategory>
+    <subcategory name="其它">
+      <link name="Baidu Tieba" url="https://tieba.baidu.com" desc="百度贴吧社区" icon="https://tieba.baidu.com/favicon.ico"/>
+      <link name="Tianya" url="https://www.tianya.cn" desc="天涯论坛" icon="https://www.tianya.cn/favicon.ico"/>
+      <link name="Cat Eye" url="https://www.maoyan.com" desc="电影票务" icon="https://www.maoyan.com/favicon.ico"/>
+      <link name="Douban Movie" url="https://movie.douban.com" desc="电影评价" icon="https://movie.douban.com/favicon.ico"/>
+      <link name="IMDb" url="https://www.imdb.com" desc="全球电影数据库" icon="https://www.imdb.com/favicon.ico"/>
+      <link name="Rotten Tomatoes" url="https://www.rottentomatoes.com" desc="电影评分" icon="https://www.rottentomatoes.com/favicon.ico"/>
+      <link name="TMDB" url="https://www.themoviedb.org" desc="电影电视数据库" icon="https://www.themoviedb.org/favicon.ico"/>
+      <link name="MyDramaList" url="https://mydramalist.com" desc="亚洲剧集" icon="https://mydramalist.com/favicon.ico"/>
+      <link name="DramaCool" url="https://dramacool.pa" desc="亚洲剧免费观看" icon="https://dramacool.pa/favicon.ico"/>
+      <link name="Viu" url="https://www.viu.com" desc="亚洲剧流媒体" icon="https://www.viu.com/favicon.ico"/>
+      <link name="iQIYI International" url="https://www.iq.com" desc="爱奇艺海外" icon="https://www.iq.com/favicon.ico"/>
+      <link name="WeTV" url="https://wetv.vip" desc="腾讯海外剧" icon="https://wetv.vip/favicon.ico"/>
+      <link name="Rakuten Viki" url="https://www.viki.com" desc="亚洲剧字幕" icon="https://www.viki.com/favicon.ico"/>
+      <link name="Kocowa" url="https://www.kocowa.com" desc="韩剧平台" icon="https://www.kocowa.com/favicon.ico"/>
+      <link name="OnDemandKorea" url="https://www.ondemandkorea.com" desc="韩剧美剧" icon="https://www.ondemandkorea.com/favicon.ico"/>
+      <link name="Tubi" url="https://tubitv.com" desc="免费广告影视" icon="https://tubitv.com/favicon.ico"/>
+      <link name="Pluto TV" url="https://pluto.tv" desc="免费直播" icon="https://pluto.tv/favicon.ico"/>
+      <link name="Freevee" url="https://www.amazon.com/freevee" desc="亚马逊免费视频" icon="https://www.amazon.com/favicon.ico"/>
+      <link name="Crackle" url="https://www.crackle.com" desc="免费电影" icon="https://www.crackle.com/favicon.ico"/>
+      <link name="Popcornflix" url="https://www.popcornflix.com" desc="免费影视" icon="https://www.popcornflix.com/favicon.ico"/>
+      <link name="Kanopy" url="https://www.kanopy.com" desc="图书馆电影" icon="https://www.kanopy.com/favicon.ico"/>
+      <link name="Hoopla" url="https://www.hoopladigital.com" desc="图书馆媒体" icon="https://www.hoopladigital.com/favicon.ico"/>
+      <link name="OverDrive" url="https://www.overdrive.com" desc="图书馆电子书" icon="https://www.overdrive.com/favicon.ico"/>
+      <link name="Libby" url="https://www.libbyapp.com" desc="图书馆借书App" icon="https://www.libbyapp.com/favicon.ico"/>
+      <link name="Scribd" url="https://www.scribd.com" desc="无限阅读订阅" icon="https://www.scribd.com/favicon.ico"/>
+      <link name="Everand" url="https://www.everand.com" desc="原Scribd" icon="https://www.everand.com/favicon.ico"/>
+      <link name="Audible" url="https://www.audible.com" desc="有声书" icon="https://www.audible.com/favicon.ico"/>
+      <link name="Storytel" url="https://www.storytel.com" desc="有声书订阅" icon="https://www.storytel.com/favicon.ico"/>
+      <link name="Libro.fm" url="https://libro.fm" desc="独立书店有声书" icon="https://libro.fm/favicon.ico"/>
+      <link name="Chirp" url="https://www.chirpbooks.com" desc="有声书折扣" icon="https://www.chirpbooks.com/favicon.ico"/>
+      <link name="Kuku FM" url="https://kukufm.com" desc="印度有声书" icon="https://kukufm.com/favicon.ico"/>
+      <link name="喜马拉雅" url="https://www.ximalaya.com" desc="中国有声书播客" icon="https://www.ximalaya.com/favicon.ico"/>
+      <link name="懒人听书" url="https://www.lrts.me" desc="中国有声书" icon="https://www.lrts.me/favicon.ico"/>
+      <link name="荔枝FM" url="https://www.lizhi.fm" desc="中国播客" icon="https://www.lizhi.fm/favicon.ico"/>
+      <link name="Spotify Podcasts" url="https://open.spotify.com" desc="全球播客" icon="https://open.spotify.com/favicon.ico"/>
+      <link name="Apple Podcasts" url="https://podcasts.apple.com" desc="苹果播客" icon="https://podcasts.apple.com/favicon.ico"/>
+      <link name="Google Podcasts" url="https://podcasts.google.com" desc="谷歌播客" icon="https://podcasts.google.com/favicon.ico"/>
+      <link name="Pocket Casts" url="https://pocketcasts.com" desc="播客客户端" icon="https://pocketcasts.com/favicon.ico"/>
+      <link name="Overcast" url="https://overcast.fm" desc="iOS播客" icon="https://overcast.fm/favicon.ico"/>
+      <link name="Castbox" url="https://castbox.fm" desc="播客平台" icon="https://castbox.fm/favicon.ico"/>
+      <link name="Podcast Addict" url="https://podcastaddict.com" desc="Android播客" icon="https://podcastaddict.com/favicon.ico"/>
+      <link name="Player FM" url="https://player.fm" desc="播客发现" icon="https://player.fm/favicon.ico"/>
+      <link name="RadioPublic" url="https://radiopublic.com" desc="播客" icon="https://radiopublic.com/favicon.ico"/>
+      <link name="Stitcher" url="https://www.stitcher.com" desc="播客" icon="https://www.stitcher.com/favicon.ico"/>
+      <link name="TuneIn Radio" url="https://tunein.com" desc="全球电台" icon="https://tunein.com/favicon.ico"/>
+      <link name="iHeartRadio" url="https://www.iheart.com" desc="美国电台" icon="https://www.iheart.com/favicon.ico"/>
+      <link name="Radio Garden" url="https://radio.garden" desc="全球电台地图" icon="https://radio.garden/favicon.ico"/>
+      <link name="myTuner Radio" url="https://mytuner-radio.com" desc="在线电台" icon="https://mytuner-radio.com/favicon.ico"/>
+      <link name="Online Radio Box" url="https://onlineradiobox.com" desc="电台目录" icon="https://onlineradiobox.com/favicon.ico"/>
+      <link name="Streema" url="https://streema.com" desc="电台流媒体" icon="https://streema.com/favicon.ico"/>
+    </subcategory>
+  </category>
+
+</navigation>
