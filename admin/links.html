@@ -157,6 +157,7 @@ let editing=null; // {i,j,k}
 
 fetch('/api/data').then(r=>r.text()).then(parseXML);
 
+/* ===== 解析 ===== */
 function parseXML(xmlText){
   const xml=new DOMParser().parseFromString(xmlText,'text/xml');
   nav={categories:[]};
@@ -167,9 +168,9 @@ function parseXML(xmlText){
       const c2={name:sub.getAttribute('name'),links:[]};
       sub.querySelectorAll('link').forEach(l=>{
         c2.links.push({
-          name:l.getAttribute('name'),
-          url:l.getAttribute('url'),
-          desc:l.getAttribute('desc')||''
+          name:l.getAttribute('name') || '',
+          url:l.getAttribute('url') || '',
+          desc:l.getAttribute('desc') || ''
         });
       });
       c1.subcategories.push(c2);
@@ -197,7 +198,9 @@ function render(){
       const cards=document.createElement('div');
       cards.className='cards';
 
-      c2.links.forEach((link,k)=>{
+      c2.links.forEach((_,k)=>{
+        const link=nav.categories[i].subcategories[j].links[k];
+
         const card=document.createElement('div');
         card.className='card';
         card.innerHTML=`
@@ -207,6 +210,7 @@ function render(){
             <button class="secondary">编辑</button>
             <button class="danger">删除</button>
           </div>`;
+
         card.querySelector('.secondary').onclick=()=>startEdit(i,j,k);
         card.querySelector('.danger').onclick=()=>{
           if(confirm('确认删除？')){
@@ -223,7 +227,7 @@ function render(){
   });
 }
 
-/* ===== 编辑 ===== */
+/* ===== 下拉 ===== */
 function initSelectors(){
   cat1.innerHTML=nav.categories.map((c,i)=>`<option value="${i}">${c.name}</option>`).join('');
   cat1.onchange=()=>{
@@ -233,12 +237,15 @@ function initSelectors(){
   cat1.onchange();
 }
 
+/* ===== 编辑 ===== */
 function startEdit(i,j,k){
   editing={i,j,k};
   const link=nav.categories[i].subcategories[j].links[k];
+
   editorTitle.textContent='编辑链接';
   cat1.value=i; cat1.onchange();
   cat2.value=j;
+
   name.value=link.name;
   url.value=link.url;
   desc.value=link.desc;
@@ -252,24 +259,32 @@ function clearEditor(){
 
 /* ===== 应用 ===== */
 function applyEdit(){
+  const n=name.value.trim();
+  const u=url.value.trim();
+
+  if(!n || !u){
+    alert('名称和 URL 不能为空');
+    return;
+  }
+
   const i=+cat1.value;
   const j=+cat2.value;
 
   if(editing){
     Object.assign(
       nav.categories[editing.i].subcategories[editing.j].links[editing.k],
-      {name:name.value,url:url.value,desc:desc.value}
+      {name:n,url:u,desc:desc.value.trim()}
     );
+    alert('修改已应用（未保存到 KV）');
   }else{
     nav.categories[i].subcategories[j].links.push({
-      name:name.value,
-      url:url.value,
-      desc:desc.value
+      name:n,url:u,desc:desc.value.trim()
     });
+    alert('新增已应用（未保存到 KV）');
   }
+
   clearEditor();
   render();
-  alert('已应用修改（未保存到 KV）');
 }
 
 /* ===== 保存 ===== */
