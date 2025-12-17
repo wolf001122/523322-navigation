@@ -9,7 +9,6 @@
 <script async
   src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9474229114991789"
   crossorigin="anonymous"></script>
-
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{
@@ -20,7 +19,6 @@ body{
   overflow:hidden;
 }
 #layout{display:flex;height:100vh;width:100vw}
-
 /* 左侧分类 */
 #sidebar{width:240px;background:#fff;border-right:1px solid #dadce0;display:flex;flex-direction:column;box-shadow:0 1px 2px 0 rgba(60,64,67,0.3),0 1px 3px 1px rgba(60,64,67,0.15);}
 #logo{padding:24px 20px;font-size:24px;font-weight:700;text-align:center;color:#5f6368;border-bottom:1px solid #dadce0;}
@@ -31,11 +29,9 @@ body{
 #side-bottom{border-top:1px solid #dadce0;padding:16px 24px;font-size:14px;color:#5f6368;}
 #side-bottom div{margin-bottom:8px;cursor:pointer;}
 #side-bottom div:hover{color:#1a73e8;}
-
 /* 主区域 */
 #main{flex:1;overflow-y:auto;background:#f8f9fa;}
 #ad-top{background:#fff;border-bottom:1px solid #dadce0;padding:12px;text-align:center;box-shadow:0 1px 2px 0 rgba(60,64,67,0.3);}
-
 /* 搜索页 */
 #search-page{height:calc(100vh - 60px);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:40px;}
 #search-box{display:flex;width:100%;max-width:680px;}
@@ -46,15 +42,12 @@ body{
 #engines button{padding:10px 20px;border:1px solid #dadce0;background:#fff;border-radius:24px;cursor:pointer;font-size:14px;color:#3c4043;transition:all 0.2s;}
 #engines button:hover{background:#f1f3f4;box-shadow:0 1px 3px rgba(0,0,0,0.15);}
 #engines button.active{background:#e8f0fe;color:#1a73e8;}
-
 /* 内容页 */
 #content{padding:24px;display:none;}
 .back{margin-bottom:16px;color:#1a73e8;cursor:pointer;font-size:15px;display:inline-block;}
 .back:hover{text-decoration:underline;}
-
 /* 广告位 */
 .ad-box{margin:32px 0;padding:16px;background:#fff;border:1px solid #dadce0;border-radius:8px;text-align:center;box-shadow:0 1px 2px 0 rgba(60,64,67,0.3);}
-
 /* 分类卡片 */
 .category-title{font-size:28px;font-weight:500;color:#202124;margin-bottom:8px;}
 .sub-title{font-size:18px;color:#5f6368;margin:24px 0 12px;font-weight:500;}
@@ -65,13 +58,11 @@ body{
 .text{margin-left:16px;overflow:hidden;}
 .name{font-size:15px;font-weight:500;color:#202124;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .desc{font-size:13px;color:#5f6368;white-space:normal;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-top:4px;}
-
 /* 提交表单 */
 form input, form select, form textarea{width:100%;margin:8px 0;padding:8px;}
 form button{padding:10px 20px;background:#1a73e8;color:#fff;border:none;cursor:pointer;}
 </style>
 </head>
-
 <body>
 <div id="layout">
   <div id="sidebar">
@@ -83,7 +74,6 @@ form button{padding:10px 20px;background:#1a73e8;color:#fff;border:none;cursor:p
       <div onclick="showAbout()">关于导航</div>
     </div>
   </div>
-
   <div id="main">
     <div id="ad-top">
       <ins class="adsbygoogle" style="display:block"
@@ -91,7 +81,6 @@ form button{padding:10px 20px;background:#1a73e8;color:#fff;border:none;cursor:p
         data-ad-slot="1234567890"
         data-ad-format="auto"></ins>
     </div>
-
     <div id="search-page">
       <div id="search-box">
         <input id="q" placeholder="搜索…" onkeydown="if(event.key==='Enter')go()">
@@ -103,16 +92,24 @@ form button{padding:10px 20px;background:#1a73e8;color:#fff;border:none;cursor:p
         <button onclick="setEngine(this,'https://www.bing.com/search?q=')">Bing</button>
       </div>
     </div>
-
     <div id="content"></div>
   </div>
 </div>
-
 <script>
 const API='/api/data';
 let engine='https://www.google.com/search?q=';
 let data;
-const DEF_ICON='/icons/gray.png'; // ★ 失败图标灰色占位
+const DEF_ICON='/icons/gray.png'; // 本地默认灰色占位图
+
+// 新增：提取域名函数（去除 www. 前缀）
+function getDomain(url) {
+  try {
+    const hostname = new URL(url).hostname;
+    return hostname.startsWith('www.') ? hostname.slice(4) : hostname;
+  } catch (e) {
+    return 'example.com';
+  }
+}
 
 /* ================= 分类数据 ================= */
 fetch(API).then(r=>r.text()).then(t=>{
@@ -125,7 +122,7 @@ fetch(API).then(r=>r.text()).then(t=>{
         name:l.getAttribute('name'),
         url:l.getAttribute('url'),
         desc:l.getAttribute('desc'),
-        icon:l.getAttribute('icon')
+        icon:l.getAttribute('icon')  // 保留，可能为空
       }))
     }))
   }));
@@ -154,7 +151,7 @@ function setEngine(btn,url){
   btn.classList.add('active');
 }
 
-/* ================= 分类页显示 + 图标失败替换为灰色占位 ================= */
+/* ================= 分类页显示 + 新图标逻辑 ================= */
 function showCategory(c){
   document.getElementById('search-page').style.display='none';
   const cont=document.getElementById('content'); cont.style.display='block';
@@ -175,9 +172,23 @@ function showCategory(c){
     s.links.forEach(l=>{
       const a=document.createElement('a'); a.className='card'; a.href=l.url; a.target='_blank';
       const img=document.createElement('img');
-      img.src=l.icon||DEF_ICON;
-      // ★ 图标加载失败使用灰色占位，不隐藏卡片或文字
-      img.onerror = ()=>{ img.src=DEF_ICON; };
+
+      // ★★★ 新图标逻辑 ★★★
+      if (l.icon && l.icon.trim()) {
+        // XML 中有手动上传的图标，优先使用
+        img.src = l.icon.trim();
+      } else {
+        // 否则使用 Google Favicon 服务
+        const domain = getDomain(l.url);
+        img.src = `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
+      }
+
+      // 任何加载失败都降级为本地默认灰色图标
+      img.onerror = () => {
+        img.onerror = null;  // 防止循环
+        img.src = DEF_ICON;
+      };
+
       const t=document.createElement('div'); t.className='text';
       t.innerHTML=`<div class="name">${l.name}</div><div class="desc">${l.desc||''}</div>`;
       a.appendChild(img); a.appendChild(t); box.appendChild(a);
@@ -192,6 +203,7 @@ function showCategory(c){
     }
   });
 }
+
 function back(){
   document.getElementById('content').style.display='none';
   document.getElementById('search-page').style.display='flex';
