@@ -234,11 +234,13 @@ function initCats(){
  /* ================= 网站提交 ================= */ 
 function submitSite(e){
   e.preventDefault();
-  if(hp.value) return;  // 蜜罐字段防机器人
+  // 加强蜜罐判断
+  if (hp && hp.value !== '') {
+    msg.textContent = '异常提交，已阻止';
+    return;
+  }
 
   const site = {
-    id: Date.now(),  // 简单唯一ID
-    time: new Date().toISOString(),
     cat1: c1.options[c1.selectedIndex].text,
     cat2: c2.options[c2.selectedIndex].text,
     name: name.value.trim(),
@@ -246,11 +248,12 @@ function submitSite(e){
     desc: desc.value.trim()
   };
 
-  // 检查必填
-  if (!site.name || !site.url || !site.desc) {
+  if (!site.name || !site.url || !site.desc || c1.value === '' || c2.value === '') {
     msg.textContent = '请填写完整信息';
     return;
   }
+
+  msg.textContent = '提交中...';
 
   fetch('/api/submit', {
     method: 'POST',
@@ -261,8 +264,12 @@ function submitSite(e){
   .then(text => {
     msg.textContent = text.includes('成功') ? '提交成功，等待管理员审核' : text;
     e.target.reset();
+    c2.innerHTML = '<option value="">二级分类</option>';
   })
-  .catch(() => msg.textContent = '提交失败，请重试');
+  .catch(err => {
+    msg.textContent = '网络错误，请重试';
+    console.error(err);
+  });
 }
 
 /* ================= 友情链接 ================= */
@@ -289,4 +296,5 @@ function showPage(html){
 </script>
 </body>
 </html>
+
 
