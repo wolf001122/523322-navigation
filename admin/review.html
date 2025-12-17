@@ -10,8 +10,16 @@ h1 {font-size: 24px; margin-bottom: 20px;}
 .item p {margin: 8px 0;}
 button {padding: 8px 16px; margin-right: 10px; border: none; border-radius: 4px; cursor: pointer;}
 .approve {background: #1a73e8; color: #fff;}
+.edit {background: #34a853; color: #fff;}
 .delete {background: #f44336; color: #fff;}
-#msg {color: #d93025; margin-top: 20px;}
+#msg {color: #d93025; margin-top: 20px; font-weight:500;}
+
+/* 修改弹窗样式 */
+#editModal {display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:100;}
+.modal-content {background:#fff; padding:20px; border-radius:8px; width:90%; max-width:500px;}
+.modal-content h2 {margin-bottom:15px;}
+.modal-content input, .modal-content textarea, .modal-content select {width:100%; padding:8px; margin:8px 0;}
+.modal-content button {margin-right:10px;}
 </style>
 </head>
 <body>
@@ -19,7 +27,23 @@ button {padding: 8px 16px; margin-right: 10px; border: none; border-radius: 4px;
 <div id="list">加载中...</div>
 <div id="msg"></div>
 
+<!-- 修改弹窗 -->
+<div id="editModal">
+  <div class="modal-content">
+    <h2>修改提交信息</h2>
+    <input id="editName" placeholder="网站名称" required>
+    <input id="editUrl" placeholder="https://example.com" required>
+    <textarea id="editDesc" placeholder="网站简介" required></textarea>
+    <p><strong>分类：</strong><span id="editCat"></span></p>
+    <button class="approve" onclick="saveEdit()">保存修改</button>
+    <button onclick="closeModal()">取消</button>
+    <p id="editMsg"></p>
+  </div>
+</div>
+
 <script>
+let currentEditId = null;  // 当前正在修改的提交ID
+
 function loadPending() {
   fetch('/api/pending')
     .then(r => {
@@ -43,6 +67,7 @@ function loadPending() {
           <p><strong>简介：</strong>${site.desc}</p>
           <p><strong>提交时间：</strong>${new Date(site.time).toLocaleString()}</p>
           <button class="approve" onclick="review(${site.id}, 'approve')">通过并上线</button>
+          <button class="edit" onclick="openEdit(${site.id})">修改</button>
           <button class="delete" onclick="review(${site.id}, 'delete')">删除</button>
         `;
         div.appendChild(item);
@@ -64,12 +89,64 @@ function review(id, action) {
   .then(r => r.text())
   .then(msg => {
     alert(msg);
-    loadPending();  // 刷新列表
+    loadPending();
   })
   .catch(err => alert('操作失败：' + err.message));
 }
 
-// 初始加载 + 每30秒自动刷新
+// 打开修改弹窗
+function openEdit(id) {
+  fetch('/api/pending')
+    .then(r => r.json())
+    .then(list => {
+      const site = list.find(s => s.id === id);
+      if (!site) {
+        alert('未找到该提交');
+        return;
+      }
+      currentEditId = id;
+      document.getElementById('editName').value = site.name;
+      document.getElementById('editUrl').value = site.url;
+      document.getElementById('editDesc').value = site.desc;
+      document.getElementById('editCat').textContent = site.cat1 + ' > ' + site.cat2;
+      document.getElementById('editModal').style.display = 'flex';
+    });
+}
+
+// 关闭弹窗
+function closeModal() {
+  document.getElementById('editModal').style.display = 'none';
+  document.getElementById('editMsg').textContent = '';
+}
+
+// 保存修改（新增 /api/edit 接口）
+function saveEdit() {
+  const name = document.getElementById('editName').value.trim();
+  const url = document.getElementById('editUrl').value.trim();
+  const desc = document.getElementById('editDesc').value.trim();
+
+  if (!name || !url || !desc) {
+    document.getElementById('editMsg').textContent = '请填写完整';
+    return;
+  }
+
+  fetch('/api/edit', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({id: currentEditId, name, url, desc})
+  })
+  .then(r => r.text())
+  .then(msg => {
+    alert(msg);
+    if (msg.includes('成功')) {
+      closeModal();
+      loadPending();
+    }
+  })
+  .catch(() => alert('修改失败'));
+}
+
+// 初始加载 + 自动刷新
 loadPending();
 setInterval(loadPending, 30000);
 </script>
