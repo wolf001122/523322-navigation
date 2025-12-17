@@ -209,6 +209,7 @@ function back(){
   document.getElementById('search-page').style.display='flex';
 }
 
+
 /* ================= 网站提交 ================= */
 function showSubmit(){
   showPage(`
@@ -224,24 +225,49 @@ function showSubmit(){
     </form>
     <p id="msg"></p>
   `);
-  initCats();
 
-  // ★★★ 关键修复：定义全局变量 ★★★
+  // ★★★ 关键修复：重新获取动态生成的 DOM 元素并定义为全局变量 ★★★
   window.c1 = document.getElementById('c1');
   window.c2 = document.getElementById('c2');
-  window.nameInput = document.getElementById('name');  // 避免与全局name冲突，用nameInput
+  window.nameInput = document.getElementById('name');
   window.urlInput = document.getElementById('url');
-  window.desc = document.getElementById('desc');
+  window.descInput = document.getElementById('desc');
   window.hp = document.getElementById('hp');
   window.msg = document.getElementById('msg');
+
+  // 清空并重新初始化分类选项
+  initCats();
 }
- /* ================= 网站提交 ================= */ 
+
+function initCats(){
+  c1.innerHTML = '<option value="">请选择一级分类</option>';
+  data.forEach((cat, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = cat.name;
+    c1.appendChild(opt);
+  });
+
+  // 一级分类变更时填充二级
+  c1.onchange = () => {
+    c2.innerHTML = '<option value="">请选择二级分类</option>';
+    if (c1.value !== '') {
+      data[c1.value].subs.forEach(sub => {
+        const opt = document.createElement('option');
+        opt.textContent = sub.name;
+        c2.appendChild(opt);
+      });
+    }
+  };
+}
+
+/* ================= 提交处理 ================= */
 function submitSite(e){
   e.preventDefault();
 
   // 蜜罐防机器人
   if (hp && hp.value !== '') {
-    msg.textContent = '异常提交，已阻止';
+    msg.textContent = '检测到异常操作，已阻止提交';
     return;
   }
 
@@ -250,12 +276,12 @@ function submitSite(e){
     cat2: c2.options[c2.selectedIndex]?.text || '',
     name: nameInput.value.trim(),
     url: urlInput.value.trim(),
-    desc: desc.value.trim()
+    desc: descInput.value.trim()
   };
 
   // 必填校验
   if (!site.cat1 || !site.cat2 || !site.name || !site.url || !site.desc) {
-    msg.textContent = '请填写完整信息';
+    msg.textContent = '请填写完整信息并选择分类';
     return;
   }
 
@@ -268,9 +294,14 @@ function submitSite(e){
   })
   .then(r => r.text())
   .then(text => {
-    msg.textContent = text.includes('成功') ? '提交成功，等待管理员审核' : '提交失败：' + text;
-    e.target.reset();
-    c2.innerHTML = '<option value="">二级分类</option>';
+    if (text.includes('成功')) {
+      msg.textContent = '提交成功，等待管理员审核';
+      e.target.reset();
+      c1.selectedIndex = 0;
+      c2.innerHTML = '<option value="">请选择二级分类</option>';
+    } else {
+      msg.textContent = '提交失败：' + text;
+    }
   })
   .catch(err => {
     msg.textContent = '网络错误，请重试';
@@ -302,6 +333,7 @@ function showPage(html){
 </script>
 </body>
 </html>
+
 
 
 
