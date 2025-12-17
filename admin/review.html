@@ -5,21 +5,23 @@
 <title>待审核网站提交</title>
 <style>
 body {font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 20px; background: #f8f9fa; color: #202124;}
-h1 {font-size: 24px; margin-bottom: 20px;}
-.item {border: 1px solid #dadce0; margin: 15px 0; padding: 15px; border-radius: 8px; background: #fff; box-shadow: 0 1px 2px rgba(60,64,67,0.3);}
-.item p {margin: 8px 0;}
-button {padding: 8px 16px; margin-right: 10px; border: none; border-radius: 4px; cursor: pointer;}
+h1 {font-size: 24px; margin-bottom: 20px; text-align: center;}
+#list {display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;}
+.item {background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 1px 2px rgba(60,64,67,0.3), 0 2px 6px 2px rgba(60,64,67,0.15);}
+.item p {margin: 8px 0; word-break: break-all;}
+.item strong {color: #5f6368;}
+button {padding: 8px 16px; margin: 5px 5px 5px 0; border: none; border-radius: 4px; cursor: pointer;}
 .approve {background: #1a73e8; color: #fff;}
 .edit {background: #34a853; color: #fff;}
 .delete {background: #f44336; color: #fff;}
-#msg {color: #d93025; margin-top: 20px; font-weight:500;}
+#msg {text-align: center; margin: 20px 0; font-weight: 500; color: #d93025;}
 
-/* 修改弹窗样式 */
-#editModal {display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:100;}
-.modal-content {background:#fff; padding:20px; border-radius:8px; width:90%; max-width:500px;}
-.modal-content h2 {margin-bottom:15px;}
-.modal-content input, .modal-content textarea, .modal-content select {width:100%; padding:8px; margin:8px 0;}
-.modal-content button {margin-right:10px;}
+/* 修改弹窗 */
+#editModal {display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 100;}
+.modal-content {background: #fff; padding: 24px; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);}
+.modal-content h2 {margin-bottom: 16px;}
+.modal-content input, .modal-content textarea, .modal-content select {width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #dadce0; border-radius: 4px;}
+.modal-content button {margin-right: 10px;}
 </style>
 </head>
 <body>
@@ -31,10 +33,11 @@ button {padding: 8px 16px; margin-right: 10px; border: none; border-radius: 4px;
 <div id="editModal">
   <div class="modal-content">
     <h2>修改提交信息</h2>
+    <select id="editCat1" required></select>
+    <select id="editCat2" required></select>
     <input id="editName" placeholder="网站名称" required>
     <input id="editUrl" placeholder="https://example.com" required>
-    <textarea id="editDesc" placeholder="网站简介" required></textarea>
-    <p><strong>分类：</strong><span id="editCat"></span></p>
+    <textarea id="editDesc" placeholder="网站简介" rows="4" required></textarea>
     <button class="approve" onclick="saveEdit()">保存修改</button>
     <button onclick="closeModal()">取消</button>
     <p id="editMsg"></p>
@@ -42,42 +45,102 @@ button {padding: 8px 16px; margin-right: 10px; border: none; border-radius: 4px;
 </div>
 
 <script>
-let currentEditId = null;  // 当前正在修改的提交ID
+let currentEditId = null;
+let categories = [];  // 存储正式分类数据
 
-function loadPending() {
-  fetch('/api/pending')
-    .then(r => {
-      if (!r.ok) throw new Error('加载失败');
-      return r.json();
-    })
-    .then(list => {
-      const div = document.getElementById('list');
-      if (list.length === 0) {
-        div.innerHTML = '<p>暂无待审核提交</p>';
-        return;
-      }
-      div.innerHTML = '';
-      list.forEach(site => {
-        const item = document.createElement('div');
-        item.className = 'item';
-        item.innerHTML = `
-          <p><strong>网站名称：</strong>${site.name}</p>
-          <p><strong>URL：</strong><a href="${site.url}" target="_blank">${site.url}</a></p>
-          <p><strong>分类：</strong>${site.cat1} > ${site.cat2}</p>
-          <p><strong>简介：</strong>${site.desc}</p>
-          <p><strong>提交时间：</strong>${new Date(site.time).toLocaleString()}</p>
+// 加载正式分类（用于修改时下拉框）
+async function loadCategories() {
+  try {
+    const res = await fetch('/api/data');
+    const text = await res.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, 'text/xml');
+    categories = [...doc.querySelectorAll('category')].map(c => ({
+      name: c.getAttribute('name'),
+      subs: [...c.querySelectorAll('subcategory')].map(s => s.getAttribute('name'))
+    }));
+  } catch (e) {
+    console.error('加载分类失败', e);
+  }
+}
+
+// 填充分类下拉框
+function fillEditCats(cat1Name, cat2Name) {
+  const cat1Select = document.getElementById('editCat1');
+  const cat2Select = document.getElementById('editCat2');
+  cat1Select.innerHTML = '<option value="">请选择一级分类</option>';
+  categories.forEach(cat => {
+    const opt = document.createElement('option');
+    opt.value = cat.name;
+    opt.textContent = cat.name;
+    if (cat.name === cat1Name) opt.selected = true;
+    cat1Select.appendChild(opt);
+  });
+
+  cat2Select.innerHTML = '<option value="">请选择二级分类</option>';
+  if (cat1Name) {
+    const cat = categories.find(c => c.name === cat1Name);
+    if (cat) {
+      cat.subs.forEach(sub => {
+        const opt = document.createElement('option');
+        opt.value = sub;
+        opt.textContent = sub;
+        if (sub === cat2Name) opt.selected = true;
+        cat2Select.appendChild(opt);
+      });
+    }
+  }
+
+  cat1Select.onchange = () => {
+    const selectedCat = categories.find(c => c.name === cat1Select.value);
+    cat2Select.innerHTML = '<option value="">请选择二级分类</option>';
+    if (selectedCat) {
+      selectedCat.subs.forEach(sub => {
+        const opt = document.createElement('option');
+        opt.value = sub;
+        opt.textContent = sub;
+        cat2Select.appendChild(opt);
+      });
+    }
+  };
+}
+
+// 加载待审核列表
+async function loadPending() {
+  try {
+    const res = await fetch('/api/pending');
+    if (!res.ok) throw new Error('加载失败');
+    const list = await res.json();
+
+    const div = document.getElementById('list');
+    if (list.length === 0) {
+      div.innerHTML = '<p style="grid-column: 1 / -1; text-align:center;">暂无待审核提交</p>';
+      return;
+    }
+    div.innerHTML = '';
+    list.forEach(site => {
+      const item = document.createElement('div');
+      item.className = 'item';
+      item.innerHTML = `
+        <p><strong>网站名称：</strong>${site.name}</p>
+        <p><strong>URL：</strong><a href="${site.url}" target="_blank">${site.url}</a></p>
+        <p><strong>分类：</strong>${site.cat1} > ${site.cat2}</p>
+        <p><strong>简介：</strong>${site.desc}</p>
+        <p><strong>提交时间：</strong>${new Date(site.time).toLocaleString()}</p>
+        <div style="margin-top:12px;">
           <button class="approve" onclick="review(${site.id}, 'approve')">通过并上线</button>
           <button class="edit" onclick="openEdit(${site.id})">修改</button>
           <button class="delete" onclick="review(${site.id}, 'delete')">删除</button>
-        `;
-        div.appendChild(item);
-      });
-    })
-    .catch(err => {
-      document.getElementById('list').innerHTML = '<p style="color:red">加载失败：' + err.message + '</p>';
+        </div>
+      `;
+      div.appendChild(item);
     });
+  } catch (err) {
+    document.getElementById('list').innerHTML = '<p style="color:red; grid-column: 1 / -1; text-align:center;">加载失败：' + err.message + '</p>';
+  }
 }
 
+// 通过/删除
 function review(id, action) {
   if (!confirm(action === 'approve' ? '确认通过并上线此网站？' : '确认删除此提交？')) return;
 
@@ -108,32 +171,34 @@ function openEdit(id) {
       document.getElementById('editName').value = site.name;
       document.getElementById('editUrl').value = site.url;
       document.getElementById('editDesc').value = site.desc;
-      document.getElementById('editCat').textContent = site.cat1 + ' > ' + site.cat2;
+      fillEditCats(site.cat1, site.cat2);
       document.getElementById('editModal').style.display = 'flex';
+      document.getElementById('editMsg').textContent = '';
     });
 }
 
 // 关闭弹窗
 function closeModal() {
   document.getElementById('editModal').style.display = 'none';
-  document.getElementById('editMsg').textContent = '';
 }
 
-// 保存修改（新增 /api/edit 接口）
+// 保存修改（新增支持修改分类）
 function saveEdit() {
+  const cat1 = document.getElementById('editCat1').value;
+  const cat2 = document.getElementById('editCat2').value;
   const name = document.getElementById('editName').value.trim();
   const url = document.getElementById('editUrl').value.trim();
   const desc = document.getElementById('editDesc').value.trim();
 
-  if (!name || !url || !desc) {
-    document.getElementById('editMsg').textContent = '请填写完整';
+  if (!cat1 || !cat2 || !name || !url || !desc) {
+    document.getElementById('editMsg').textContent = '请填写完整并选择分类';
     return;
   }
 
   fetch('/api/edit', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({id: currentEditId, name, url, desc})
+    body: JSON.stringify({id: currentEditId, cat1, cat2, name, url, desc})
   })
   .then(r => r.text())
   .then(msg => {
@@ -146,9 +211,9 @@ function saveEdit() {
   .catch(() => alert('修改失败'));
 }
 
-// 初始加载 + 自动刷新
-loadPending();
-setInterval(loadPending, 30000);
+// 初始化
+loadCategories().then(() => loadPending());
+setInterval(loadPending, 30000); // 每30秒刷新
 </script>
 </body>
 </html>
