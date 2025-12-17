@@ -8,7 +8,7 @@
 <style>
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+  font-family: system-ui, -apple-system;
   background: #f4f6f8;
 }
 
@@ -21,7 +21,7 @@ body {
 .editor {
   width: 360px;
   padding: 16px;
-  background: #ffffff;
+  background: #fff;
   border-right: 1px solid #ddd;
   box-sizing: border-box;
 }
@@ -36,8 +36,8 @@ body {
   font-size: 14px;
 }
 
-.editor select,
 .editor input,
+.editor select,
 .editor textarea {
   width: 100%;
   padding: 6px;
@@ -45,9 +45,7 @@ body {
   box-sizing: border-box;
 }
 
-.editor textarea {
-  resize: vertical;
-}
+textarea { resize: vertical; }
 
 .btn-row {
   display: flex;
@@ -106,18 +104,18 @@ button {
   color: #666;
 }
 
-.card .actions {
+.actions {
   margin-top: 8px;
   display: flex;
   gap: 6px;
 }
 
-.card .edit {
+.edit {
   background: #409eff;
   color: #fff;
 }
 
-.card .del {
+.del {
   background: #e74c3c;
   color: #fff;
 }
@@ -128,7 +126,7 @@ button {
 
 <div class="container">
 
-  <!-- 左侧 -->
+  <!-- 左侧编辑 -->
   <div class="editor">
     <h2>编辑链接</h2>
 
@@ -155,20 +153,21 @@ button {
     <button class="btn-save-kv" onclick="saveToKV()">保存到 KV</button>
   </div>
 
-  <!-- 右侧 -->
+  <!-- 右侧卡片 -->
   <div class="cards" id="cards"></div>
 
 </div>
 
 <script>
+/* ====== 数据区 ====== */
 let data = [];
 let editingIndex = null;
 
-/* 示例分类 */
 const categories = {
   "视频与音乐流媒体": ["音乐流媒体", "视频平台"]
 };
 
+/* ====== 初始化分类 ====== */
 const cat1 = document.getElementById('cat1');
 const cat2 = document.getElementById('cat2');
 
@@ -182,7 +181,18 @@ cat1.onchange = () => {
 };
 cat1.onchange();
 
-/* 渲染卡片（关键：写入完整 dataset） */
+/* ====== 初始占位数据（防空白） ====== */
+if (data.length === 0) {
+  data.push({
+    cat1: '视频与音乐流媒体',
+    cat2: '音乐流媒体',
+    name: '示例网站',
+    url: 'https://example.com',
+    desc: '这是一个示例链接，可编辑或删除'
+  });
+}
+
+/* ====== 渲染 ====== */
 function render() {
   const wrap = document.getElementById('cards');
   wrap.innerHTML = '';
@@ -190,13 +200,6 @@ function render() {
   data.forEach((d, i) => {
     const card = document.createElement('div');
     card.className = 'card';
-
-    card.dataset.index = i;
-    card.dataset.name = d.name;
-    card.dataset.url = d.url;
-    card.dataset.desc = d.desc;
-    card.dataset.cat1 = d.cat1;
-    card.dataset.cat2 = d.cat2;
 
     card.innerHTML = `
       <h3>${d.name}</h3>
@@ -211,7 +214,7 @@ function render() {
   });
 }
 
-/* 编辑：100% 从 data 取值 */
+/* ====== 编辑 ====== */
 function editCard(i) {
   const d = data[i];
   editingIndex = i;
@@ -225,7 +228,7 @@ function editCard(i) {
   document.getElementById('desc').value = d.desc;
 }
 
-/* 应用修改 */
+/* ====== 应用修改 ====== */
 function applyEdit() {
   const name = document.getElementById('name').value.trim();
   if (!name) {
@@ -251,7 +254,7 @@ function applyEdit() {
   render();
 }
 
-/* 删除 */
+/* ====== 删除 ====== */
 function deleteCard(i) {
   if (confirm('确认删除该链接？')) {
     data.splice(i, 1);
@@ -259,7 +262,7 @@ function deleteCard(i) {
   }
 }
 
-/* 清空 */
+/* ====== 清空 ====== */
 function clearForm() {
   editingIndex = null;
   document.getElementById('name').value = '';
@@ -267,10 +270,13 @@ function clearForm() {
   document.getElementById('desc').value = '';
 }
 
-/* 保存到 KV（示意） */
+/* ====== 保存到 KV（示意） ====== */
 function saveToKV() {
   alert('已保存到 KV（示意）');
 }
+
+/* ====== 首次渲染 ====== */
+render();
 </script>
 
 </body>
