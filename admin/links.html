@@ -2,114 +2,116 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>链接管理</title>
+<title>链接管理后台</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 body {
   margin: 0;
-  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:#f5f6f7;
-}
-
-button {
-  padding:6px 12px;
-  border-radius:4px;
-  border:1px solid #409eff;
-  background:#409eff;
-  color:#fff;
-  cursor:pointer;
-}
-button.secondary {
-  background:#fff;
-  color:#409eff;
-}
-button.danger {
-  background:#e74c3c;
-  border-color:#e74c3c;
+  font-family: system-ui, -apple-system;
+  background: #f4f6f8;
 }
 
 .container {
-  display:flex;
-  gap:16px;
-  padding:16px;
+  display: flex;
+  height: 100vh;
 }
 
-/* ===== 编辑区 ===== */
+/* 左侧 */
 .editor {
-  width:320px;
-  background:#fff;
-  border-radius:8px;
-  padding:12px;
-  box-shadow:0 1px 4px rgba(0,0,0,.08);
-  position:sticky;
-  top:16px;
-  height:fit-content;
+  width: 360px;
+  padding: 16px;
+  background: #fff;
+  border-right: 1px solid #ddd;
+  box-sizing: border-box;
 }
 
-.editor h3 { margin-top:0; }
+.editor h2 {
+  margin: 0 0 12px;
+}
 
 .editor label {
-  font-size:13px;
-  margin-top:8px;
-  display:block;
+  display: block;
+  margin-top: 10px;
+  font-size: 14px;
 }
 
-.editor input,.editor select {
-  width:100%;
-  padding:6px;
-  margin-top:4px;
+.editor input,
+.editor select,
+.editor textarea {
+  width: 100%;
+  padding: 6px;
+  margin-top: 4px;
+  box-sizing: border-box;
 }
 
-/* ===== 列表 ===== */
-.list { flex:1; }
+textarea { resize: vertical; }
 
-.group {
-  margin-bottom:30px;
+.btn-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
 }
 
-.group-title {
-  font-size:16px;
-  margin-bottom:8px;
-  color:#333;
-  border-left:4px solid #409eff;
-  padding-left:8px;
+button {
+  border: none;
+  border-radius: 4px;
+  padding: 8px;
+  cursor: pointer;
 }
 
+.btn-apply {
+  background: #409eff;
+  color: #fff;
+}
+
+.btn-clear {
+  background: #ddd;
+}
+
+.btn-save {
+  margin-top: 16px;
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  background: linear-gradient(135deg,#2ecc71,#27ae60);
+  color: #fff;
+}
+
+/* 卡片 */
 .cards {
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-  gap:12px;
+  flex: 1;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  overflow-y: auto;
 }
 
 .card {
-  background:#fff;
-  border-radius:6px;
-  padding:10px;
-  box-shadow:0 1px 4px rgba(0,0,0,.08);
-  display:flex;
-  flex-direction:column;
-  gap:6px;
+  background: #fff;
+  border-radius: 6px;
+  padding: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.1);
 }
 
-.card .name {
-  font-weight:600;
-  font-size:14px;
+.card h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
 }
 
-.card .url {
-  font-size:12px;
-  color:#666;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+.card small {
+  color: #666;
 }
 
-.card .actions {
-  margin-top:auto;
-  display:flex;
-  gap:8px;
+.actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 6px;
 }
+
+.edit { background:#409eff;color:#fff; }
+.del { background:#e74c3c;color:#fff; }
 </style>
 </head>
 
@@ -117,15 +119,15 @@ button.danger {
 
 <div class="container">
 
-  <!-- 编辑区 -->
+  <!-- 左侧 -->
   <div class="editor">
-    <h3 id="editorTitle">新增链接</h3>
+    <h2>编辑链接</h2>
 
     <label>一级分类</label>
-    <select id="cat1"></select>
+    <input id="cat1">
 
     <label>二级分类</label>
-    <select id="cat2"></select>
+    <input id="cat2">
 
     <label>名称</label>
     <input id="name">
@@ -134,177 +136,121 @@ button.danger {
     <input id="url">
 
     <label>描述</label>
-    <input id="desc">
+    <textarea id="desc"></textarea>
 
-    <div style="margin-top:12px;display:flex;gap:8px">
-      <button onclick="applyEdit()">应用修改</button>
-      <button class="secondary" onclick="clearEditor()">清空</button>
+    <div class="btn-row">
+      <button class="btn-apply" onclick="applyEdit()">应用修改</button>
+      <button class="btn-clear" onclick="clearForm()">清空</button>
     </div>
 
-    <div style="margin-top:10px">
-      <button style="width:100%" onclick="saveKV()">保存到 KV</button>
-    </div>
+    <button class="btn-save" onclick="saveToKV()">保存到 KV</button>
   </div>
 
-  <!-- 列表 -->
-  <div id="list" class="list"></div>
+  <!-- 右侧 -->
+  <div class="cards" id="cards"></div>
 
 </div>
 
 <script>
-let nav=null;
-let editing=null; // {i,j,k}
+let data = [];
+let editingIndex = null;
 
-fetch('/api/data').then(r=>r.text()).then(parseXML);
+/* ========== 加载 XML ========= */
+fetch('/api/data')
+  .then(r => r.text())
+  .then(parseXML)
+  .then(render)
+  .catch(e => alert('数据加载失败：' + e));
 
-/* ===== 解析 ===== */
-function parseXML(xmlText){
-  const xml=new DOMParser().parseFromString(xmlText,'text/xml');
-  nav={categories:[]};
+function parseXML(xmlText) {
+  const xml = new DOMParser().parseFromString(xmlText, 'text/xml');
+  const links = xml.querySelectorAll('link');
 
-  xml.querySelectorAll('category').forEach(cat=>{
-    const c1={name:cat.getAttribute('name'),subcategories:[]};
-    cat.querySelectorAll('subcategory').forEach(sub=>{
-      const c2={name:sub.getAttribute('name'),links:[]};
-      sub.querySelectorAll('link').forEach(l=>{
-        c2.links.push({
-          name:l.getAttribute('name') || '',
-          url:l.getAttribute('url') || '',
-          desc:l.getAttribute('desc') || ''
-        });
-      });
-      c1.subcategories.push(c2);
-    });
-    nav.categories.push(c1);
-  });
-
-  initSelectors();
-  render();
+  data = Array.from(links).map(l => ({
+    cat1: l.getAttribute('cat1') || '',
+    cat2: l.getAttribute('cat2') || '',
+    name: l.getAttribute('name') || '',
+    url: l.getAttribute('url') || '',
+    desc: l.getAttribute('desc') || ''
+  }));
 }
 
-/* ===== 渲染 ===== */
-function render(){
-  const list=document.getElementById('list');
-  list.innerHTML='';
+/* ========== 渲染 ========= */
+function render() {
+  const wrap = document.getElementById('cards');
+  wrap.innerHTML = '';
 
-  nav.categories.forEach((c1,i)=>{
-    c1.subcategories.forEach((c2,j)=>{
-      if(!c2.links.length)return;
-
-      const g=document.createElement('div');
-      g.className='group';
-      g.innerHTML=`<div class="group-title">${c1.name} / ${c2.name}</div>`;
-
-      const cards=document.createElement('div');
-      cards.className='cards';
-
-      c2.links.forEach((_,k)=>{
-        const link=nav.categories[i].subcategories[j].links[k];
-
-        const card=document.createElement('div');
-        card.className='card';
-        card.innerHTML=`
-          <div class="name">${link.name}</div>
-          <div class="url">${link.url}</div>
-          <div class="actions">
-            <button class="secondary">编辑</button>
-            <button class="danger">删除</button>
-          </div>`;
-
-        card.querySelector('.secondary').onclick=()=>startEdit(i,j,k);
-        card.querySelector('.danger').onclick=()=>{
-          if(confirm('确认删除？')){
-            c2.links.splice(k,1);
-            render();
-          }
-        };
-        cards.appendChild(card);
-      });
-
-      g.appendChild(cards);
-      list.appendChild(g);
-    });
+  data.forEach((d,i)=>{
+    const card = document.createElement('div');
+    card.className='card';
+    card.innerHTML=`
+      <h3>${d.name}</h3>
+      <small>${d.cat1} / ${d.cat2}</small><br>
+      <small>${d.url}</small>
+      <div class="actions">
+        <button class="edit" onclick="edit(${i})">编辑</button>
+        <button class="del" onclick="removeItem(${i})">删除</button>
+      </div>`;
+    wrap.appendChild(card);
   });
 }
 
-/* ===== 下拉 ===== */
-function initSelectors(){
-  cat1.innerHTML=nav.categories.map((c,i)=>`<option value="${i}">${c.name}</option>`).join('');
-  cat1.onchange=()=>{
-    const c=nav.categories[cat1.value];
-    cat2.innerHTML=c.subcategories.map((s,i)=>`<option value="${i}">${s.name}</option>`).join('');
-  };
-  cat1.onchange();
+/* ========== 编辑 ========= */
+function edit(i){
+  const d=data[i];
+  editingIndex=i;
+  cat1.value=d.cat1;
+  cat2.value=d.cat2;
+  name.value=d.name;
+  url.value=d.url;
+  desc.value=d.desc;
 }
 
-/* ===== 编辑 ===== */
-function startEdit(i,j,k){
-  editing={i,j,k};
-  const link=nav.categories[i].subcategories[j].links[k];
-
-  editorTitle.textContent='编辑链接';
-  cat1.value=i; cat1.onchange();
-  cat2.value=j;
-
-  name.value=link.name;
-  url.value=link.url;
-  desc.value=link.desc;
-}
-
-function clearEditor(){
-  editing=null;
-  editorTitle.textContent='新增链接';
-  name.value=url.value=desc.value='';
-}
-
-/* ===== 应用 ===== */
+/* ========== 应用 ========= */
 function applyEdit(){
-  const n=name.value.trim();
-  const u=url.value.trim();
-
-  if(!n || !u){
-    alert('名称和 URL 不能为空');
+  if(!name.value.trim()||!url.value.trim()){
+    alert('名称和URL不能为空');
     return;
   }
-
-  const i=+cat1.value;
-  const j=+cat2.value;
-
-  if(editing){
-    Object.assign(
-      nav.categories[editing.i].subcategories[editing.j].links[editing.k],
-      {name:n,url:u,desc:desc.value.trim()}
-    );
-    alert('修改已应用（未保存到 KV）');
-  }else{
-    nav.categories[i].subcategories[j].links.push({
-      name:n,url:u,desc:desc.value.trim()
-    });
-    alert('新增已应用（未保存到 KV）');
-  }
-
-  clearEditor();
+  const obj={
+    cat1:cat1.value,
+    cat2:cat2.value,
+    name:name.value,
+    url:url.value,
+    desc:desc.value
+  };
+  if(editingIndex===null) data.push(obj);
+  else data[editingIndex]=obj;
+  editingIndex=null;
   render();
 }
 
-/* ===== 保存 ===== */
-function saveKV(){
+/* ========== 删除 ========= */
+function removeItem(i){
+  if(confirm('确认删除？')){
+    data.splice(i,1);
+    render();
+  }
+}
+
+/* ========== 清空 ========= */
+function clearForm(){
+  editingIndex=null;
+  cat1.value=cat2.value=name.value=url.value=desc.value='';
+}
+
+/* ========== 保存 ========= */
+function saveToKV(){
   let xml=`<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n`;
-  nav.categories.forEach(c1=>{
-    xml+=`  <category name="${c1.name}">\n`;
-    c1.subcategories.forEach(c2=>{
-      xml+=`    <subcategory name="${c2.name}">\n`;
-      c2.links.forEach(l=>{
-        xml+=`      <link name="${l.name}" url="${l.url}" desc="${l.desc}"/>\n`;
-      });
-      xml+=`    </subcategory>\n`;
-    });
-    xml+=`  </category>\n`;
+  data.forEach(d=>{
+    xml+=`  <link cat1="${d.cat1}" cat2="${d.cat2}" name="${d.name}"
+      url="${d.url}" desc="${d.desc}" />\n`;
   });
-  xml+=`</navigation>`;
+  xml+='</navigation>';
 
   fetch('/api/save',{method:'POST',body:xml})
-    .then(()=>alert('已成功保存到 KV'));
+    .then(()=>alert('已保存到 KV'))
+    .catch(()=>alert('保存失败'));
 }
 </script>
 
