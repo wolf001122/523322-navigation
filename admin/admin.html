@@ -1,93 +1,167 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>管理后台 - 网址导航</title>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <style>
-    body { margin:0; font-family:'Roboto',Arial,sans-serif; background:#f1f3f4; display:flex; height:100vh; }
-    /* 左侧菜单栏 - AdSense 风格 */
-    .sidebar { width:256px; background:#fff; box-shadow:2px 0 8px rgba(0,0,0,0.12); position:fixed; height:100%; overflow-y:auto; z-index:10; }
-    .sidebar-header { padding:24px 16px; font-size:20px; color:#5f6368; border-bottom:1px solid #e0e0e0; }
-    .sidebar-menu { list-style:none; padding:0; margin:0; }
-    .sidebar-menu li a { display:flex; align-items:center; padding:12px 24px; color:#5f6368; text-decoration:none; font-size:14px; transition:0.2s; }
-    .sidebar-menu li a:hover { background:#f1f3f4; }
-    .sidebar-menu li a.active { background:#e8f0fe; color:#4285f4; font-weight:500; }
-    .sidebar-menu li a .material-icons { margin-right:24px; font-size:24px; color:#5f6368; }
-    .sidebar-menu li a.active .material-icons { color:#4285f4; }
+<meta charset="UTF-8">
+<title>后台管理</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    /* 主内容区 */
-    .main-content { margin-left:256px; flex:1; background:#f1f3f4; }
-    .top-bar { background:#fff; height:64px; box-shadow:0 2px 4px rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:space-between; padding:0 24px; }
-    .top-bar h1 { font-size:20px; color:#3c4043; }
-    .top-bar .user-info { display:flex; align-items:center; gap:12px; }
-    .top-bar button { background:#ea4335; color:white; border:none; padding:8px 16px; border-radius:4px; cursor:pointer; }
-    .top-bar button:hover { background:#d33b2f; }
-    .top-bar button.home { background:#4285f4; }
-    .top-bar button.home:hover { background:#3367d6; }
-    .content-frame { height:calc(100vh - 64px); width:100%; border:none; background:#f1f3f4; }
+<style>
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f5f6f7;
+  color: #333;
+}
 
-    @media (max-width:1024px) {
-      .sidebar { width:72px; }
-      .sidebar-menu li a span { display:none; }
-      .sidebar-menu li a .material-icons { margin-right:0; }
-      .main-content { margin-left:72px; }
-    }
-  </style>
+header {
+  height: 56px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+header .title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+header .actions a {
+  margin-left: 16px;
+  color: #409eff;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.layout {
+  display: flex;
+  height: calc(100vh - 56px);
+}
+
+/* ===== 左侧菜单 ===== */
+aside {
+  width: 220px;
+  background: #ffffff;
+  border-right: 1px solid #e5e5e5;
+  padding: 16px 0;
+}
+
+.menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu li {
+  margin-bottom: 4px;
+}
+
+.menu a {
+  display: block;
+  padding: 10px 20px;
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.menu a:hover,
+.menu a.active {
+  background: #ecf5ff;
+  color: #409eff;
+}
+
+/* ===== 主内容区 ===== */
+main {
+  flex: 1;
+  padding: 24px;
+  overflow: auto;
+}
+
+.card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08);
+  max-width: 800px;
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+.card p {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.quick-links {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.quick-links a {
+  padding: 8px 14px;
+  background: #409eff;
+  color: #fff;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.quick-links a.secondary {
+  background: #67c23a;
+}
+</style>
 </head>
+
 <body>
-  <!-- 左侧菜单 -->
-  <div class="sidebar">
-    <div class="sidebar-header">管理后台</div>
-    <ul class="sidebar-menu">
-      <li><a href="categories.html" target="contentFrame" class="active"><span class="material-icons">dashboard</span><span>分类管理</span></a></li>
-      <li><a href="links.html" target="contentFrame"><span class="material-icons">link</span><span>链接管理</span></a></li>
-      <li><a href="friendly.html" target="contentFrame"><span class="material-icons">link</span><span>友情链接管理</span></a></li>
-      <li><a href="review.html" target="contentFrame"><span class="material-icons">verified</span><span>提交审核</span></a></li>
-      <li><a href="/" target="_top"><span class="material-icons">home</span><span>返回首页</span></a></li>
-    </ul>
+
+<header>
+  <div class="title">导航后台管理</div>
+  <div class="actions">
+    <a href="/" target="_blank">查看首页</a>
+    <a href="/admin/login.html">重新登录</a>
   </div>
+</header>
+
+<div class="layout">
+
+  <!-- 左侧菜单 -->
+  <aside>
+    <ul class="menu">
+      <li><a class="active" href="/admin/admin.html">后台首页</a></li>
+      <li><a href="/admin/links.html">链接管理</a></li>
+      <li><a href="#" onclick="alert('功能预留')">分类管理</a></li>
+      <li><a href="#" onclick="alert('功能预留')">系统设置</a></li>
+    </ul>
+  </aside>
 
   <!-- 主内容 -->
-  <div class="main-content">
-    <div class="top-bar">
-      <h1 id="pageTitle">分类管理</h1>
-      <div class="user-info">
-        <span>管理员</span>
-        <button onclick="logout()">登出</button>
-        <button class="home" onclick="location.href='/'">返回首页</button>
+  <main>
+    <div class="card">
+      <h2>欢迎进入导航后台</h2>
+      <p>
+        当前后台基于 <strong>Cloudflare Pages + Workers KV + Zero Trust</strong> 构建，
+        所有数据修改仅在你确认后才会写入 KV。
+      </p>
+      <p>
+        👉 建议日常维护只使用「链接管理」，其它模块为后续扩展预留。
+      </p>
+
+      <div class="quick-links">
+        <a href="/admin/links.html">进入链接管理</a>
+        <a class="secondary" href="/" target="_blank">打开首页</a>
       </div>
     </div>
-    <iframe name="contentFrame" class="content-frame" src="categories.html"></iframe>
-  </div>
+  </main>
 
-  <script>
-    // 检查登录状态（Cookie）
-    function checkLogin() {
-      if (!document.cookie.includes('admin_logged_in=true')) {
-        location.href = '/admin/login.html';
-      }
-    }
+</div>
 
-    // 登出
-    function logout() {
-      document.cookie = 'admin_logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-      location.href = '/admin/login.html';
-    }
-
-    // 更新标题和高亮
-    document.querySelectorAll('.sidebar-menu a').forEach(link => {
-      link.addEventListener('click', () => {
-        document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
-        link.classList.add('active');
-        const text = link.querySelector('span:nth-child(2)');
-        document.getElementById('pageTitle').textContent = text ? text.textContent : '管理后台';
-      });
-    });
-
-    // 页面加载时检查登录
-    checkLogin();
-  </script>
 </body>
 </html>
