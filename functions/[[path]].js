@@ -2,6 +2,15 @@ export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
 
+  // ================= 后台页面强制登录检查（新增部分） =================
+  // 所有 /admin/*.html 页面必须登录才能访问
+  if (url.pathname.startsWith('/admin/') && url.pathname.endsWith('.html') && url.pathname !== '/admin/login.html') {
+    const cookie = request.headers.get('cookie') || '';
+    if (!cookie.includes('admin_logged_in=true')) {
+      return Response.redirect(new URL('/admin/login.html', request.url).toString(), 302);
+    }
+  }
+
   // GET /api/data - 读取 XML 数据（原有功能）
   if (url.pathname === '/api/data' && request.method === 'GET') {
     let xml = await env.NAV_DATA.get('nav_data');
@@ -111,7 +120,7 @@ export async function onRequest(context) {
     <subcategory name="${subName}">${linkStr}
     </subcategory>
   </category>`;
-          xml = xml.replace('</navigation>', `  ${newCat}\n</navigation>`);
+          xml = xml.replace('</navigation>', ` ${newCat}\n</navigation>`);
         }
 
         await env.NAV_DATA.put('nav_data', xml);
