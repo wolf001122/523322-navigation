@@ -4,8 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>分类管理</title>
+  <!-- 关键修复：禁用缓存，强制每次加载都从服务器获取 -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
   <style>
+    /* 样式保持不变 */
     body { background:#f1f3f4; padding:24px; font-family:'Roboto',Arial,sans-serif; }
     .card { background:#fff; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.12); padding:24px; margin-bottom:24px; }
     h2 { font-size:20px; color:#3c4043; margin:0 0 16px; display:flex; justify-content:space-between; align-items:center; }
@@ -22,21 +27,20 @@
     .status.success { background:#e6f4ea; color:#137333; border:1px solid #34a853; }
     .status.error { background:#fce8e6; color:#c5221f; border:1px solid #ea4335; }
   </style>
-</head>
-<body>
-  <!-- 修复：强制登录检查（包括浏览器后退） -->
+  <!-- 关键修复：JS 检查登录（包括刷新/后退） -->
   <script>
     function checkLogin() {
       if (!document.cookie.split(';').some(c => c.trim().startsWith('admin_logged_in=true'))) {
-        location.replace('/admin/login.html'); // replace 防止后退循环
+        location.replace('/admin/login.html');
       }
     }
-    // 页面加载时检查
-    checkLogin();
-    // 浏览器后退/从缓存恢复时检查（关键修复）
+    checkLogin(); // 立即检查
+    window.addEventListener('load', checkLogin);
     window.addEventListener('pageshow', checkLogin);
+    window.addEventListener('focus', checkLogin); // 窗口获得焦点时检查
   </script>
-
+</head>
+<body>
   <div class="card">
     <h2>分类管理</h2>
     <div style="margin-bottom:20px;">
@@ -50,6 +54,7 @@
       <p style="color:#5f6368;">加载中...</p>
     </div>
   </div>
+  <!-- 原有脚本保持不变 -->
   <script>
     let categories = [];
 
