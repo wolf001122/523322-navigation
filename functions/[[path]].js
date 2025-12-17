@@ -3,11 +3,16 @@ export async function onRequest(context) {
   const url = new URL(request.url);
 
   // ================= 后台页面强制登录检查（修复版） =================
-  // 覆盖 /admin/*.html 和 /admin/xxx (Clean URLs 无 .html 后缀)
-  if (url.pathname.startsWith('/admin/') && url.pathname !== '/admin/login.html' && (url.pathname.endsWith('.html') || !url.pathname.includes('.'))) {
-    const cookie = request.headers.get('cookie') || '';
-    if (!cookie.includes('admin_logged_in=true')) {
-      return Response.redirect(new URL('/admin/login.html', request.url).toString(), 302);
+  // 只对 /admin/ 下的 .html 页面（除 login.html 外）进行检查
+  // 同时兼容 Clean URLs（访问 /admin/categories 时实际加载 categories.html）
+  if (url.pathname.startsWith('/admin/') && url.pathname !== '/admin/login.html') {
+    // 判断是否为后台页面（包含 .html 或无扩展名但在 /admin/ 下）
+    const isAdminPage = url.pathname.endsWith('.html') || !url.pathname.includes('.');
+    if (isAdminPage) {
+      const cookie = request.headers.get('cookie') || '';
+      if (!cookie.includes('admin_logged_in=true')) {
+        return Response.redirect(new URL('/admin/login.html', request.url).toString(), 302);
+      }
     }
   }
 
