@@ -173,19 +173,16 @@ function showCategory(c){
     s.links.forEach(l=>{
       const a=document.createElement('a'); a.className='card'; a.href=l.url; a.target='_blank';
       const img=document.createElement('img');
-
       if (l.icon && l.icon.trim()) {
         img.src = l.icon.trim();
       } else {
         const domain = getDomain(l.url);
         img.src = `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
       }
-
       img.onerror = () => {
         img.onerror = null;
         img.src = DEF_ICON;
       };
-
       const t=document.createElement('div'); t.className='text';
       t.innerHTML=`<div class="name">${l.name}</div><div class="desc">${l.desc||''}</div>`;
       a.appendChild(img); a.appendChild(t); box.appendChild(a);
@@ -206,7 +203,7 @@ function back(){
   document.getElementById('search-page').style.display='flex';
 }
 
-/* ================= 网站提交 + 验证码 ================= */
+/* ================= 网站提交 + 验证码 + 重复域名检查 ================= */
 function showSubmit(){
   showPage(`
     <h2>网站提交</h2>
@@ -236,7 +233,7 @@ function showSubmit(){
   window.captchaAnswer = document.getElementById('captchaAnswer');
 
   initCats();
-  generateCaptcha();  // 生成验证码
+  generateCaptcha();
 }
 
 function generateCaptcha() {
@@ -255,7 +252,28 @@ function generateCaptcha() {
   captchaQuestion.textContent = `验证码：${question}`;
   window.correctAnswer = answer;
 }
-/* ================================== */
+
+function initCats(){
+  c1.innerHTML = '<option value="">请选择一级分类</option>';
+  data.forEach((cat, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = cat.name;
+    c1.appendChild(opt);
+  });
+
+  c1.onchange = () => {
+    c2.innerHTML = '<option value="">请选择二级分类</option>';
+    if (c1.value !== '') {
+      data[c1.value].subs.forEach(sub => {
+        const opt = document.createElement('option');
+        opt.textContent = sub.name;
+        c2.appendChild(opt);
+      });
+    }
+  };
+}
+
 function submitSite(e){
   e.preventDefault();
 
@@ -264,7 +282,6 @@ function submitSite(e){
     return;
   }
 
-  // 验证码校验
   const userAnswer = parseInt(captchaAnswer.value.trim(), 10);
   if (isNaN(userAnswer) || userAnswer !== window.correctAnswer) {
     msg.textContent = '验证码错误，请重新计算';
@@ -279,7 +296,7 @@ function submitSite(e){
     return;
   }
 
-  // ★★★ 恢复：检查一级域名是否重复 ★★★
+  // 检查一级域名重复
   let submittedRoot = '';
   try {
     let hostname = new URL(submittedUrl).hostname.toLowerCase();
@@ -303,7 +320,6 @@ function submitSite(e){
     return;
   }
 
-  // 检查重复
   fetch(API)
     .then(r => r.text())
     .then(text => {
@@ -323,6 +339,8 @@ function submitSite(e){
             } else {
               const last = parts[parts.length - 1];
               const secondLast = parts[parts.length - 2];
+              const countrySuffixes = ['cn', 'uk', 'jp', 'de', 'fr', 'au', 'br', 'ru', 'in', 'ca', 'it', 'es', 'nl', 'kr', 'tw', 'hk', 'sg'];
+              const publicSuffixes = ['com', 'net', 'org', 'gov', 'edu', 'co', 'ne', 'or', 'go', 'ac', 'mil', 'info', 'biz'];
               if (countrySuffixes.includes(last) && publicSuffixes.includes(secondLast) && parts.length >= 3) {
                 root = parts.slice(-3).join('.');
               } else {
@@ -341,7 +359,6 @@ function submitSite(e){
         return;
       }
 
-      // 通过所有检查，正常提交
       const site = {
         cat1: c1.options[c1.selectedIndex]?.text || '',
         cat2: c2.options[c2.selectedIndex]?.text || '',
