@@ -73,6 +73,7 @@ form button{padding:10px 20px;background:#1a73e8;color:#fff;border:none;cursor:p
     <div id="cats"></div>
     <div id="side-bottom">
       <div onclick="showSubmit()">网站提交</div>
+      <div onclick="showPrivacy()">隐私政策</div> <!-- 新增隐私政策入口 -->
       <div onclick="showLinks()">友情链接</div>
       <div onclick="showAbout()">关于导航</div>
     </div>
@@ -120,7 +121,7 @@ fetch(API).then(r=>r.text()).then(t=>{
   const xml=new DOMParser().parseFromString(t,'text/xml');
   data=[...xml.querySelectorAll('category')].map(c=>({
     name:c.getAttribute('name'),
-    subs:[...c.querySelectorAll('subcategory')].map(s=>({
+    subs:[...c.querySelectorAll('subcategory')].map(s=({
       name:s.getAttribute('name'),
       links:[...s.querySelectorAll('link')].map(l=>({
         name:l.getAttribute('name'),
@@ -408,6 +409,31 @@ function submitSite(e){
       msg.textContent = '检查重复时出错，请重试';
       generateCaptcha();
     });
+}
+
+/* ================= 隐私政策页面 ================= */
+function showPrivacy(){
+  showPage(`
+    <h2>隐私政策</h2>
+    <p>最后更新日期：2025年12月17日</p>
+    <p>本站（www.523322.xyz）非常重视用户隐私保护。以下是我们隐私政策的说明：</p>
+    <h3>1. 收集的信息</h3>
+    <p>本站为纯静态导航网站，不收集任何个人身份信息（如姓名、邮箱、手机号等）。</p>
+    <p>当您使用“网站提交”功能时，我们仅收集您自愿提供的网站名称、URL和简介，用于审核后添加到导航列表。</p>
+    <h3>2. Cookie 和日志</h3>
+    <p>本站使用 Google AdSense 投放广告，可能通过 Cookie 记录匿名访问数据（如浏览页面、点击广告）以优化广告展示。这些数据由 Google 管理，详见 <a href="https://policies.google.com/privacy" target="_blank">Google 隐私政策</a>。</p>
+    <p>服务器日志可能记录 IP 地址、浏览器类型等，用于站点统计和安全防护，不用于个人追踪。</p>
+    <h3>3. 第三方服务</h3>
+    <p>本站使用 Google AdSense 和 Google Favicon 服务。这些第三方可能收集匿名数据，具体政策请参阅其官网。</p>
+    <h3>4. 数据安全</h3>
+    <p>我们采取合理措施保护提交数据，但互联网传输不存在绝对安全。</p>
+    <h3>5. 政策变更</h3>
+    <p>如有重大变更，我们将在本站更新隐私政策。</p>
+    <h3>6. 联系我们</h3>
+    <p>如对隐私有疑问，请通过本站“关于导航”页面联系管理员。</p>
+    <p>感谢您使用本站！</p>
+  `);
+  logo.classList.add('return-mode');
 }
 
 /* ================= 友情链接 ================= */
