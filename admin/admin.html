@@ -8,160 +8,251 @@
 <style>
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #f5f6f7;
-  color: #333;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+  background: #f5f6f8;
 }
 
-header {
-  height: 56px;
-  background: #ffffff;
-  border-bottom: 1px solid #e5e5e5;
+.container {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
+  height: 100vh;
 }
 
-header .title {
-  font-size: 18px;
-  font-weight: 600;
+.editor {
+  width: 360px;
+  padding: 16px;
+  background: #fff;
+  border-right: 1px solid #ddd;
+  box-sizing: border-box;
 }
 
-header .actions a {
-  margin-left: 16px;
-  color: #409eff;
-  text-decoration: none;
-  font-size: 14px;
+.editor h2 {
+  margin-top: 0;
 }
 
-.layout {
-  display: flex;
-  height: calc(100vh - 56px);
-}
-
-/* ===== 左侧菜单 ===== */
-aside {
-  width: 220px;
-  background: #ffffff;
-  border-right: 1px solid #e5e5e5;
-  padding: 16px 0;
-}
-
-.menu {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.menu li {
-  margin-bottom: 4px;
-}
-
-.menu a {
+.editor label {
   display: block;
-  padding: 10px 20px;
-  color: #333;
-  text-decoration: none;
+  margin-top: 12px;
   font-size: 14px;
 }
 
-.menu a:hover,
-.menu a.active {
-  background: #ecf5ff;
-  color: #409eff;
+.editor select,
+.editor input,
+.editor textarea {
+  width: 100%;
+  padding: 6px;
+  box-sizing: border-box;
+  margin-top: 4px;
 }
 
-/* ===== 主内容区 ===== */
-main {
+.editor textarea {
+  resize: vertical;
+}
+
+.btn-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+button {
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.btn-apply { background: #409eff; color: #fff; }
+.btn-clear { background: #ddd; }
+.btn-save {
+  margin-top: 16px;
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  background: #2ecc71;
+  color: #fff;
+}
+
+.cards {
   flex: 1;
-  padding: 24px;
-  overflow: auto;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  overflow-y: auto;
 }
 
 .card {
   background: #fff;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.08);
-  max-width: 800px;
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.1);
 }
 
-.card h2 {
-  margin-top: 0;
-  font-size: 18px;
+.card h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
 }
 
-.card p {
+.card small {
   color: #666;
-  font-size: 14px;
-  line-height: 1.6;
 }
 
-.quick-links {
-  margin-top: 20px;
+.card .actions {
+  margin-top: 8px;
   display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
+  gap: 6px;
 }
 
-.quick-links a {
-  padding: 8px 14px;
-  background: #409eff;
-  color: #fff;
-  border-radius: 4px;
-  text-decoration: none;
-  font-size: 14px;
-}
-
-.quick-links a.secondary {
-  background: #67c23a;
-}
+.card .edit { background: #409eff; color: #fff; }
+.card .del { background: #e74c3c; color: #fff; }
 </style>
 </head>
 
 <body>
 
-<header>
-  <div class="title">导航后台管理</div>
-  <div class="actions">
-    <a href="/" target="_blank">查看首页</a>
-    <a href="/admin/login.html">重新登录</a>
-  </div>
-</header>
+<div class="container">
 
-<div class="layout">
+  <!-- 左侧编辑区 -->
+  <div class="editor">
+    <h2>编辑链接</h2>
 
-  <!-- 左侧菜单 -->
-  <aside>
-    <ul class="menu">
-      <li><a class="active" href="/admin/admin.html">后台首页</a></li>
-      <li><a href="/admin/links.html">链接管理</a></li>
-      <li><a href="#" onclick="alert('功能预留')">分类管理</a></li>
-      <li><a href="#" onclick="alert('功能预留')">系统设置</a></li>
-    </ul>
-  </aside>
+    <label>一级分类</label>
+    <select id="cat1"></select>
 
-  <!-- 主内容 -->
-  <main>
-    <div class="card">
-      <h2>欢迎进入导航后台</h2>
-      <p>
-        当前后台基于 <strong>Cloudflare Pages + Workers KV + Zero Trust</strong> 构建，
-        所有数据修改仅在你确认后才会写入 KV。
-      </p>
-      <p>
-        👉 建议日常维护只使用「链接管理」，其它模块为后续扩展预留。
-      </p>
+    <label>二级分类</label>
+    <select id="cat2"></select>
 
-      <div class="quick-links">
-        <a href="/admin/links.html">进入链接管理</a>
-        <a class="secondary" href="/" target="_blank">打开首页</a>
-      </div>
+    <label>名称</label>
+    <input id="name">
+
+    <label>URL</label>
+    <input id="url">
+
+    <label>描述</label>
+    <textarea id="desc"></textarea>
+
+    <div class="btn-row">
+      <button class="btn-apply" onclick="applyEdit()">应用修改</button>
+      <button class="btn-clear" onclick="clearForm()">清空</button>
     </div>
-  </main>
+
+    <button class="btn-save" onclick="saveKV()">保存到 KV</button>
+  </div>
+
+  <!-- 右侧卡片区 -->
+  <div class="cards" id="cards"></div>
 
 </div>
+
+<script>
+let data = [];
+let editingIndex = null;
+
+/* 示例分类（你可换成真实） */
+const cats = {
+  "视频与音乐流媒体": ["音乐流媒体", "视频平台"]
+};
+
+const cat1 = document.getElementById('cat1');
+const cat2 = document.getElementById('cat2');
+
+for (const k in cats) {
+  cat1.add(new Option(k, k));
+}
+cat1.onchange = () => {
+  cat2.innerHTML = '';
+  cats[cat1.value].forEach(v => cat2.add(new Option(v, v)));
+};
+cat1.onchange();
+
+/* 渲染卡片 */
+function render() {
+  const wrap = document.getElementById('cards');
+  wrap.innerHTML = '';
+  data.forEach((d, i) => {
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.dataset.index = i;
+    div.dataset.name = d.name;
+    div.dataset.url = d.url;
+    div.dataset.desc = d.desc;
+    div.dataset.cat1 = d.cat1;
+    div.dataset.cat2 = d.cat2;
+
+    div.innerHTML = `
+      <h3>${d.name}</h3>
+      <small>${d.cat1} / ${d.cat2}</small><br>
+      <small>${d.url}</small>
+      <div class="actions">
+        <button class="edit" onclick="edit(${i})">编辑</button>
+        <button class="del" onclick="del(${i})">删除</button>
+      </div>
+    `;
+    wrap.appendChild(div);
+  });
+}
+
+/* 编辑 */
+function edit(i) {
+  const d = data[i];
+  editingIndex = i;
+
+  cat1.value = d.cat1;
+  cat1.onchange();
+  cat2.value = d.cat2;
+
+  document.getElementById('name').value = d.name;
+  document.getElementById('url').value = d.url;
+  document.getElementById('desc').value = d.desc;
+}
+
+/* 应用修改 */
+function applyEdit() {
+  const name = document.getElementById('name').value.trim();
+  if (!name) {
+    alert('名称不能为空');
+    return;
+  }
+
+  const obj = {
+    cat1: cat1.value,
+    cat2: cat2.value,
+    name,
+    url: url.value.trim(),
+    desc: desc.value.trim()
+  };
+
+  if (editingIndex === null) {
+    data.push(obj);
+  } else {
+    data[editingIndex] = obj;
+  }
+
+  editingIndex = null;
+  render();
+}
+
+/* 删除 */
+function del(i) {
+  if (confirm('确认删除？')) {
+    data.splice(i, 1);
+    render();
+  }
+}
+
+/* 清空 */
+function clearForm() {
+  editingIndex = null;
+  document.getElementById('name').value = '';
+  document.getElementById('url').value = '';
+  document.getElementById('desc').value = '';
+}
+
+/* 保存到 KV（示意） */
+function saveKV() {
+  alert('已保存到 KV（示意）');
+}
+</script>
 
 </body>
 </html>
