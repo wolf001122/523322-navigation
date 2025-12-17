@@ -129,6 +129,31 @@ export async function onRequest(context) {
     }
   }
 
+  // ================= 新增：管理员修改待审核项 =================
+  if (url.pathname === '/api/edit' && request.method === 'POST') {
+    try {
+      const { id, name, url, desc } = await request.json();
+
+      let pending = await env.NAV_DATA.get('pending_sites');
+      if (!pending) return new Response('无待审核数据', { status: 404 });
+
+      let list = JSON.parse(pending);
+      const index = list.findIndex(s => s.id === id);
+      if (index === -1) return new Response('提交记录不存在', { status: 404 });
+
+      // 更新字段（分类保持不变）
+      list[index].name = name.trim();
+      list[index].url = url.trim();
+      list[index].desc = desc.trim();
+
+      await env.NAV_DATA.put('pending_sites', JSON.stringify(list));
+
+      return new Response('修改成功', { status: 200 });
+    } catch (e) {
+      return new Response('修改失败: ' + e.message, { status: 500 });
+    }
+  }
+
   // 其他请求直接放行给静态资源（原有功能）
   return await context.next();
 }
