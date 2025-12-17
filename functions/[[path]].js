@@ -29,6 +29,10 @@ export async function onRequest(context) {
   }
 
   // ================= 用户网站提交（待审核） =================
+    // 可选：简单长度或时间戳校验防绕过
+  if (!site.time || Date.now() - new Date(site.time).getTime() > 600000) { // 10分钟内有效
+    return new Response('提交超时', { status: 400 });
+  }
   if (url.pathname === '/api/submit' && request.method === 'POST') {
     try {
       const site = await request.json();
