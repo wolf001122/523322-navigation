@@ -231,12 +231,38 @@ function initCats(){
   data.forEach((c,i)=>c1.innerHTML+=`<option value="${i}">${c.name}</option>`);
   c1.onchange=()=>{c2.innerHTML='<option value="">二级分类</option>'; data[c1.value].subs.forEach(s=>c2.innerHTML+=`<option>${s.name}</option>`);}
 }
+ /* ================= 网站提交 ================= */ 
 function submitSite(e){
   e.preventDefault();
-  if(hp.value) return;
-  fetch('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({cat1:c1.value,cat2:c2.value,name:name.value,url:url.value,desc:desc.value})})
-  .then(()=>msg.textContent='提交成功，等待审核');
+  if(hp.value) return;  // 蜜罐字段防机器人
+
+  const site = {
+    id: Date.now(),  // 简单唯一ID
+    time: new Date().toISOString(),
+    cat1: c1.options[c1.selectedIndex].text,
+    cat2: c2.options[c2.selectedIndex].text,
+    name: name.value.trim(),
+    url: url.value.trim(),
+    desc: desc.value.trim()
+  };
+
+  // 检查必填
+  if (!site.name || !site.url || !site.desc) {
+    msg.textContent = '请填写完整信息';
+    return;
+  }
+
+  fetch('/api/submit', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(site)
+  })
+  .then(r => r.text())
+  .then(text => {
+    msg.textContent = text.includes('成功') ? '提交成功，等待管理员审核' : text;
+    e.target.reset();
+  })
+  .catch(() => msg.textContent = '提交失败，请重试');
 }
 
 /* ================= 友情链接 ================= */
@@ -263,3 +289,4 @@ function showPage(html){
 </script>
 </body>
 </html>
+
