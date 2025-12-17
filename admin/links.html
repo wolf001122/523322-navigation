@@ -6,115 +6,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system;
-  background: #f4f6f8;
-}
+body{margin:0;font-family:system-ui;background:#f4f6f8}
+header{background:#1f2937;color:#fff;padding:14px 20px}
+.container{display:flex;height:calc(100vh - 52px)}
+.editor{width:320px;background:#fff;border-right:1px solid #e5e7eb;padding:16px}
+.editor label{display:block;margin-top:10px;font-size:13px}
+.editor input,.editor select{width:100%;padding:6px;margin-top:4px}
+.editor button{width:100%;margin-top:10px;padding:8px;border:none;border-radius:4px;cursor:pointer}
+.apply{background:#409eff;color:#fff}
+.clear{background:#9ca3af;color:#fff}
+.save{background:#22c55e;color:#fff;font-weight:600}
 
-header {
-  background: #1f2937;
-  color: #fff;
-  padding: 14px 20px;
-  font-size: 16px;
-}
-
-.container {
-  display: flex;
-  height: calc(100vh - 52px);
-}
-
-/* 左侧编辑区 */
-.editor {
-  width: 320px;
-  background: #fff;
-  border-right: 1px solid #e5e7eb;
-  padding: 16px;
-  box-sizing: border-box;
-}
-
-.editor h3 {
-  margin-top: 0;
-}
-
-.editor label {
-  display: block;
-  font-size: 13px;
-  margin-top: 10px;
-}
-
-.editor input,
-.editor select {
-  width: 100%;
-  padding: 6px;
-  margin-top: 4px;
-}
-
-.editor button {
-  width: 100%;
-  margin-top: 10px;
-  padding: 8px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.btn-apply { background:#409eff; color:#fff; }
-.btn-clear { background:#9ca3af; color:#fff; }
-.btn-save  { background:#22c55e; color:#fff; font-weight:600; }
-
-/* 右侧卡片区 */
-.cards {
-  flex: 1;
-  padding: 16px;
-  overflow-y: auto;
-}
-
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
-  gap: 12px;
-}
-
-.card {
-  background: #fff;
-  border-radius: 6px;
-  padding: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,.08);
-}
-
-.card strong {
-  display:block;
-}
-
-.card small {
-  color:#666;
-}
-
-.card .actions {
-  margin-top: 8px;
-  display:flex;
-  gap:8px;
-}
-
-.card button {
-  flex:1;
-  padding:5px;
-  font-size:12px;
-  cursor:pointer;
-}
+.cards{flex:1;padding:16px;overflow-y:auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.card{background:#fff;border-radius:6px;padding:12px;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.card strong{display:block}
+.card small{color:#666}
+.actions{margin-top:8px;display:flex;gap:8px}
+.actions button{flex:1;font-size:12px}
 </style>
 </head>
 
 <body>
-<header>链接管理（编辑后需手动保存到 KV）</header>
+<header>链接管理（修改后需保存到 KV）</header>
 
 <div class="container">
 
-<!-- 左侧编辑 -->
 <div class="editor">
-  <h3>编辑链接</h3>
-
   <label>一级分类</label>
   <select id="cat"></select>
 
@@ -133,45 +51,41 @@ header {
   <label>图标</label>
   <input id="icon">
 
-  <button class="btn-apply" onclick="applyEdit()">应用修改</button>
-  <button class="btn-clear" onclick="clearForm()">清空</button>
-  <button class="btn-save" onclick="saveKV()">保存到 KV</button>
+  <button class="apply" onclick="applyEdit()">应用修改</button>
+  <button class="clear" onclick="clearForm()">清空</button>
+  <button class="save" onclick="saveKV()">保存到 KV</button>
 </div>
 
-<!-- 右侧卡片 -->
 <div class="cards">
-  <div class="card-grid" id="list"></div>
+  <div class="grid" id="list"></div>
 </div>
 
 </div>
 
 <script>
 let xmlDoc;
-let editRef = null;
+let editing = null;
 
-/* ========= 读取 XML ========= */
 fetch('/api/data')
-  .then(r => r.text())
-  .then(txt => {
-    xmlDoc = new DOMParser().parseFromString(txt,'text/xml');
-    buildSelectors();
-    renderCards();
+  .then(r=>r.text())
+  .then(t=>{
+    xmlDoc=new DOMParser().parseFromString(t,'text/xml');
+    buildCat();
+    render();
   });
 
-/* ========= 构建下拉 ========= */
-function buildSelectors() {
-  const catSel = cat;
-  catSel.innerHTML = '';
+function buildCat(){
+  cat.innerHTML='';
   xmlDoc.querySelectorAll('category').forEach(c=>{
     const o=document.createElement('option');
     o.value=o.textContent=c.getAttribute('name');
-    catSel.appendChild(o);
+    cat.appendChild(o);
   });
   buildSub();
-  catSel.onchange=buildSub;
+  cat.onchange=buildSub;
 }
 
-function buildSub() {
+function buildSub(){
   sub.innerHTML='';
   xmlDoc.querySelectorAll(
     `category[name="${cat.value}"] subcategory`
@@ -182,85 +96,93 @@ function buildSub() {
   });
 }
 
-/* ========= 渲染卡片 ========= */
-function renderCards() {
+function render(){
   list.innerHTML='';
   xmlDoc.querySelectorAll('category').forEach(c=>{
     c.querySelectorAll('subcategory').forEach(s=>{
-      s.querySelectorAll('link').forEach(link=>{
+      s.querySelectorAll('link').forEach(l=>{
         const d=document.createElement('div');
         d.className='card';
+        d.dataset.cat=c.getAttribute('name');
+        d.dataset.sub=s.getAttribute('name');
+        d.dataset.name=l.getAttribute('name');
+
         d.innerHTML=`
-<strong>${link.getAttribute('name')}</strong>
+<strong>${l.getAttribute('name')}</strong>
 <small>${c.getAttribute('name')} / ${s.getAttribute('name')}</small>
-<small>${link.getAttribute('url')}</small>
+<small>${l.getAttribute('url')}</small>
 <div class="actions">
-<button onclick="editLink(this)">编辑</button>
-<button onclick="delLink(this)">删除</button>
+<button onclick="edit(this)">编辑</button>
+<button onclick="del(this)">删除</button>
 </div>`;
-        d._ref = link;
         list.appendChild(d);
       });
     });
   });
 }
 
-/* ========= 编辑 ========= */
-function editLink(btn){
-  const l = btn.closest('.card')._ref;
-  editRef = l;
-  name.value = l.getAttribute('name');
-  url.value  = l.getAttribute('url');
-  desc.value = l.getAttribute('desc')||'';
-  icon.value = l.getAttribute('icon')||'';
-
-  cat.value = l.closest('category').getAttribute('name');
-  buildSub();
-  sub.value = l.closest('subcategory').getAttribute('name');
+function findLink(catN,subN,name){
+  return xmlDoc.querySelector(
+    `category[name="${catN}"] subcategory[name="${subN}"] link[name="${name}"]`
+  );
 }
 
-/* ========= 应用 ========= */
+function edit(btn){
+  const card=btn.closest('.card');
+  const l=findLink(card.dataset.cat,card.dataset.sub,card.dataset.name);
+  if(!l)return alert('未找到数据');
+
+  editing=l;
+
+  cat.value=card.dataset.cat;
+  buildSub();
+  sub.value=card.dataset.sub;
+
+  name.value=l.getAttribute('name')||'';
+  url.value=l.getAttribute('url')||'';
+  desc.value=l.getAttribute('desc')||'';
+  icon.value=l.getAttribute('icon')||'';
+}
+
 function applyEdit(){
-  if(!name.value || !url.value){
+  if(!name.value||!url.value){
     alert('名称和网址不能为空');
     return;
   }
 
-  if(!editRef){
-    const s = xmlDoc.querySelector(
+  if(!editing){
+    const s=xmlDoc.querySelector(
       `category[name="${cat.value}"] subcategory[name="${sub.value}"]`
     );
-    editRef = xmlDoc.createElement('link');
-    s.appendChild(editRef);
+    editing=xmlDoc.createElement('link');
+    s.appendChild(editing);
   }
 
-  editRef.setAttribute('name',name.value);
-  editRef.setAttribute('url',url.value);
-  editRef.setAttribute('desc',desc.value);
-  editRef.setAttribute('icon',icon.value);
+  editing.setAttribute('name',name.value);
+  editing.setAttribute('url',url.value);
+  editing.setAttribute('desc',desc.value);
+  editing.setAttribute('icon',icon.value);
 
   clearForm();
-  renderCards();
+  render();
 }
 
-/* ========= 删除 ========= */
-function delLink(btn){
-  const l=btn.closest('.card')._ref;
-  if(confirm('确定删除？')){
+function del(btn){
+  const card=btn.closest('.card');
+  const l=findLink(card.dataset.cat,card.dataset.sub,card.dataset.name);
+  if(l&&confirm('确定删除？')){
     l.remove();
-    renderCards();
+    render();
   }
 }
 
-/* ========= 清空 ========= */
 function clearForm(){
   name.value=url.value=desc.value=icon.value='';
-  editRef=null;
+  editing=null;
 }
 
-/* ========= 保存 ========= */
 function saveKV(){
-  const xml = new XMLSerializer().serializeToString(xmlDoc);
+  const xml=new XMLSerializer().serializeToString(xmlDoc);
   fetch('/api/save',{method:'POST',body:xml})
     .then(()=>alert('已保存到 KV'));
 }
