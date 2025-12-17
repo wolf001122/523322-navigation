@@ -28,7 +28,7 @@ export async function onRequest(context) {
     }
   }
 
-  // ================= 新增：用户网站提交（待审核） =================
+  // ================= 用户网站提交（待审核） =================
   if (url.pathname === '/api/submit' && request.method === 'POST') {
     try {
       const site = await request.json();
@@ -59,7 +59,7 @@ export async function onRequest(context) {
     }
   }
 
-  // ================= 新增：管理员获取待审核列表 =================
+  // ================= 管理员获取待审核列表 =================
   if (url.pathname === '/api/pending' && request.method === 'GET') {
     const pending = await env.NAV_DATA.get('pending_sites');
     const list = pending ? JSON.parse(pending) : [];
@@ -68,7 +68,7 @@ export async function onRequest(context) {
     });
   }
 
-  // ================= 新增：管理员审核操作（通过/删除） =================
+  // ================= 管理员审核操作（通过/删除） =================
   if (url.pathname === '/api/approve' && request.method === 'POST') {
     try {
       const { id, action } = await request.json(); // action: 'approve' 或 'delete'
@@ -129,10 +129,10 @@ export async function onRequest(context) {
     }
   }
 
-  // ================= 新增：管理员修改待审核项 =================
+  // ================= 管理员修改待审核项（支持修改分类） =================
   if (url.pathname === '/api/edit' && request.method === 'POST') {
     try {
-      const { id, name, url, desc } = await request.json();
+      const { id, cat1, cat2, name, url, desc } = await request.json();
 
       let pending = await env.NAV_DATA.get('pending_sites');
       if (!pending) return new Response('无待审核数据', { status: 404 });
@@ -141,7 +141,9 @@ export async function onRequest(context) {
       const index = list.findIndex(s => s.id === id);
       if (index === -1) return new Response('提交记录不存在', { status: 404 });
 
-      // 更新字段（分类保持不变）
+      // 更新所有字段
+      list[index].cat1 = cat1;
+      list[index].cat2 = cat2;
       list[index].name = name.trim();
       list[index].url = url.trim();
       list[index].desc = desc.trim();
