@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>链接管理后台</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>后台管理</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body {
@@ -12,272 +12,81 @@ body {
   background: #f4f6f8;
 }
 
-.container {
-  display: flex;
-  height: 100vh;
-}
-
-/* 左侧编辑区 */
-.editor {
-  width: 360px;
-  padding: 16px;
-  background: #fff;
-  border-right: 1px solid #ddd;
-  box-sizing: border-box;
-}
-
-.editor h2 {
-  margin: 0 0 12px;
-}
-
-.editor label {
-  display: block;
-  margin-top: 10px;
-  font-size: 14px;
-}
-
-.editor input,
-.editor select,
-.editor textarea {
-  width: 100%;
-  padding: 6px;
-  margin-top: 4px;
-  box-sizing: border-box;
-}
-
-textarea { resize: vertical; }
-
-.btn-row {
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-button {
-  border: none;
-  border-radius: 4px;
-  padding: 8px;
-  cursor: pointer;
-}
-
-.btn-apply {
-  background: #409eff;
+.header {
+  background: #1f2937;
   color: #fff;
-}
-
-.btn-clear {
-  background: #ddd;
-}
-
-.btn-save-kv {
-  margin-top: 16px;
-  width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  background: linear-gradient(135deg, #2ecc71, #27ae60);
-  color: #fff;
-}
-
-/* 卡片区 */
-.cards {
-  flex: 1;
   padding: 16px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 12px;
-  overflow-y: auto;
+  font-size: 18px;
+}
+
+.main {
+  padding: 24px;
+  max-width: 900px;
+  margin: auto;
 }
 
 .card {
   background: #fff;
-  border-radius: 6px;
-  padding: 10px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.1);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
 }
 
-.card h3 {
-  margin: 0 0 6px;
-  font-size: 15px;
-}
-
-.card small {
-  color: #666;
+.card h2 {
+  margin-top: 0;
 }
 
 .actions {
-  margin-top: 8px;
   display: flex;
-  gap: 6px;
+  gap: 12px;
+  margin-top: 12px;
 }
 
-.edit {
+a.btn {
+  display: inline-block;
+  padding: 10px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #fff;
   background: #409eff;
-  color: #fff;
 }
 
-.del {
-  background: #e74c3c;
-  color: #fff;
+a.btn:hover {
+  opacity: .9;
+}
+
+.btn-secondary {
+  background: #6b7280;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-
-  <!-- 左侧编辑 -->
-  <div class="editor">
-    <h2>编辑链接</h2>
-
-    <label>一级分类</label>
-    <select id="cat1"></select>
-
-    <label>二级分类</label>
-    <select id="cat2"></select>
-
-    <label>名称</label>
-    <input id="name">
-
-    <label>URL</label>
-    <input id="url">
-
-    <label>描述</label>
-    <textarea id="desc"></textarea>
-
-    <div class="btn-row">
-      <button class="btn-apply" onclick="applyEdit()">应用修改</button>
-      <button class="btn-clear" onclick="clearForm()">清空</button>
-    </div>
-
-    <button class="btn-save-kv" onclick="saveToKV()">保存到 KV</button>
-  </div>
-
-  <!-- 右侧卡片 -->
-  <div class="cards" id="cards"></div>
-
+<div class="header">
+  后台管理控制台
 </div>
 
-<script>
-/* ====== 数据区 ====== */
-let data = [];
-let editingIndex = null;
+<div class="main">
 
-const categories = {
-  "视频与音乐流媒体": ["音乐流媒体", "视频平台"]
-};
+  <div class="card">
+    <h2>导航内容管理</h2>
+    <p>添加、修改、删除导航链接，数据将保存到 Cloudflare KV。</p>
+    <div class="actions">
+      <a class="btn" href="/admin/links.html">进入链接管理</a>
+    </div>
+  </div>
 
-/* ====== 初始化分类 ====== */
-const cat1 = document.getElementById('cat1');
-const cat2 = document.getElementById('cat2');
+  <div class="card">
+    <h2>账户操作</h2>
+    <p>退出当前后台登录。</p>
+    <div class="actions">
+      <a class="btn btn-secondary" href="/admin/login.html">退出登录</a>
+    </div>
+  </div>
 
-for (const k in categories) {
-  cat1.add(new Option(k, k));
-}
-
-cat1.onchange = () => {
-  cat2.innerHTML = '';
-  categories[cat1.value].forEach(v => cat2.add(new Option(v, v)));
-};
-cat1.onchange();
-
-/* ====== 初始占位数据（防空白） ====== */
-if (data.length === 0) {
-  data.push({
-    cat1: '视频与音乐流媒体',
-    cat2: '音乐流媒体',
-    name: '示例网站',
-    url: 'https://example.com',
-    desc: '这是一个示例链接，可编辑或删除'
-  });
-}
-
-/* ====== 渲染 ====== */
-function render() {
-  const wrap = document.getElementById('cards');
-  wrap.innerHTML = '';
-
-  data.forEach((d, i) => {
-    const card = document.createElement('div');
-    card.className = 'card';
-
-    card.innerHTML = `
-      <h3>${d.name}</h3>
-      <small>${d.cat1} / ${d.cat2}</small><br>
-      <small>${d.url}</small>
-      <div class="actions">
-        <button class="edit" onclick="editCard(${i})">编辑</button>
-        <button class="del" onclick="deleteCard(${i})">删除</button>
-      </div>
-    `;
-    wrap.appendChild(card);
-  });
-}
-
-/* ====== 编辑 ====== */
-function editCard(i) {
-  const d = data[i];
-  editingIndex = i;
-
-  cat1.value = d.cat1;
-  cat1.onchange();
-  cat2.value = d.cat2;
-
-  document.getElementById('name').value = d.name;
-  document.getElementById('url').value = d.url;
-  document.getElementById('desc').value = d.desc;
-}
-
-/* ====== 应用修改 ====== */
-function applyEdit() {
-  const name = document.getElementById('name').value.trim();
-  if (!name) {
-    alert('名称不能为空，无法应用修改');
-    return;
-  }
-
-  const obj = {
-    cat1: cat1.value,
-    cat2: cat2.value,
-    name,
-    url: document.getElementById('url').value.trim(),
-    desc: document.getElementById('desc').value.trim()
-  };
-
-  if (editingIndex === null) {
-    data.push(obj);
-  } else {
-    data[editingIndex] = obj;
-  }
-
-  editingIndex = null;
-  render();
-}
-
-/* ====== 删除 ====== */
-function deleteCard(i) {
-  if (confirm('确认删除该链接？')) {
-    data.splice(i, 1);
-    render();
-  }
-}
-
-/* ====== 清空 ====== */
-function clearForm() {
-  editingIndex = null;
-  document.getElementById('name').value = '';
-  document.getElementById('url').value = '';
-  document.getElementById('desc').value = '';
-}
-
-/* ====== 保存到 KV（示意） ====== */
-function saveToKV() {
-  alert('已保存到 KV（示意）');
-}
-
-/* ====== 首次渲染 ====== */
-render();
-</script>
+</div>
 
 </body>
 </html>
