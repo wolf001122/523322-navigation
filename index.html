@@ -219,36 +219,42 @@ function showSubmit(){
       <input id="name" placeholder="网站名称" required>
       <input id="url" placeholder="https://example.com" required>
       <textarea id="desc" placeholder="网站简介" required></textarea>
-      <input id="hp" style="display:none">
+      <input id="hp" style="display:none" autocomplete="off" readonly>
       <button>提交</button>
     </form>
     <p id="msg"></p>
   `);
   initCats();
-}
-function initCats(){
-  c1.innerHTML='<option value="">一级分类</option>';
-  data.forEach((c,i)=>c1.innerHTML+=`<option value="${i}">${c.name}</option>`);
-  c1.onchange=()=>{c2.innerHTML='<option value="">二级分类</option>'; data[c1.value].subs.forEach(s=>c2.innerHTML+=`<option>${s.name}</option>`);}
+
+  // ★★★ 关键修复：定义全局变量 ★★★
+  window.c1 = document.getElementById('c1');
+  window.c2 = document.getElementById('c2');
+  window.nameInput = document.getElementById('name');  // 避免与全局name冲突，用nameInput
+  window.urlInput = document.getElementById('url');
+  window.desc = document.getElementById('desc');
+  window.hp = document.getElementById('hp');
+  window.msg = document.getElementById('msg');
 }
  /* ================= 网站提交 ================= */ 
 function submitSite(e){
   e.preventDefault();
-  // 加强蜜罐判断
+
+  // 蜜罐防机器人
   if (hp && hp.value !== '') {
     msg.textContent = '异常提交，已阻止';
     return;
   }
 
   const site = {
-    cat1: c1.options[c1.selectedIndex].text,
-    cat2: c2.options[c2.selectedIndex].text,
-    name: name.value.trim(),
-    url: url.value.trim(),
+    cat1: c1.options[c1.selectedIndex]?.text || '',
+    cat2: c2.options[c2.selectedIndex]?.text || '',
+    name: nameInput.value.trim(),
+    url: urlInput.value.trim(),
     desc: desc.value.trim()
   };
 
-  if (!site.name || !site.url || !site.desc || c1.value === '' || c2.value === '') {
+  // 必填校验
+  if (!site.cat1 || !site.cat2 || !site.name || !site.url || !site.desc) {
     msg.textContent = '请填写完整信息';
     return;
   }
@@ -262,7 +268,7 @@ function submitSite(e){
   })
   .then(r => r.text())
   .then(text => {
-    msg.textContent = text.includes('成功') ? '提交成功，等待管理员审核' : text;
+    msg.textContent = text.includes('成功') ? '提交成功，等待管理员审核' : '提交失败：' + text;
     e.target.reset();
     c2.innerHTML = '<option value="">二级分类</option>';
   })
@@ -296,5 +302,6 @@ function showPage(html){
 </script>
 </body>
 </html>
+
 
 
