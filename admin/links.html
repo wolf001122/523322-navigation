@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>链接管理后台</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>链接管理</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body {
@@ -12,245 +12,257 @@ body {
   background: #f4f6f8;
 }
 
-.container {
-  display: flex;
-  height: 100vh;
+header {
+  background: #1f2937;
+  color: #fff;
+  padding: 14px 20px;
+  font-size: 16px;
 }
 
-/* 左侧 */
+.container {
+  display: flex;
+  height: calc(100vh - 52px);
+}
+
+/* 左侧编辑区 */
 .editor {
-  width: 360px;
-  padding: 16px;
+  width: 320px;
   background: #fff;
-  border-right: 1px solid #ddd;
+  border-right: 1px solid #e5e7eb;
+  padding: 16px;
   box-sizing: border-box;
 }
 
-.editor h2 {
-  margin: 0 0 12px;
+.editor h3 {
+  margin-top: 0;
 }
 
 .editor label {
   display: block;
+  font-size: 13px;
   margin-top: 10px;
-  font-size: 14px;
 }
 
 .editor input,
-.editor select,
-.editor textarea {
+.editor select {
   width: 100%;
   padding: 6px;
   margin-top: 4px;
-  box-sizing: border-box;
 }
 
-textarea { resize: vertical; }
-
-.btn-row {
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-button {
+.editor button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px;
   border: none;
   border-radius: 4px;
-  padding: 8px;
   cursor: pointer;
 }
 
-.btn-apply {
-  background: #409eff;
-  color: #fff;
-}
+.btn-apply { background:#409eff; color:#fff; }
+.btn-clear { background:#9ca3af; color:#fff; }
+.btn-save  { background:#22c55e; color:#fff; font-weight:600; }
 
-.btn-clear {
-  background: #ddd;
-}
-
-.btn-save {
-  margin-top: 16px;
-  width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  background: linear-gradient(135deg,#2ecc71,#27ae60);
-  color: #fff;
-}
-
-/* 卡片 */
+/* 右侧卡片区 */
 .cards {
   flex: 1;
   padding: 16px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 12px;
   overflow-y: auto;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
+  gap: 12px;
 }
 
 .card {
   background: #fff;
   border-radius: 6px;
-  padding: 10px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.1);
+  padding: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.08);
 }
 
-.card h3 {
-  margin: 0 0 6px;
-  font-size: 15px;
+.card strong {
+  display:block;
 }
 
 .card small {
-  color: #666;
+  color:#666;
 }
 
-.actions {
+.card .actions {
   margin-top: 8px;
-  display: flex;
-  gap: 6px;
+  display:flex;
+  gap:8px;
 }
 
-.edit { background:#409eff;color:#fff; }
-.del { background:#e74c3c;color:#fff; }
+.card button {
+  flex:1;
+  padding:5px;
+  font-size:12px;
+  cursor:pointer;
+}
 </style>
 </head>
 
 <body>
+<header>链接管理（编辑后需手动保存到 KV）</header>
 
 <div class="container">
 
-  <!-- 左侧 -->
-  <div class="editor">
-    <h2>编辑链接</h2>
+<!-- 左侧编辑 -->
+<div class="editor">
+  <h3>编辑链接</h3>
 
-    <label>一级分类</label>
-    <input id="cat1">
+  <label>一级分类</label>
+  <select id="cat"></select>
 
-    <label>二级分类</label>
-    <input id="cat2">
+  <label>二级分类</label>
+  <select id="sub"></select>
 
-    <label>名称</label>
-    <input id="name">
+  <label>名称</label>
+  <input id="name">
 
-    <label>URL</label>
-    <input id="url">
+  <label>网址</label>
+  <input id="url">
 
-    <label>描述</label>
-    <textarea id="desc"></textarea>
+  <label>描述</label>
+  <input id="desc">
 
-    <div class="btn-row">
-      <button class="btn-apply" onclick="applyEdit()">应用修改</button>
-      <button class="btn-clear" onclick="clearForm()">清空</button>
-    </div>
+  <label>图标</label>
+  <input id="icon">
 
-    <button class="btn-save" onclick="saveToKV()">保存到 KV</button>
-  </div>
+  <button class="btn-apply" onclick="applyEdit()">应用修改</button>
+  <button class="btn-clear" onclick="clearForm()">清空</button>
+  <button class="btn-save" onclick="saveKV()">保存到 KV</button>
+</div>
 
-  <!-- 右侧 -->
-  <div class="cards" id="cards"></div>
+<!-- 右侧卡片 -->
+<div class="cards">
+  <div class="card-grid" id="list"></div>
+</div>
 
 </div>
 
 <script>
-let data = [];
-let editingIndex = null;
+let xmlDoc;
+let editRef = null;
 
-/* ========== 加载 XML ========= */
+/* ========= 读取 XML ========= */
 fetch('/api/data')
   .then(r => r.text())
-  .then(parseXML)
-  .then(render)
-  .catch(e => alert('数据加载失败：' + e));
+  .then(txt => {
+    xmlDoc = new DOMParser().parseFromString(txt,'text/xml');
+    buildSelectors();
+    renderCards();
+  });
 
-function parseXML(xmlText) {
-  const xml = new DOMParser().parseFromString(xmlText, 'text/xml');
-  const links = xml.querySelectorAll('link');
-
-  data = Array.from(links).map(l => ({
-    cat1: l.getAttribute('cat1') || '',
-    cat2: l.getAttribute('cat2') || '',
-    name: l.getAttribute('name') || '',
-    url: l.getAttribute('url') || '',
-    desc: l.getAttribute('desc') || ''
-  }));
+/* ========= 构建下拉 ========= */
+function buildSelectors() {
+  const catSel = cat;
+  catSel.innerHTML = '';
+  xmlDoc.querySelectorAll('category').forEach(c=>{
+    const o=document.createElement('option');
+    o.value=o.textContent=c.getAttribute('name');
+    catSel.appendChild(o);
+  });
+  buildSub();
+  catSel.onchange=buildSub;
 }
 
-/* ========== 渲染 ========= */
-function render() {
-  const wrap = document.getElementById('cards');
-  wrap.innerHTML = '';
-
-  data.forEach((d,i)=>{
-    const card = document.createElement('div');
-    card.className='card';
-    card.innerHTML=`
-      <h3>${d.name}</h3>
-      <small>${d.cat1} / ${d.cat2}</small><br>
-      <small>${d.url}</small>
-      <div class="actions">
-        <button class="edit" onclick="edit(${i})">编辑</button>
-        <button class="del" onclick="removeItem(${i})">删除</button>
-      </div>`;
-    wrap.appendChild(card);
+function buildSub() {
+  sub.innerHTML='';
+  xmlDoc.querySelectorAll(
+    `category[name="${cat.value}"] subcategory`
+  ).forEach(s=>{
+    const o=document.createElement('option');
+    o.value=o.textContent=s.getAttribute('name');
+    sub.appendChild(o);
   });
 }
 
-/* ========== 编辑 ========= */
-function edit(i){
-  const d=data[i];
-  editingIndex=i;
-  cat1.value=d.cat1;
-  cat2.value=d.cat2;
-  name.value=d.name;
-  url.value=d.url;
-  desc.value=d.desc;
+/* ========= 渲染卡片 ========= */
+function renderCards() {
+  list.innerHTML='';
+  xmlDoc.querySelectorAll('category').forEach(c=>{
+    c.querySelectorAll('subcategory').forEach(s=>{
+      s.querySelectorAll('link').forEach(link=>{
+        const d=document.createElement('div');
+        d.className='card';
+        d.innerHTML=`
+<strong>${link.getAttribute('name')}</strong>
+<small>${c.getAttribute('name')} / ${s.getAttribute('name')}</small>
+<small>${link.getAttribute('url')}</small>
+<div class="actions">
+<button onclick="editLink(this)">编辑</button>
+<button onclick="delLink(this)">删除</button>
+</div>`;
+        d._ref = link;
+        list.appendChild(d);
+      });
+    });
+  });
 }
 
-/* ========== 应用 ========= */
+/* ========= 编辑 ========= */
+function editLink(btn){
+  const l = btn.closest('.card')._ref;
+  editRef = l;
+  name.value = l.getAttribute('name');
+  url.value  = l.getAttribute('url');
+  desc.value = l.getAttribute('desc')||'';
+  icon.value = l.getAttribute('icon')||'';
+
+  cat.value = l.closest('category').getAttribute('name');
+  buildSub();
+  sub.value = l.closest('subcategory').getAttribute('name');
+}
+
+/* ========= 应用 ========= */
 function applyEdit(){
-  if(!name.value.trim()||!url.value.trim()){
-    alert('名称和URL不能为空');
+  if(!name.value || !url.value){
+    alert('名称和网址不能为空');
     return;
   }
-  const obj={
-    cat1:cat1.value,
-    cat2:cat2.value,
-    name:name.value,
-    url:url.value,
-    desc:desc.value
-  };
-  if(editingIndex===null) data.push(obj);
-  else data[editingIndex]=obj;
-  editingIndex=null;
-  render();
+
+  if(!editRef){
+    const s = xmlDoc.querySelector(
+      `category[name="${cat.value}"] subcategory[name="${sub.value}"]`
+    );
+    editRef = xmlDoc.createElement('link');
+    s.appendChild(editRef);
+  }
+
+  editRef.setAttribute('name',name.value);
+  editRef.setAttribute('url',url.value);
+  editRef.setAttribute('desc',desc.value);
+  editRef.setAttribute('icon',icon.value);
+
+  clearForm();
+  renderCards();
 }
 
-/* ========== 删除 ========= */
-function removeItem(i){
-  if(confirm('确认删除？')){
-    data.splice(i,1);
-    render();
+/* ========= 删除 ========= */
+function delLink(btn){
+  const l=btn.closest('.card')._ref;
+  if(confirm('确定删除？')){
+    l.remove();
+    renderCards();
   }
 }
 
-/* ========== 清空 ========= */
+/* ========= 清空 ========= */
 function clearForm(){
-  editingIndex=null;
-  cat1.value=cat2.value=name.value=url.value=desc.value='';
+  name.value=url.value=desc.value=icon.value='';
+  editRef=null;
 }
 
-/* ========== 保存 ========= */
-function saveToKV(){
-  let xml=`<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n`;
-  data.forEach(d=>{
-    xml+=`  <link cat1="${d.cat1}" cat2="${d.cat2}" name="${d.name}"
-      url="${d.url}" desc="${d.desc}" />\n`;
-  });
-  xml+='</navigation>';
-
+/* ========= 保存 ========= */
+function saveKV(){
+  const xml = new XMLSerializer().serializeToString(xmlDoc);
   fetch('/api/save',{method:'POST',body:xml})
-    .then(()=>alert('已保存到 KV'))
-    .catch(()=>alert('保存失败'));
+    .then(()=>alert('已保存到 KV'));
 }
 </script>
 
