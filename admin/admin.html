@@ -2,91 +2,215 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>后台管理</title>
+<title>后台管理控制台</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system;
-  background: #f4f6f8;
-}
-
-.header {
-  background: #1f2937;
-  color: #fff;
-  padding: 16px;
-  font-size: 18px;
-}
-
-.main {
-  padding: 24px;
-  max-width: 900px;
-  margin: auto;
-}
-
-.card {
-  background: #fff;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.08);
-}
-
-.card h2 {
-  margin-top: 0;
-}
-
-.actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 12px;
-}
-
-a.btn {
-  display: inline-block;
-  padding: 10px 16px;
-  border-radius: 6px;
-  text-decoration: none;
-  color: #fff;
-  background: #409eff;
-}
-
-a.btn:hover {
-  opacity: .9;
-}
-
-.btn-secondary {
-  background: #6b7280;
-}
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f4f6f9;
+    color: #333;
+  }
+  .header {
+    background: #1e293b;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .main {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 0 20px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+  }
+  .card h2 {
+    margin: 0 0 12px 0;
+    font-size: 20px;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card p {
+    color: #64748b;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+  .actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  a.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: #3b82f6;
+    color: #fff;
+  }
+  .btn-primary:hover {
+    background: #2563eb;
+  }
+  .btn-success {
+    background: #10b981;
+    color: #fff;
+  }
+  .btn-success:hover {
+    background: #059669;
+  }
+  .btn-warning {
+    background: #f59e0b;
+    color: #fff;
+  }
+  .btn-warning:hover {
+    background: #d97706;
+  }
+  .btn-danger {
+    background: #ef4444;
+    color: #fff;
+  }
+  .btn-danger:hover {
+    background: #dc2626;
+  }
+  .icon {
+    width: 20px;
+    height: 20px;
+  }
+  @media (max-width: 640px) {
+    .header {font-size: 20px; padding: 16px;}
+    .main {padding: 0 16px;}
+  }
 </style>
 </head>
-
 <body>
+  <div class="header">
+    后台管理控制台
+  </div>
+  <div class="main">
+    <div class="grid">
+      <!-- 链接管理 -->
+      <div class="card">
+        <h2>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+          </svg>
+          导航链接管理
+        </h2>
+        <p>添加、修改、删除导航站点链接，手动编辑 XML 数据。</p>
+        <div class="actions">
+          <a href="/admin/links.html" class="btn btn-primary">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+            </svg>
+            进入管理
+          </a>
+        </div>
+      </div>
 
-<div class="header">
-  后台管理控制台
-</div>
+      <!-- 待审核管理 -->
+      <div class="card">
+        <h2>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          待审核网站
+        </h2>
+        <p>查看用户提交的网站，进行通过、修改或删除操作。</p>
+        <div class="actions">
+          <a href="/admin/review.html" class="btn btn-success">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            查看审核
+          </a>
+        </div>
+      </div>
 
-<div class="main">
+      <!-- 分类管理 -->
+      <div class="card">
+        <h2>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 7h18M3 12h18M3 17h18"/>
+          </svg>
+          分类管理
+        </h2>
+        <p>添加、删除、重命名一级/二级分类，调整结构。</p>
+        <div class="actions">
+          <a href="/admin/categories.html" class="btn btn-warning">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 4v16m8-8H4"/>
+            </svg>
+            管理分类
+          </a>
+        </div>
+      </div>
 
-  <div class="card">
-    <h2>导航内容管理</h2>
-    <p>添加、修改、删除导航链接，数据将保存到 Cloudflare KV。</p>
-    <div class="actions">
-      <a class="btn" href="/admin/links.html">进入链接管理</a>
+      <!-- 友情链接管理 -->
+      <div class="card">
+        <h2>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+          友情链接管理
+        </h2>
+        <p>管理底部友情链接的添加、修改和删除。</p>
+        <div class="actions">
+          <a href="/admin/friendly.html" class="btn btn-primary">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+            进入管理
+          </a>
+        </div>
+      </div>
+
+      <!-- 账户操作 -->
+      <div class="card">
+        <h2>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+          </svg>
+          账户操作
+        </h2>
+        <p>安全退出当前后台登录状态。</p>
+        <div class="actions">
+          <a href="/admin/login.html" class="btn btn-danger">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            退出登录
+          </a>
+        </div>
+      </div>
     </div>
   </div>
-
-  <div class="card">
-    <h2>账户操作</h2>
-    <p>退出当前后台登录。</p>
-    <div class="actions">
-      <a class="btn btn-secondary" href="/admin/login.html">退出登录</a>
-    </div>
-  </div>
-
-</div>
-
 </body>
 </html>
