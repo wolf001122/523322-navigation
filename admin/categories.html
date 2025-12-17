@@ -24,6 +24,15 @@
   </style>
 </head>
 <body>
+  <!-- 新增：登录验证 -->
+  <script>
+    // 检查登录 Cookie
+    if (!document.cookie.split(';').some(c => c.trim().startsWith('admin_logged_in=true'))) {
+      alert('请先登录后台');
+      location.href = '/admin/login.html';
+    }
+  </script>
+
   <div class="card">
     <h2>分类管理</h2>
     <div style="margin-bottom:20px;">
@@ -37,18 +46,15 @@
       <p style="color:#5f6368;">加载中...</p>
     </div>
   </div>
-
   <script>
-    let categories = []; // 当前内存中的分类结构（仅结构，不含链接）
+    let categories = [];
 
-    // 显示状态
     function showStatus(message, isSuccess = true) {
       const div = document.getElementById('saveStatus');
       div.textContent = message;
       div.className = 'status ' + (isSuccess ? 'success' : 'error');
     }
 
-    // 加载完整数据（包含链接）
     async function loadData() {
       try {
         const res = await fetch('/api/data');
@@ -56,7 +62,6 @@
         const xml = await res.text();
         const parser = new DOMParser();
         const doc = parser.parseFromString(xml, 'text/xml');
-
         categories = Array.from(doc.querySelectorAll('category')).map(cat => ({
           name: cat.getAttribute('name'),
           subcategories: Array.from(cat.querySelectorAll('subcategory')).map(sub => ({
@@ -69,7 +74,6 @@
             }))
           })) || [{ name: '默认子分类', links: [] }]
         }));
-
         renderCategories();
         initSortable();
       } catch (e) {
@@ -77,7 +81,6 @@
       }
     }
 
-    // 只渲染分类结构（不显示链接）
     function renderCategories() {
       const list = document.getElementById('categoriesList');
       list.innerHTML = '';
@@ -95,7 +98,6 @@
             </div>
           </div>
         `;
-
         cat.subcategories.forEach((sub, sIdx) => {
           const subDiv = document.createElement('div');
           subDiv.className = 'subcategory';
@@ -111,12 +113,10 @@
           `;
           catDiv.appendChild(subDiv);
         });
-
         list.appendChild(catDiv);
       });
     }
 
-    // 初始化拖拽
     function initSortable() {
       new Sortable(document.getElementById('categoriesList'), {
         animation: 150,
@@ -130,8 +130,6 @@
       });
     }
 
-    // 新增/编辑/删除操作（同前）
-
     function addCategory() {
       const name = prompt('请输入一级分类名称');
       if (name && name.trim()) {
@@ -140,7 +138,6 @@
         initSortable();
       }
     }
-
     function editCategory(idx) {
       const name = prompt('修改一级分类名称', categories[idx].name);
       if (name && name.trim()) {
@@ -148,7 +145,6 @@
         renderCategories();
       }
     }
-
     function deleteCategory(idx) {
       if (confirm(`确认删除一级分类 "${categories[idx].name}" 及其所有子分类和链接？`)) {
         categories.splice(idx, 1);
@@ -156,7 +152,6 @@
         initSortable();
       }
     }
-
     function addSubcategory(cIdx) {
       const name = prompt('请输入二级分类名称');
       if (name && name.trim()) {
@@ -164,7 +159,6 @@
         renderCategories();
       }
     }
-
     function editSubcategory(cIdx, sIdx) {
       const name = prompt('修改二级分类名称', categories[cIdx].subcategories[sIdx].name);
       if (name && name.trim()) {
@@ -172,7 +166,6 @@
         renderCategories();
       }
     }
-
     function deleteSubcategory(cIdx, sIdx) {
       if (confirm(`确认删除二级分类 "${categories[cIdx].subcategories[sIdx].name}" 及其所有链接？`)) {
         categories[cIdx].subcategories.splice(sIdx, 1);
@@ -180,69 +173,63 @@
       }
     }
 
-    // 安全保存到 KV（保留所有链接）
-async function saveToKV() {
-  if (!confirm('确认保存所有分类修改到 KV？')) return;
+    async function saveToKV() {
+      if (!confirm('确认保存所有分类修改到 KV？')) return;
+      showStatus('正在保存...', false);
+      try {
+        const res = await fetch('/api/data');
+        if (!res.ok) throw new Error('读取失败');
+        const originalXml = await res.text();
+        const parser = new DOMParser();
+        const originalDoc = parser.parseFromString(originalXml, 'text/xml');
 
-  showStatus('正在保存...', false);
-
-  try {
-    // 读取当前完整数据
-    const res = await fetch('/api/data');
-    if (!res.ok) throw new Error('读取失败');
-    const originalXml = await res.text();
-    const parser = new DOMParser();
-    const originalDoc = parser.parseFromString(originalXml, 'text/xml');
-
-    // 强制设置管理员账号（如果不存在则创建）
-    let adminAttr = ' username="admin" password="123456"'; // ← 这里修改您的用户名和密码
-
-    // 生成新 XML
-    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n';
-    xml += `  <admin${adminAttr} />\n`; // 强制写入 admin 标签
-
-    categories.forEach(cat => {
-      xml += `  <category name="${escapeXml(cat.name)}">\n`;
-      cat.subcategories.forEach(sub => {
-        xml += `    <subcategory name="${escapeXml(sub.name)}">\n`;
-
-        // 保留原有链接
-        const origCat = Array.from(originalDoc.querySelectorAll('category')).find(c => c.getAttribute('name') === cat.name);
-        if (origCat) {
-          const origSub = Array.from(origCat.querySelectorAll('subcategory')).find(s => s.getAttribute('name') === sub.name);
-          if (origSub) {
-            Array.from(origSub.querySelectorAll('link')).forEach(link => {
-              const attrs = ['name', 'url', 'desc', 'icon'].map(attr => {
-                const val = link.getAttribute(attr) || '';
-                return val ? ` ${attr}="${escapeXml(val)}"` : '';
-              }).join('');
-              xml += `      <link${attrs} />\n`;
-            });
-          }
+        let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n';
+        // 保留原有 admin 标签
+        const admin = originalDoc.querySelector('admin');
+        if (admin) {
+          const attrs = ['username', 'password'].map(attr => {
+            const val = admin.getAttribute(attr);
+            return val ? ` ${attr}="${val}"` : '';
+          }).join('');
+          xml += `  <admin${attrs} />\n`;
         }
+        categories.forEach(cat => {
+          xml += `  <category name="${escapeXml(cat.name)}">\n`;
+          cat.subcategories.forEach(sub => {
+            xml += `    <subcategory name="${escapeXml(sub.name)}">\n`;
+            const origCat = Array.from(originalDoc.querySelectorAll('category')).find(c => c.getAttribute('name') === cat.name);
+            if (origCat) {
+              const origSub = Array.from(origCat.querySelectorAll('subcategory')).find(s => s.getAttribute('name') === sub.name);
+              if (origSub) {
+                Array.from(origSub.querySelectorAll('link')).forEach(link => {
+                  const attrs = ['name', 'url', 'desc', 'icon'].map(attr => {
+                    const val = link.getAttribute(attr) || '';
+                    return val ? ` ${attr}="${escapeXml(val)}"` : '';
+                  }).join('');
+                  xml += `      <link${attrs} />\n`;
+                });
+              }
+            }
+            xml += '    </subcategory>\n';
+          });
+          xml += '  </category>\n';
+        });
+        xml += '</navigation>';
 
-        xml += '    </subcategory>\n';
-      });
-      xml += '  </category>\n';
-    });
-    xml += '</navigation>';
-
-    const saveRes = await fetch('/api/save', {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/xml' },
-      body: xml
-    });
-
-    if (saveRes.ok) {
-      showStatus('保存成功！管理员账号已设置。', true);
-      window.parent.postMessage('kvSaved', '*');
-    } else {
-      showStatus('保存失败：' + await saveRes.text(), false);
+        const saveRes = await fetch('/api/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/xml' },
+          body: xml
+        });
+        if (saveRes.ok) {
+          showStatus('保存成功！', true);
+        } else {
+          showStatus('保存失败：' + await saveRes.text(), false);
+        }
+      } catch (e) {
+        showStatus('异常：' + e.message, false);
+      }
     }
-  } catch (e) {
-    showStatus('异常：' + e.message, false);
-  }
-}
 
     function escapeXml(s) {
       if (!s) return '';
