@@ -5,17 +5,34 @@ export async function onRequest(context) {
   // ================= 后台页面强制登录检查（修复版） =================
   // 只对 /admin/ 下的 .html 页面（除 login.html 外）进行检查
   // 同时兼容 Clean URLs（访问 /admin/categories 时实际加载 categories.html）
-  if (url.pathname.startsWith('/admin/') && url.pathname !== '/admin/login.html') {
+  //if (url.pathname.startsWith('/admin/') && url.pathname !== '/admin/login.html') {
     // 判断是否为后台页面（包含 .html 或无扩展名但在 /admin/ 下）
-    const isAdminPage = url.pathname.endsWith('.html') || !url.pathname.includes('.');
-    if (isAdminPage) {
-      const cookie = request.headers.get('cookie') || '';
-      if (!cookie.includes('admin_logged_in=true')) {
-        return Response.redirect(new URL('/admin/login.html', request.url).toString(), 302);
-      }
-    }
-  }
+    //const isAdminPage = url.pathname.endsWith('.html') || !url.pathname.includes('.');
+    //if (isAdminPage) {
+      //const cookie = request.headers.get('cookie') || '';
+      //if (!cookie.includes('admin_logged_in=true')) {
+        //return Response.redirect(new URL('/admin/login.html', request.url).toString(), 302);
+      //}
+    //}
+  //}
 
+// ================= 后台页面强制登录（稳定版） =================
+// 仅拦截明确的后台 HTML 页面
+if (
+  url.pathname.startsWith('/admin/') &&
+  url.pathname.endsWith('.html') &&
+  url.pathname !== '/admin/login.html'
+) {
+  const cookie = request.headers.get('cookie') || '';
+  if (!cookie.includes('admin_logged_in=true')) {
+    return Response.redirect(
+      new URL('/admin/login.html', request.url),
+      302
+    );
+  }
+}
+
+  
   // GET /api/data - 读取 XML 数据（原有功能）
   if (url.pathname === '/api/data' && request.method === 'GET') {
     let xml = await env.NAV_DATA.get('nav_data');
