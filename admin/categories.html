@@ -24,13 +24,17 @@
   </style>
 </head>
 <body>
-  <!-- 新增：登录验证 -->
+  <!-- 修复：强制登录检查（包括浏览器后退） -->
   <script>
-    // 检查登录 Cookie
-    if (!document.cookie.split(';').some(c => c.trim().startsWith('admin_logged_in=true'))) {
-      alert('请先登录后台');
-      location.href = '/admin/login.html';
+    function checkLogin() {
+      if (!document.cookie.split(';').some(c => c.trim().startsWith('admin_logged_in=true'))) {
+        location.replace('/admin/login.html'); // replace 防止后退循环
+      }
     }
+    // 页面加载时检查
+    checkLogin();
+    // 浏览器后退/从缓存恢复时检查（关键修复）
+    window.addEventListener('pageshow', checkLogin);
   </script>
 
   <div class="card">
@@ -184,7 +188,6 @@
         const originalDoc = parser.parseFromString(originalXml, 'text/xml');
 
         let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<navigation>\n';
-        // 保留原有 admin 标签
         const admin = originalDoc.querySelector('admin');
         if (admin) {
           const attrs = ['username', 'password'].map(attr => {
