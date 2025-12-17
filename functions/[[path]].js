@@ -29,32 +29,24 @@ export async function onRequest(context) {
   }
 
   // ================= 用户网站提交（待审核） =================
-    // 可选：简单长度或时间戳校验防绕过
-  if (!site.time || Date.now() - new Date(site.time).getTime() > 600000) { // 10分钟内有效
-    return new Response('提交超时', { status: 400 });
-  }
   if (url.pathname === '/api/submit' && request.method === 'POST') {
     try {
       const site = await request.json();
 
-      // 简单垃圾词过滤（可自行扩展）
+      // 简单垃圾词过滤
       const spamWords = ['成人', '赌博', '贷款', '彩票', 'AV', 'porn', 'sex', 'casino', '博彩', '黄色', '约炮'];
       const text = `${site.name || ''}${site.desc || ''}${site.url || ''}`.toLowerCase();
       if (spamWords.some(word => text.includes(word))) {
         return new Response('包含敏感内容，提交失败', { status: 400 });
       }
 
-      // 生成唯一ID和时间
       site.id = Date.now();
       site.time = new Date().toISOString();
 
-      // 读取现有待审核列表
       let pending = await env.NAV_DATA.get('pending_sites');
       let list = pending ? JSON.parse(pending) : [];
 
       list.push(site);
-
-      // 保存
       await env.NAV_DATA.put('pending_sites', JSON.stringify(list));
 
       return new Response('提交成功，等待管理员审核', { status: 200 });
@@ -75,7 +67,7 @@ export async function onRequest(context) {
   // ================= 管理员审核操作（通过/删除） =================
   if (url.pathname === '/api/approve' && request.method === 'POST') {
     try {
-      const { id, action } = await request.json(); // action: 'approve' 或 'delete'
+      const { id, action } = await request.json();
 
       let pending = await env.NAV_DATA.get('pending_sites');
       if (!pending) return new Response('无待审核数据', { status: 404 });
@@ -87,43 +79,45 @@ export async function onRequest(context) {
       if (action === 'approve') {
         const site = list[index];
 
-        // 读取正式 XML
         let xml = await env.NAV_DATA.get('nav_data');
         if (!xml) return new Response('正式数据异常', { status: 500 });
 
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(xml, 'text/xml');
+        // 纯字符串操作添加链接（避免使用 DOMParser）
+        const catName = site.cat1;
+        const subName = site.cat2;
+        const linkStr = `  <link name="${site.name}" url="${site.url}"${site.desc ? ` desc="${site.desc}"` : ''} />`;
 
-        // 查找或创建一级分类
-        let cat = [...doc.querySelectorAll('category')].find(c => c.getAttribute('name') === site.cat1);
-        if (!cat) {
-          cat = doc.createElement('category');
-          cat.setAttribute('name', site.cat1);
-          doc.querySelector('navigation').appendChild(cat);
+        // 查找或创建 category
+        const catRegex = new RegExp(`<category name="${catName}"[^>]*>(.*?)</category>`, 's');
+        const catMatch = xml.match(catRegex);
+        if (catMatch) {
+          // 分类存在，查找或创建 subcategory
+          const catContent = catMatch[1];
+          const subRegex = new RegExp(`<subcategory name="${subName}"[^>]*>(.*?)</subcategory>`, 's');
+          const subMatch = catContent.match(subRegex);
+          if (subMatch) {
+            // 子分类存在，直接添加 link
+            const newCatContent = catContent.replace(subRegex, `<subcategory name="${subName}"${subMatch[0].includes('/>') ? '>' : ''}${subMatch[1]}${linkStr}</subcategory>`);
+            xml = xml.replace(catRegex, `<category name="${catName}"${catMatch[0].includes('/>') ? '>' : ''}${newCatContent}</category>`);
+          } else {
+            // 子分类不存在，创建
+            const newSub = `<subcategory name="${subName}">${linkStr}\n    </subcategory>`;
+            const newCatContent = catContent.trim() ? catContent.trim() + '\n    ' + newSub : newSub;
+            xml = xml.replace(catRegex, `<category name="${catName}"${catMatch[0].includes('/>') ? '>' : ''}${newCatContent}\n  </category>`);
+          }
+        } else {
+          // 分类不存在，创建
+          const newCat = `<category name="${catName}">
+    <subcategory name="${subName}">${linkStr}
+    </subcategory>
+  </category>`;
+          xml = xml.replace('</navigation>', `  ${newCat}\n</navigation>`);
         }
 
-        // 查找或创建二级分类
-        let sub = [...cat.querySelectorAll('subcategory')].find(s => s.getAttribute('name') === site.cat2);
-        if (!sub) {
-          sub = doc.createElement('subcategory');
-          sub.setAttribute('name', site.cat2);
-          cat.appendChild(sub);
-        }
-
-        // 添加链接
-        const link = doc.createElement('link');
-        link.setAttribute('name', site.name);
-        link.setAttribute('url', site.url);
-        if (site.desc) link.setAttribute('desc', site.desc);
-        sub.appendChild(link);
-
-        // 保存更新后的正式 XML
-        const serializer = new XMLSerializer();
-        xml = serializer.serializeToString(doc);
         await env.NAV_DATA.put('nav_data', xml);
       }
 
-      // 从待审核列表移除
+      // 从待审核移除
       list.splice(index, 1);
       await env.NAV_DATA.put('pending_sites', JSON.stringify(list));
 
@@ -145,7 +139,6 @@ export async function onRequest(context) {
       const index = list.findIndex(s => s.id === id);
       if (index === -1) return new Response('提交记录不存在', { status: 404 });
 
-      // 更新所有字段
       list[index].cat1 = cat1;
       list[index].cat2 = cat2;
       list[index].name = name.trim();
@@ -160,6 +153,6 @@ export async function onRequest(context) {
     }
   }
 
-  // 其他请求直接放行给静态资源（原有功能）
+  // 其他请求放行
   return await context.next();
 }
