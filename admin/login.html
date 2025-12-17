@@ -194,7 +194,7 @@
         const calculatedHash = derivedKey.toString(CryptoJS.enc.Hex);
 
         if (calculatedHash === expectedHash) {
-          document.cookie = `admin_logged_in=true; path=/; max-age=${7*24*60*60}; Secure; SameSite=Lax`;
+          document.cookie = `admin_logged_in=true; path=/; max-age=${7*24*60*60}; SameSite=Lax`;
           showStatus('登录成功，正在跳转...', false);
           setTimeout(() => location.href = '/admin/admin.html', 1200);
         } else {
