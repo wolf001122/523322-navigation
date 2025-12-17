@@ -2,14 +2,14 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>后台管理</title>
+<title>链接管理后台</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont;
-  background: #f5f6f8;
+  background: #f4f6f8;
 }
 
 .container {
@@ -17,21 +17,22 @@ body {
   height: 100vh;
 }
 
+/* 左侧编辑区 */
 .editor {
   width: 360px;
   padding: 16px;
-  background: #fff;
+  background: #ffffff;
   border-right: 1px solid #ddd;
   box-sizing: border-box;
 }
 
 .editor h2 {
-  margin-top: 0;
+  margin: 0 0 12px;
 }
 
 .editor label {
   display: block;
-  margin-top: 12px;
+  margin-top: 10px;
   font-size: 14px;
 }
 
@@ -40,8 +41,8 @@ body {
 .editor textarea {
   width: 100%;
   padding: 6px;
-  box-sizing: border-box;
   margin-top: 4px;
+  box-sizing: border-box;
 }
 
 .editor textarea {
@@ -56,22 +57,30 @@ body {
 
 button {
   border: none;
+  border-radius: 4px;
   padding: 8px;
   cursor: pointer;
-  border-radius: 4px;
 }
 
-.btn-apply { background: #409eff; color: #fff; }
-.btn-clear { background: #ddd; }
-.btn-save {
+.btn-apply {
+  background: #409eff;
+  color: #fff;
+}
+
+.btn-clear {
+  background: #ddd;
+}
+
+.btn-save-kv {
   margin-top: 16px;
   width: 100%;
   padding: 12px;
   font-size: 16px;
-  background: #2ecc71;
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
   color: #fff;
 }
 
+/* 卡片区 */
 .cards {
   flex: 1;
   padding: 16px;
@@ -83,8 +92,8 @@ button {
 
 .card {
   background: #fff;
-  padding: 10px;
   border-radius: 6px;
+  padding: 10px;
   box-shadow: 0 1px 4px rgba(0,0,0,.1);
 }
 
@@ -103,8 +112,15 @@ button {
   gap: 6px;
 }
 
-.card .edit { background: #409eff; color: #fff; }
-.card .del { background: #e74c3c; color: #fff; }
+.card .edit {
+  background: #409eff;
+  color: #fff;
+}
+
+.card .del {
+  background: #e74c3c;
+  color: #fff;
+}
 </style>
 </head>
 
@@ -112,7 +128,7 @@ button {
 
 <div class="container">
 
-  <!-- 左侧编辑区 -->
+  <!-- 左侧 -->
   <div class="editor">
     <h2>编辑链接</h2>
 
@@ -136,10 +152,10 @@ button {
       <button class="btn-clear" onclick="clearForm()">清空</button>
     </div>
 
-    <button class="btn-save" onclick="saveKV()">保存到 KV</button>
+    <button class="btn-save-kv" onclick="saveToKV()">保存到 KV</button>
   </div>
 
-  <!-- 右侧卡片区 -->
+  <!-- 右侧 -->
   <div class="cards" id="cards"></div>
 
 </div>
@@ -148,52 +164,55 @@ button {
 let data = [];
 let editingIndex = null;
 
-/* 示例分类（你可换成真实） */
-const cats = {
+/* 示例分类 */
+const categories = {
   "视频与音乐流媒体": ["音乐流媒体", "视频平台"]
 };
 
 const cat1 = document.getElementById('cat1');
 const cat2 = document.getElementById('cat2');
 
-for (const k in cats) {
+for (const k in categories) {
   cat1.add(new Option(k, k));
 }
+
 cat1.onchange = () => {
   cat2.innerHTML = '';
-  cats[cat1.value].forEach(v => cat2.add(new Option(v, v)));
+  categories[cat1.value].forEach(v => cat2.add(new Option(v, v)));
 };
 cat1.onchange();
 
-/* 渲染卡片 */
+/* 渲染卡片（关键：写入完整 dataset） */
 function render() {
   const wrap = document.getElementById('cards');
   wrap.innerHTML = '';
-  data.forEach((d, i) => {
-    const div = document.createElement('div');
-    div.className = 'card';
-    div.dataset.index = i;
-    div.dataset.name = d.name;
-    div.dataset.url = d.url;
-    div.dataset.desc = d.desc;
-    div.dataset.cat1 = d.cat1;
-    div.dataset.cat2 = d.cat2;
 
-    div.innerHTML = `
+  data.forEach((d, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    card.dataset.index = i;
+    card.dataset.name = d.name;
+    card.dataset.url = d.url;
+    card.dataset.desc = d.desc;
+    card.dataset.cat1 = d.cat1;
+    card.dataset.cat2 = d.cat2;
+
+    card.innerHTML = `
       <h3>${d.name}</h3>
       <small>${d.cat1} / ${d.cat2}</small><br>
       <small>${d.url}</small>
       <div class="actions">
-        <button class="edit" onclick="edit(${i})">编辑</button>
-        <button class="del" onclick="del(${i})">删除</button>
+        <button class="edit" onclick="editCard(${i})">编辑</button>
+        <button class="del" onclick="deleteCard(${i})">删除</button>
       </div>
     `;
-    wrap.appendChild(div);
+    wrap.appendChild(card);
   });
 }
 
-/* 编辑 */
-function edit(i) {
+/* 编辑：100% 从 data 取值 */
+function editCard(i) {
   const d = data[i];
   editingIndex = i;
 
@@ -210,7 +229,7 @@ function edit(i) {
 function applyEdit() {
   const name = document.getElementById('name').value.trim();
   if (!name) {
-    alert('名称不能为空');
+    alert('名称不能为空，无法应用修改');
     return;
   }
 
@@ -218,8 +237,8 @@ function applyEdit() {
     cat1: cat1.value,
     cat2: cat2.value,
     name,
-    url: url.value.trim(),
-    desc: desc.value.trim()
+    url: document.getElementById('url').value.trim(),
+    desc: document.getElementById('desc').value.trim()
   };
 
   if (editingIndex === null) {
@@ -233,8 +252,8 @@ function applyEdit() {
 }
 
 /* 删除 */
-function del(i) {
-  if (confirm('确认删除？')) {
+function deleteCard(i) {
+  if (confirm('确认删除该链接？')) {
     data.splice(i, 1);
     render();
   }
@@ -249,7 +268,7 @@ function clearForm() {
 }
 
 /* 保存到 KV（示意） */
-function saveKV() {
+function saveToKV() {
   alert('已保存到 KV（示意）');
 }
 </script>
