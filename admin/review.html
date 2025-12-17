@@ -1,179 +1,77 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>提交审核</title>
-  <style>
-    body { background:#f1f3f4; padding:24px; font-family:'Roboto',Arial,sans-serif; }
-    .card { background:#fff; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.12); padding:24px; margin-bottom:24px; }
-    h2 { font-size:20px; color:#3c4043; margin:0 0 16px; }
-    .empty-state { text-align:center; color:#5f6368; padding:60px 20px; }
-    .empty-state p { font-size:16px; margin:20px 0; }
-    .pending-list { }
-    .pending-item { border-left:4px solid #ff9800; padding:20px; margin-bottom:20px; background:#fffde7; border-radius:0 8px 8px 0; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
-    .pending-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; flex-wrap:wrap; gap:12px; }
-    .pending-header strong { font-size:18px; color:#333; }
-    .actions { display:flex; gap:10px; flex-wrap:wrap; }
-    button { background:#4285f4; color:white; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; font-size:14px; }
-    button:hover { background:#3367d6; }
-    button.approve { background:#34a853; }
-    button.approve:hover { background:#2d8e44; }
-    button.reject { background:#ea4335; }
-    button.reject:hover { background:#d33b2f; }
-    button.edit { background:#5f6368; }
-    button.edit:hover { background:#484c50; }
-    .detail { margin:8px 0; line-height:1.6; color:#333; }
-    .detail strong { color:#5f6368; }
-    .detail img { width:60px; height:60px; object-fit:contain; border-radius:8px; margin-top:8px; border:1px solid #ddd; }
-    .status { margin-top:16px; padding:12px; border-radius:4px; font-size:14px; text-align:center; }
-    .status.success { background:#e6f4ea; color:#137333; border:1px solid #34a853; }
-    .status.error { background:#fce8e6; color:#c5221f; border:1px solid #ea4335; }
-  </style>
+<meta charset="UTF-8">
+<title>待审核网站提交</title>
+<style>
+body {font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 20px; background: #f8f9fa; color: #202124;}
+h1 {font-size: 24px; margin-bottom: 20px;}
+.item {border: 1px solid #dadce0; margin: 15px 0; padding: 15px; border-radius: 8px; background: #fff; box-shadow: 0 1px 2px rgba(60,64,67,0.3);}
+.item p {margin: 8px 0;}
+button {padding: 8px 16px; margin-right: 10px; border: none; border-radius: 4px; cursor: pointer;}
+.approve {background: #1a73e8; color: #fff;}
+.delete {background: #f44336; color: #fff;}
+#msg {color: #d93025; margin-top: 20px;}
+</style>
 </head>
 <body>
-  <div class="card">
-    <h2>待审核网站提交</h2>
-    <div id="pendingList">
-      <!-- 动态加载 -->
-    </div>
-  </div>
+<h1>待审核网站提交</h1>
+<div id="list">加载中...</div>
+<div id="msg"></div>
 
-  <script>
-    let pending = []; // 待审核数据数组
-
-    // 加载待审核数据
-    async function loadPending() {
-      const listDiv = document.getElementById('pendingList');
-      try {
-        const res = await fetch('/api/pending');
-        if (!res.ok) throw new Error('获取失败');
-        pending = await res.json();
-
-        if (pending.length === 0) {
-          listDiv.innerHTML = `
-            <div class="empty-state">
-              <p>暂无待审核的网站提交</p>
-              <p style="font-size:14px;">用户提交的网站将在此处显示，审核后可添加至导航。</p>
-            </div>
-          `;
-          return;
-        }
-
-        renderPending();
-      } catch (e) {
-        listDiv.innerHTML = `
-          <div class="empty-state">
-            <p style="color:#c5221f;">加载待审核数据失败：${e.message}</p>
-          </div>
-        `;
+<script>
+function loadPending() {
+  fetch('/api/pending')
+    .then(r => {
+      if (!r.ok) throw new Error('加载失败');
+      return r.json();
+    })
+    .then(list => {
+      const div = document.getElementById('list');
+      if (list.length === 0) {
+        div.innerHTML = '<p>暂无待审核提交</p>';
+        return;
       }
-    }
-
-    // 渲染待审核列表
-    function renderPending() {
-      const listDiv = document.getElementById('pendingList');
-      listDiv.innerHTML = '<div class="pending-list"></div>';
-      const container = listDiv.querySelector('.pending-list');
-
-      pending.forEach((item, idx) => {
-        const div = document.createElement('div');
-        div.className = 'pending-item';
-        div.innerHTML = `
-          <div class="pending-header">
-            <strong>${escapeHtml(item.name || '未命名网站')}（${escapeHtml(item.url || '无URL')}）</strong>
-            <div class="actions">
-              <button class="approve" onclick="approveSubmission(${idx})">通过并添加</button>
-              <button class="edit" onclick="editSubmission(${idx})">修改后添加</button>
-              <button class="reject" onclick="rejectSubmission(${idx})">拒绝删除</button>
-            </div>
-          </div>
-          <div class="detail"><strong>提交时间：</strong>${item.timestamp ? new Date(item.timestamp).toLocaleString() : '未知'}</div>
-          <div class="detail"><strong>建议一级分类：</strong>${escapeHtml(item.category || '无')}</div>
-          <div class="detail"><strong>建议二级分类：</strong>${escapeHtml(item.subcategory || '无')}</div>
-          <div class="detail"><strong>描述：</strong>${escapeHtml(item.desc || '无')}</div>
-          ${item.icon ? `<div class="detail"><strong>图标预览：</strong><br><img src="${escapeHtml(item.icon)}" alt="图标"></div>` : ''}
+      div.innerHTML = '';
+      list.forEach(site => {
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.innerHTML = `
+          <p><strong>网站名称：</strong>${site.name}</p>
+          <p><strong>URL：</strong><a href="${site.url}" target="_blank">${site.url}</a></p>
+          <p><strong>分类：</strong>${site.cat1} > ${site.cat2}</p>
+          <p><strong>简介：</strong>${site.desc}</p>
+          <p><strong>提交时间：</strong>${new Date(site.time).toLocaleString()}</p>
+          <button class="approve" onclick="review(${site.id}, 'approve')">通过并上线</button>
+          <button class="delete" onclick="review(${site.id}, 'delete')">删除</button>
         `;
-        container.appendChild(div);
+        div.appendChild(item);
       });
-    }
+    })
+    .catch(err => {
+      document.getElementById('list').innerHTML = '<p style="color:red">加载失败：' + err.message + '</p>';
+    });
+}
 
-    // 通过并添加到正式导航
-    async function approveSubmission(idx) {
-      if (!confirm('确认通过此提交并添加到正式导航？')) return;
+function review(id, action) {
+  if (!confirm(action === 'approve' ? '确认通过并上线此网站？' : '确认删除此提交？')) return;
 
-      const item = pending[idx];
-      // 这里调用合并逻辑（简化：提示成功，实际由 settings 或专用接口合并）
-      alert(`已通过！网站 "${item.name}" 将被添加到建议分类下。\n实际生产环境需合并到正式 KV。`);
+  fetch('/api/approve', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({id, action})
+  })
+  .then(r => r.text())
+  .then(msg => {
+    alert(msg);
+    loadPending();  // 刷新列表
+  })
+  .catch(err => alert('操作失败：' + err.message));
+}
 
-      // 删除该条待审核
-      pending.splice(idx, 1);
-      await savePending();
-      renderPending();
-    }
-
-    // 修改后添加
-    function editSubmission(idx) {
-      const item = pending[idx];
-
-      const newName = prompt('网站名称（原：' + (item.name || '无') + '）', item.name);
-      if (newName === null) return;
-      const newUrl = prompt('网站地址（原：' + (item.url || '无') + '）', item.url);
-      if (newUrl === null) return;
-      const newCategory = prompt('一级分类（原：' + (item.category || '无') + '）', item.category || '');
-      const newSubcategory = prompt('二级分类（原：' + (item.subcategory || '无') + '）', item.subcategory || '');
-      const newDesc = prompt('描述（原：' + (item.desc || '无') + '）', item.desc || '');
-
-      if (newName && newUrl) {
-        pending[idx] = {
-          ...item,
-          name: newName,
-          url: newUrl,
-          category: newCategory,
-          subcategory: newSubcategory,
-          desc: newDesc
-        };
-        alert('修改完成，可再次点击“通过并添加”正式提交');
-        renderPending();
-      }
-    }
-
-    // 拒绝并删除
-    async function rejectSubmission(idx) {
-      if (!confirm('确认拒绝并删除此提交？')) return;
-
-      pending.splice(idx, 1);
-      await savePending();
-      renderPending();
-    }
-
-    // 保存回 KV
-    async function savePending() {
-      try {
-        const res = await fetch('/api/pending', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(pending)
-        });
-        if (!res.ok) throw new Error(await res.text());
-      } catch (e) {
-        alert('保存待审核数据失败：' + e.message);
-      }
-    }
-
-    // HTML 转义防止 XSS
-    function escapeHtml(text) {
-      if (!text) return '';
-      return text.toString()
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
-    // 页面加载时执行
-    loadPending();
-  </script>
+// 初始加载 + 每30秒自动刷新
+loadPending();
+setInterval(loadPending, 30000);
+</script>
 </body>
 </html>
