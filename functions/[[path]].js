@@ -79,7 +79,7 @@ export async function onRequest(context) {
     });
   }
 
-  // ================= 管理员审核操作（通过/删除） =================
+  // ================= 管理员审核操作（通过/仍要通过/删除） =================
   if (url.pathname === '/api/approve' && request.method === 'POST') {
     try {
       const { id, action } = await request.json();
@@ -91,9 +91,10 @@ export async function onRequest(context) {
       const index = list.findIndex(s => s.id === id);
       if (index === -1) return new Response('提交记录不存在', { status: 404 });
 
-      if (action === 'approve') {
-        const site = list[index];
+      const site = list[index];
 
+      // 通过并上线：将数据加入 nav_data
+      if (action === 'approve_online') {
         let xml = await env.NAV_DATA.get('nav_data');
         if (!xml) return new Response('正式数据异常', { status: 500 });
 
@@ -126,8 +127,11 @@ export async function onRequest(context) {
         await env.NAV_DATA.put('nav_data', xml);
       }
 
-      list.splice(index, 1);
-      await env.NAV_DATA.put('pending_sites', JSON.stringify(list));
+      // 仍要通过/删除
+      if (action === 'approve_keep' || action === 'approve_online' || action === 'delete') {
+        list.splice(index, 1);
+        await env.NAV_DATA.put('pending_sites', JSON.stringify(list));
+      }
 
       return new Response('操作成功', { status: 200 });
     } catch (e) {
@@ -174,30 +178,6 @@ export async function onRequest(context) {
 
       await env.NAV_DATA.put('user_feedback', JSON.stringify(list));
 
-      return new Response('OK', { status: 200 });
-    } catch (e) {
-      return new Response('保存失败: ' + e.message, { status: 500 });
-    }
-  }
-
-  // ================= 友情链接读取
-  if (url.pathname === '/api/friendly' && request.method === 'GET') {
-    try {
-      let list = await env.NAV_DATA.get('friendly_links');
-      list = list ? JSON.parse(list) : [];
-      return new Response(JSON.stringify(list), {
-        headers: { 'Content-Type': 'application/json;charset=utf-8' }
-      });
-    } catch (e) {
-      return new Response('[]', { headers: { 'Content-Type': 'application/json;charset=utf-8' } });
-    }
-  }
-
-  // ================= 友情链接保存
-  if (url.pathname === '/api/friendly' && request.method === 'POST') {
-    try {
-      const links = await request.json();
-      await env.NAV_DATA.put('friendly_links', JSON.stringify(links));
       return new Response('OK', { status: 200 });
     } catch (e) {
       return new Response('保存失败: ' + e.message, { status: 500 });
