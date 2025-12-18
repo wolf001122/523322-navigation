@@ -19,19 +19,9 @@ body{
   border-radius:12px;
   box-shadow:0 1px 3px rgba(60,64,67,.3),0 4px 12px rgba(60,64,67,.15);
 }
-h1{
-  font-size:24px;
-  margin-bottom:24px;
-}
-.form-row{
-  margin-bottom:18px;
-}
-label{
-  display:block;
-  font-size:14px;
-  color:#5f6368;
-  margin-bottom:6px;
-}
+h1{font-size:24px;margin-bottom:24px}
+.form-row{margin-bottom:18px}
+label{display:block;font-size:14px;color:#5f6368;margin-bottom:6px}
 input,select,textarea{
   width:100%;
   padding:12px;
@@ -39,38 +29,19 @@ input,select,textarea{
   border-radius:8px;
   font-size:14px;
 }
-textarea{resize:vertical;min-height:80px}
+textarea{min-height:80px;resize:vertical}
 button{
-  padding:12px 24px;
+  padding:12px 28px;
   border:none;
   border-radius:24px;
   background:#1a73e8;
   color:#fff;
-  font-size:15px;
   cursor:pointer;
 }
-button:hover{opacity:.9}
-.notice{
-  font-size:13px;
-  color:#5f6368;
-  margin-bottom:16px;
-}
-.captcha{
-  display:flex;
-  gap:12px;
-  align-items:center;
-}
-.captcha span{
-  font-weight:600;
-}
-.error{
-  color:#d93025;
-  font-size:13px;
-}
-.success{
-  color:#188038;
-  font-size:14px;
-}
+.captcha{display:flex;align-items:center;gap:12px}
+.captcha span{font-weight:600}
+.error{color:#d93025;font-size:13px}
+.success{color:#188038;font-size:14px}
 </style>
 </head>
 
@@ -78,9 +49,6 @@ button:hover{opacity:.9}
 
 <div class="submit-box">
   <h1>网站提交</h1>
-  <div class="notice">
-    请填写真实有效的网站信息，审核通过后将显示在导航中。
-  </div>
 
   <div class="form-row">
     <label>一级分类</label>
@@ -98,17 +66,17 @@ button:hover{opacity:.9}
 
   <div class="form-row">
     <label>网站名称</label>
-    <input id="name" placeholder="例如：百度">
+    <input id="name">
   </div>
 
   <div class="form-row">
     <label>网站网址</label>
-    <input id="url" placeholder="https://www.example.com">
+    <input id="url" placeholder="https://">
   </div>
 
   <div class="form-row">
     <label>网站简介</label>
-    <textarea id="desc" placeholder="一句话介绍，不超过50字"></textarea>
+    <textarea id="desc"></textarea>
   </div>
 
   <div class="form-row captcha">
@@ -128,85 +96,94 @@ const API='/api/data';
 let categories=[];
 let captchaAnswer=0;
 
-/* ========= 加载分类 ========= */
-fetch(API).then(r=>r.text()).then(t=>{
-  const xml=new DOMParser().parseFromString(t,'text/xml');
-  categories=[...xml.querySelectorAll('category')].map(c=>({
-    name:c.getAttribute('name'),
-    subs:[...c.querySelectorAll('subcategory')].map(s=>s.getAttribute('name'))
-  }));
-  const c1=document.getElementById('cat1');
-  categories.forEach((c,i)=>{
-    const o=document.createElement('option');
-    o.value=i;
-    o.textContent=c.name;
-    c1.appendChild(o);
-  });
+/* ===== DOM 完全就绪后执行 ===== */
+document.addEventListener('DOMContentLoaded',()=>{
+  loadCategories();
+  generateCaptcha();
 });
 
-/* ========= 一级 → 二级 ========= */
+/* ===== 从 Cloudflare KV 读取分类（与 index.html 一致） ===== */
+function loadCategories(){
+  fetch(API).then(r=>r.text()).then(t=>{
+    const xml=new DOMParser().parseFromString(t,'text/xml');
+    categories=[...xml.querySelectorAll('category')].map(c=>({
+      name:c.getAttribute('name'),
+      subs:[...c.querySelectorAll('subcategory')].map(s=>({
+        name:s.getAttribute('name')
+      }))
+    }));
+
+    const cat1=document.getElementById('cat1');
+    categories.forEach((c,i)=>{
+      const o=document.createElement('option');
+      o.value=i;
+      o.textContent=c.name;
+      cat1.appendChild(o);
+    });
+  });
+}
+
+/* ===== 一级 → 二级联动 ===== */
 document.getElementById('cat1').onchange=e=>{
-  const c2=document.getElementById('cat2');
-  c2.innerHTML='';
+  const cat2=document.getElementById('cat2');
+  cat2.innerHTML='';
   if(e.target.value===''){
-    c2.disabled=true;
-    c2.innerHTML='<option>请先选择一级分类</option>';
+    cat2.disabled=true;
+    cat2.innerHTML='<option>请先选择一级分类</option>';
     return;
   }
-  c2.disabled=false;
-  c2.innerHTML='<option value="">请选择二级分类</option>';
+  cat2.disabled=false;
+  cat2.innerHTML='<option value="">请选择二级分类</option>';
   categories[e.target.value].subs.forEach(s=>{
     const o=document.createElement('option');
-    o.value=s;
-    o.textContent=s;
-    c2.appendChild(o);
+    o.value=s.name;
+    o.textContent=s.name;
+    cat2.appendChild(o);
   });
 };
 
-/* ========= 验证码 ========= */
-function newCaptcha(){
+/* ===== 验证码（保证显示） ===== */
+function generateCaptcha(){
   const a=Math.floor(Math.random()*10+1);
   const b=Math.floor(Math.random()*10+1);
   captchaAnswer=a+b;
   document.getElementById('captcha-q').textContent=`验证：${a} + ${b} = ?`;
 }
-newCaptcha();
 
-/* ========= 提交 ========= */
+/* ===== 提交 ===== */
 function submitSite(){
   const msg=document.getElementById('msg');
   msg.innerHTML='';
 
-  const cat1=document.getElementById('cat1').value;
-  const cat2=document.getElementById('cat2').value;
+  const c1=document.getElementById('cat1').value;
+  const c2=document.getElementById('cat2').value;
   const name=document.getElementById('name').value.trim();
   const url=document.getElementById('url').value.trim();
-  const desc=document.getElementById('desc').value.trim();
   const cap=document.getElementById('captcha-a').value.trim();
 
-  if(!cat1||!cat2||!name||!url){
-    msg.innerHTML='<div class="error">请完整填写所有必填项</div>';
+  if(!c1||!c2||!name||!url){
+    msg.innerHTML='<div class="error">请填写完整信息</div>';
     return;
   }
   if(!/^https?:\/\//.test(url)){
-    msg.innerHTML='<div class="error">网址必须以 http 或 https 开头</div>';
+    msg.innerHTML='<div class="error">网址格式错误</div>';
     return;
   }
   if(Number(cap)!==captchaAnswer){
     msg.innerHTML='<div class="error">验证码错误</div>';
-    newCaptcha();
+    generateCaptcha();
     return;
   }
 
-  /* 这里预留提交接口 */
+  /* 提交接口预留（Worker / KV / DB） */
   console.log({
-    category:categories[cat1].name,
-    subcategory:cat2,
-    name,url,desc
+    category:categories[c1].name,
+    subcategory:c2,
+    name,url
   });
 
   msg.innerHTML='<div class="success">提交成功，等待审核</div>';
-  newCaptcha();
+  generateCaptcha();
 }
 </script>
 
