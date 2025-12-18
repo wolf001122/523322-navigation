@@ -1,229 +1,214 @@
-<!-- submit.html : 被 index.html 通过 fetch + innerHTML 加载 -->
-<div id="submit-page">
-  <h2>网站提交</h2>
-
-  <form id="submitForm">
-    <select id="c1" required></select>
-    <select id="c2" required></select>
-
-    <input id="name" placeholder="网站名称" required>
-    <input id="url" placeholder="https://example.com" required>
-    <textarea id="desc" rows="4" placeholder="网站简介（简短描述网站功能和特色）" required></textarea>
-
-    <!-- 蜜罐 -->
-    <input id="hp" style="display:none" autocomplete="off" readonly>
-
-    <!-- 验证码 -->
-    <div id="captchaQuestion"></div>
-    <input id="captchaAnswer" placeholder="请输入答案" required>
-
-    <button type="submit">提交网站</button>
-  </form>
-
-  <p id="msg"></p>
-</div>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>网站提交</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 <style>
-#submit-page{
-  padding:24px;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
   background:#f8f9fa;
   color:#202124;
 }
-#submit-page h2{
-  font-size:28px;
-  font-weight:500;
-  margin-bottom:24px;
-  text-align:center;
-}
-#submit-page form{
-  max-width:600px;
+.submit-box{
+  max-width:720px;
   margin:0 auto;
   background:#fff;
   padding:32px;
   border-radius:12px;
-  box-shadow:0 1px 3px rgba(0,0,0,0.12);
+  box-shadow:0 1px 3px rgba(60,64,67,.3),0 4px 12px rgba(60,64,67,.15);
 }
-#submit-page select,
-#submit-page input,
-#submit-page textarea{
+h1{
+  font-size:24px;
+  margin-bottom:24px;
+}
+.form-row{
+  margin-bottom:18px;
+}
+label{
+  display:block;
+  font-size:14px;
+  color:#5f6368;
+  margin-bottom:6px;
+}
+input,select,textarea{
   width:100%;
   padding:12px;
-  margin:12px 0;
   border:1px solid #dadce0;
   border-radius:8px;
-  font-size:16px;
+  font-size:14px;
 }
-#submit-page select:focus,
-#submit-page input:focus,
-#submit-page textarea:focus{
-  outline:none;
-  border-color:#1a73e8;
-  box-shadow:0 0 0 3px rgba(26,115,232,.2);
-}
-#captchaQuestion{
-  font-weight:bold;
-  margin:16px 0;
-  color:#1a73e8;
-  text-align:center;
-  font-size:18px;
-}
-#submit-page button{
-  width:100%;
-  padding:14px;
+textarea{resize:vertical;min-height:80px}
+button{
+  padding:12px 24px;
+  border:none;
+  border-radius:24px;
   background:#1a73e8;
   color:#fff;
-  border:none;
-  border-radius:8px;
-  font-size:18px;
+  font-size:15px;
   cursor:pointer;
 }
-#submit-page button:hover{background:#1557b0;}
-#msg{
-  text-align:center;
-  margin-top:20px;
-  font-size:16px;
-  min-height:24px;
+button:hover{opacity:.9}
+.notice{
+  font-size:13px;
+  color:#5f6368;
+  margin-bottom:16px;
 }
-.error{color:#d93025;}
-.success{color:#137333;}
+.captcha{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+.captcha span{
+  font-weight:600;
+}
+.error{
+  color:#d93025;
+  font-size:13px;
+}
+.success{
+  color:#188038;
+  font-size:14px;
+}
 </style>
+</head>
+
+<body>
+
+<div class="submit-box">
+  <h1>网站提交</h1>
+  <div class="notice">
+    请填写真实有效的网站信息，审核通过后将显示在导航中。
+  </div>
+
+  <div class="form-row">
+    <label>一级分类</label>
+    <select id="cat1">
+      <option value="">请选择一级分类</option>
+    </select>
+  </div>
+
+  <div class="form-row">
+    <label>二级分类</label>
+    <select id="cat2" disabled>
+      <option value="">请先选择一级分类</option>
+    </select>
+  </div>
+
+  <div class="form-row">
+    <label>网站名称</label>
+    <input id="name" placeholder="例如：百度">
+  </div>
+
+  <div class="form-row">
+    <label>网站网址</label>
+    <input id="url" placeholder="https://www.example.com">
+  </div>
+
+  <div class="form-row">
+    <label>网站简介</label>
+    <textarea id="desc" placeholder="一句话介绍，不超过50字"></textarea>
+  </div>
+
+  <div class="form-row captcha">
+    <span id="captcha-q"></span>
+    <input id="captcha-a" placeholder="答案">
+  </div>
+
+  <div class="form-row">
+    <button onclick="submitSite()">提交审核</button>
+  </div>
+
+  <div id="msg"></div>
+</div>
 
 <script>
-/* =========================================================
-   供 index.html 调用的初始化函数
-   ========================================================= */
-window.initSubmitPage = function () {
+const API='/api/data';
+let categories=[];
+let captchaAnswer=0;
 
-  const API = '/api/data';
+/* ========= 加载分类 ========= */
+fetch(API).then(r=>r.text()).then(t=>{
+  const xml=new DOMParser().parseFromString(t,'text/xml');
+  categories=[...xml.querySelectorAll('category')].map(c=>({
+    name:c.getAttribute('name'),
+    subs:[...c.querySelectorAll('subcategory')].map(s=>s.getAttribute('name'))
+  }));
+  const c1=document.getElementById('cat1');
+  categories.forEach((c,i)=>{
+    const o=document.createElement('option');
+    o.value=i;
+    o.textContent=c.name;
+    c1.appendChild(o);
+  });
+});
 
-  const c1 = document.getElementById('c1');
-  const c2 = document.getElementById('c2');
-  const nameInput = document.getElementById('name');
-  const urlInput = document.getElementById('url');
-  const descInput = document.getElementById('desc');
-  const hp = document.getElementById('hp');
-  const msg = document.getElementById('msg');
-  const captchaQuestion = document.getElementById('captchaQuestion');
-  const captchaAnswer = document.getElementById('captchaAnswer');
-  const form = document.getElementById('submitForm');
-
-  let data = [];
-
-  /* ---------- 加载分类 ---------- */
-  fetch(API)
-    .then(r => r.text())
-    .then(t => {
-      const xml = new DOMParser().parseFromString(t, 'text/xml');
-      data = [...xml.querySelectorAll('category')].map(c => ({
-        name: c.getAttribute('name'),
-        subs: [...c.querySelectorAll('subcategory')].map(s => ({
-          name: s.getAttribute('name')
-        }))
-      }));
-      initCats();
-      generateCaptcha();
-    })
-    .catch(() => {
-      msg.textContent = '分类加载失败';
-      msg.className = 'error';
-    });
-
-  function initCats(){
-    c1.innerHTML = '<option value="">请选择一级分类</option>';
-    c2.innerHTML = '<option value="">请选择二级分类</option>';
-
-    data.forEach((cat,i)=>{
-      const o=document.createElement('option');
-      o.value=i;
-      o.textContent=cat.name;
-      c1.appendChild(o);
-    });
-
-    c1.onchange=()=>{
-      c2.innerHTML='<option value="">请选择二级分类</option>';
-      if(c1.value!==''){
-        data[c1.value].subs.forEach(s=>{
-          const o=document.createElement('option');
-          o.textContent=s.name;
-          c2.appendChild(o);
-        });
-      }
-    };
+/* ========= 一级 → 二级 ========= */
+document.getElementById('cat1').onchange=e=>{
+  const c2=document.getElementById('cat2');
+  c2.innerHTML='';
+  if(e.target.value===''){
+    c2.disabled=true;
+    c2.innerHTML='<option>请先选择一级分类</option>';
+    return;
   }
-
-  /* ---------- 验证码 ---------- */
-  function generateCaptcha(){
-    const a=Math.floor(Math.random()*10)+1;
-    const b=Math.floor(Math.random()*10)+1;
-    const ops=['+','-','×'];
-    const op=ops[Math.floor(Math.random()*ops.length)];
-    let ans;
-    if(op==='+') ans=a+b;
-    if(op==='-') ans=a-b;
-    if(op==='×') ans=a*b;
-    captchaQuestion.textContent=`验证码：${a} ${op} ${b} = ?`;
-    window._submitCaptcha=ans;
-  }
-
-  /* ---------- 提交 ---------- */
-  form.onsubmit = e => {
-    e.preventDefault();
-
-    if(hp.value!==''){
-      msg.textContent='异常操作';
-      msg.className='error';
-      return;
-    }
-
-    if(parseInt(captchaAnswer.value,10)!==window._submitCaptcha){
-      msg.textContent='验证码错误';
-      msg.className='error';
-      generateCaptcha();
-      captchaAnswer.value='';
-      return;
-    }
-
-    const site={
-      cat1:c1.options[c1.selectedIndex]?.text,
-      cat2:c2.options[c2.selectedIndex]?.text,
-      name:nameInput.value.trim(),
-      url:urlInput.value.trim(),
-      desc:descInput.value.trim()
-    };
-
-    if(!site.cat1||!site.cat2||!site.name||!site.url||!site.desc){
-      msg.textContent='请填写完整信息';
-      msg.className='error';
-      generateCaptcha();
-      return;
-    }
-
-    msg.textContent='提交中...';
-
-    fetch('/api/submit',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(site)
-    })
-    .then(r=>r.text())
-    .then(t=>{
-      if(t.includes('成功')){
-        msg.textContent='提交成功，等待审核';
-        msg.className='success';
-        form.reset();
-        generateCaptcha();
-      }else{
-        msg.textContent='提交失败：'+t;
-        msg.className='error';
-        generateCaptcha();
-      }
-    })
-    .catch(()=>{
-      msg.textContent='网络错误';
-      msg.className='error';
-      generateCaptcha();
-    });
-  };
+  c2.disabled=false;
+  c2.innerHTML='<option value="">请选择二级分类</option>';
+  categories[e.target.value].subs.forEach(s=>{
+    const o=document.createElement('option');
+    o.value=s;
+    o.textContent=s;
+    c2.appendChild(o);
+  });
 };
+
+/* ========= 验证码 ========= */
+function newCaptcha(){
+  const a=Math.floor(Math.random()*10+1);
+  const b=Math.floor(Math.random()*10+1);
+  captchaAnswer=a+b;
+  document.getElementById('captcha-q').textContent=`验证：${a} + ${b} = ?`;
+}
+newCaptcha();
+
+/* ========= 提交 ========= */
+function submitSite(){
+  const msg=document.getElementById('msg');
+  msg.innerHTML='';
+
+  const cat1=document.getElementById('cat1').value;
+  const cat2=document.getElementById('cat2').value;
+  const name=document.getElementById('name').value.trim();
+  const url=document.getElementById('url').value.trim();
+  const desc=document.getElementById('desc').value.trim();
+  const cap=document.getElementById('captcha-a').value.trim();
+
+  if(!cat1||!cat2||!name||!url){
+    msg.innerHTML='<div class="error">请完整填写所有必填项</div>';
+    return;
+  }
+  if(!/^https?:\/\//.test(url)){
+    msg.innerHTML='<div class="error">网址必须以 http 或 https 开头</div>';
+    return;
+  }
+  if(Number(cap)!==captchaAnswer){
+    msg.innerHTML='<div class="error">验证码错误</div>';
+    newCaptcha();
+    return;
+  }
+
+  /* 这里预留提交接口 */
+  console.log({
+    category:categories[cat1].name,
+    subcategory:cat2,
+    name,url,desc
+  });
+
+  msg.innerHTML='<div class="success">提交成功，等待审核</div>';
+  newCaptcha();
+}
 </script>
+
+</body>
+</html>
