@@ -19,10 +19,7 @@
     button.danger:hover { background:#d33b2f; }
     .link-list { margin-top:20px; }
     .link-item { display:flex; align-items:center; justify-content:space-between; padding:16px; background:#f8f9fa; border-radius:8px; margin-bottom:12px; }
-    .link-item div.info { flex:1; }
-    .status { margin-top:12px; padding:12px; border-radius:4px; font-size:14px; text-align:center; }
-    .status.success { background:#e6f4ea; color:#137333; border:1px solid #34a853; }
-    .status.error { background:#fce8e6; color:#c5221f; border:1px solid #ea4335; }
+    .link-item div:first-child { max-width:70%; word-break:break-word; }
   </style>
 </head>
 <body>
@@ -30,9 +27,8 @@
     <h2>友情链接管理
       <button class="success" onclick="saveToKV()">保存到 KV（永久生效）</button>
     </h2>
-    <div id="saveStatus"></div>
 
-    <h3 style="margin:30px 0 20px;">添加新友情链接</h3>
+    <h3 style="margin:30px 0 20px;">添加/编辑友情链接</h3>
     <form id="addForm">
       <div class="form-group">
         <label>网站名称 *</label>
@@ -46,7 +42,7 @@
         <label>网站描述（可选）</label>
         <textarea id="desc" rows="3"></textarea>
       </div>
-      <button type="submit">添加友情链接</button>
+      <button type="submit">添加/修改友情链接</button>
     </form>
 
     <h3 style="margin:40px 0 20px;">现有友情链接</h3>
@@ -57,6 +53,7 @@
 
   <script>
     let friendlyLinks = [];
+    let editIndex = null;
 
     // 加载友情链接
     async function loadLinks() {
@@ -67,10 +64,11 @@
         } else {
           friendlyLinks = [];
         }
+        renderLinks();
       } catch (e) {
         friendlyLinks = [];
+        renderLinks();
       }
-      renderLinks();
     }
 
     // 渲染列表
@@ -86,11 +84,11 @@
         const div = document.createElement('div');
         div.className = 'link-item';
         div.innerHTML = `
-          <div class="info">
+          <div>
             <strong><a href="${link.url}" target="_blank">${link.name}</a></strong><br>
-            <span style="color:#666;font-size:14px;">${link.desc || ''}</span>
+            <span style="color:#666;font-size:14px;">${link.desc || '无描述'}</span>
           </div>
-          <div style="display:flex; gap:8px;">
+          <div>
             <button onclick="editLink(${idx})">编辑</button>
             <button class="danger" onclick="deleteLink(${idx})">删除</button>
           </div>
@@ -99,7 +97,7 @@
       });
     }
 
-    // 添加新链接
+    // 添加/修改链接
     document.getElementById('addForm').onsubmit = (e) => {
       e.preventDefault();
       const name = document.getElementById('name').value.trim();
@@ -108,7 +106,13 @@
 
       if (!name || !url) return alert('名称和地址必填');
 
-      friendlyLinks.push({ name, url, desc });
+      if (editIndex !== null) {
+        friendlyLinks[editIndex] = { name, url, desc };
+        editIndex = null;
+      } else {
+        friendlyLinks.push({ name, url, desc });
+      }
+
       renderLinks();
       document.getElementById('addForm').reset();
     };
@@ -116,14 +120,11 @@
     // 编辑链接
     function editLink(idx) {
       const link = friendlyLinks[idx];
-      const newName = prompt('网站名称', link.name);
-      const newUrl = prompt('网站地址', link.url);
-      const newDesc = prompt('网站描述', link.desc);
-
-      if (newName && newUrl) {
-        friendlyLinks[idx] = { name: newName, url: newUrl, desc: newDesc || '' };
-        renderLinks();
-      }
+      document.getElementById('name').value = link.name;
+      document.getElementById('url').value = link.url;
+      document.getElementById('desc').value = link.desc || '';
+      editIndex = idx;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     // 删除链接
@@ -138,10 +139,6 @@
     async function saveToKV() {
       if (!confirm('确认保存所有友情链接到云端？')) return;
 
-      const statusDiv = document.getElementById('saveStatus');
-      statusDiv.textContent = '正在保存...';
-      statusDiv.className = 'status';
-
       try {
         const res = await fetch('/api/friendly', {
           method: 'POST',
@@ -150,14 +147,13 @@
         });
 
         if (res.ok) {
-          statusDiv.textContent = '保存成功！';
-          statusDiv.className = 'status success';
+          alert('保存成功！');
         } else {
-          throw new Error(await res.text());
+          const txt = await res.text();
+          alert('保存失败：' + txt);
         }
       } catch (e) {
-        statusDiv.textContent = '保存失败：' + e.message;
-        statusDiv.className = 'status error';
+        alert('保存失败：' + e.message);
       }
     }
 
