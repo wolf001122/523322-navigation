@@ -37,32 +37,37 @@ const API = '/api/data';
 
 // 全局变量
 let data = [];
-let c1, c2, nameInput, urlInput, descInput, hp, msg, captchaQuestion, captchaAnswer, correctAnswer;
+let c1, c2, nameInput, urlInput, descInput, hp, msg, captchaQuestion, captchaAnswer;
 
-// 加载分类数据并初始化页面
-async function initPage() {
-  try {
-    const res = await fetch(API);
-    if (!res.ok) throw new Error('加载失败');
-    const xml = await res.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(xml, 'text/xml');
-    data = [...doc.querySelectorAll('category')].map(c => ({
-      name: c.getAttribute('name'),
-      subs: [...c.querySelectorAll('subcategory')].map(s => ({
-        name: s.getAttribute('name')
-      }))
-    }));
-    initCats();
-    generateCaptcha();
-  } catch (e) {
-    msg.textContent = '加载分类失败，请刷新页面重试';
-    msg.className = 'error';
-  }
-}
+// 加载分类数据
+fetch(API).then(r=>r.text()).then(t=>{
+  const xml=new DOMParser().parseFromString(t,'text/xml');
+  data=[...xml.querySelectorAll('category')].map(c=>({
+    name:c.getAttribute('name'),
+    subs:[...c.querySelectorAll('subcategory')].map(s=({
+      name:s.getAttribute('name')
+    }))
+  }));
+  initCats();
+  generateCaptcha();
+}).catch(() => {
+  msg.textContent = '加载分类失败，请刷新页面重试';
+  msg.className = 'error';
+});
+
+// 定义变量
+c1 = document.getElementById('c1');
+c2 = document.getElementById('c2');
+nameInput = document.getElementById('name');
+urlInput = document.getElementById('url');
+descInput = document.getElementById('desc');
+hp = document.getElementById('hp');
+msg = document.getElementById('msg');
+captchaQuestion = document.getElementById('captchaQuestion');
+captchaAnswer = document.getElementById('captchaAnswer');
 
 // 初始化分类下拉框
-function initCats() {
+function initCats(){
   c1.innerHTML = '<option value="">请选择一级分类</option>';
   data.forEach((cat, i) => {
     const opt = document.createElement('option');
@@ -97,24 +102,22 @@ function generateCaptcha() {
     case '×': question = `${a} × ${b} = ?`; answer = a * b; break;
   }
 
-  captchaQuestion.textContent = question;
-  correctAnswer = answer;
+  captchaQuestion.textContent = `验证码：${question}`;
+  window.correctAnswer = answer;
 }
 
 // 提交处理
-async function submitSite(e) {
+function submitSite(e) {
   e.preventDefault();
 
-  // 蜜罐防机器人
   if (hp && hp.value !== '') {
     msg.textContent = '异常操作，已阻止';
     msg.className = 'error';
     return;
   }
 
-  // 验证码检查
   const userAnswer = parseInt(captchaAnswer.value.trim(), 10);
-  if (isNaN(userAnswer) || userAnswer !== correctAnswer) {
+  if (isNaN(userAnswer) || userAnswer !== window.correctAnswer) {
     msg.textContent = '验证码错误，请重新计算';
     msg.className = 'error';
     generateCaptcha();
@@ -129,7 +132,6 @@ async function submitSite(e) {
     return;
   }
 
-  // 重复域名检查
   let submittedRoot = '';
   try {
     let hostname = new URL(submittedUrl).hostname.toLowerCase();
@@ -154,90 +156,94 @@ async function submitSite(e) {
     return;
   }
 
-  try {
-    const res = await fetch(API);
-    const text = await res.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(text, 'text/xml');
-    const existingRootDomains = new Set();
-    doc.querySelectorAll('link').forEach(link => {
-      let url = link.getAttribute('url');
-      if (url) {
-        try {
-          let hostname = new URL(url).hostname.toLowerCase();
-          if (hostname.startsWith('www.')) hostname = hostname.slice(4);
-          const parts = hostname.split('.');
-          let root = '';
-          if (parts.length <= 2) {
-            root = hostname;
-          } else {
-            const last = parts[parts.length - 1];
-            const secondLast = parts[parts.length - 2];
-            const countrySuffixes = ['cn', 'uk', 'jp', 'de', 'fr', 'au', 'br', 'ru', 'in', 'ca', 'it', 'es', 'nl', 'kr', 'tw', 'hk', 'sg'];
-            const publicSuffixes = ['com', 'net', 'org', 'gov', 'edu', 'co', 'ne', 'or', 'go', 'ac', 'mil', 'info', 'biz'];
-            if (countrySuffixes.includes(last) && publicSuffixes.includes(secondLast) && parts.length >= 3) {
-              root = parts.slice(-3).join('.');
+  fetch(API)
+    .then(r => r.text())
+    .then(text => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(text, 'text/xml');
+      const existingRootDomains = new Set();
+      doc.querySelectorAll('link').forEach(link => {
+        let url = link.getAttribute('url');
+        if (url) {
+          try {
+            let hostname = new URL(url).hostname.toLowerCase();
+            if (hostname.startsWith('www.')) hostname = hostname.slice(4);
+            const parts = hostname.split('.');
+            let root = '';
+            if (parts.length <= 2) {
+              root = hostname;
             } else {
-              root = parts.slice(-2).join('.');
+              const last = parts[parts.length - 1];
+              const secondLast = parts[parts.length - 2];
+              if (countrySuffixes.includes(last) && publicSuffixes.includes(secondLast) && parts.length >= 3) {
+                root = parts.slice(-3).join('.');
+              } else {
+                root = parts.slice(-2).join('.');
+              }
             }
-          }
-          if (root) existingRootDomains.add(root);
-        } catch {}
+            if (root) existingRootDomains.add(root);
+          } catch {}
+        }
+      });
+
+      if (existingRootDomains.has(submittedRoot)) {
+        alert('此一级域名已存在（包括二级域名如 pan.baidu.com 等），请勿重复提交！');
+        msg.textContent = '重复域名，提交已阻止';
+        msg.className = 'error';
+        generateCaptcha();
+        return;
       }
+
+      const site = {
+        cat1: c1.options[c1.selectedIndex]?.text || '',
+        cat2: c2.options[c2.selectedIndex]?.text || '',
+        name: nameInput.value.trim(),
+        url: submittedUrl,
+        desc: descInput.value.trim()
+      };
+
+      if (!site.cat1 || !site.cat2 || !site.name || !site.url || !site.desc) {
+        msg.textContent = '请填写完整信息并选择分类';
+        msg.className = 'error';
+        generateCaptcha();
+        return;
+      }
+
+      msg.textContent = '提交中...';
+      msg.className = '';
+
+      fetch('/api/submit', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(site)
+      })
+      .then(r => r.text())
+      .then(text => {
+        if (text.includes('成功')) {
+          msg.textContent = '提交成功，等待管理员审核';
+          msg.className = 'success';
+          e.target.reset();
+          generateCaptcha();
+          c1.selectedIndex = 0;
+          c2.innerHTML = '<option value="">请选择二级分类</option>';
+        } else {
+          msg.textContent = '提交失败：' + text;
+          msg.className = 'error';
+          generateCaptcha();
+        }
+      })
+      .catch(() => {
+        msg.textContent = '网络错误，请重试';
+        msg.className = 'error';
+        generateCaptcha();
+      });
+    })
+    .catch(() => {
+      msg.textContent = '检查重复时出错，请重试';
+      msg.className = 'error';
+      generateCaptcha();
     });
-
-    if (existingRootDomains.has(submittedRoot)) {
-      alert('此一级域名已存在（包括二级域名如 pan.baidu.com 等），请勿重复提交！');
-      msg.textContent = '重复域名，提交已阻止';
-      msg.className = 'error';
-      generateCaptcha();
-      return;
-    }
-
-    const site = {
-      cat1: c1.options[c1.selectedIndex]?.text || '',
-      cat2: c2.options[c2.selectedIndex]?.text || '',
-      name: nameInput.value.trim(),
-      url: submittedUrl,
-      desc: descInput.value.trim()
-    };
-
-    if (!site.cat1 || !site.cat2 || !site.name || !site.url || !site.desc) {
-      msg.textContent = '请填写完整信息并选择分类';
-      msg.className = 'error';
-      generateCaptcha();
-      return;
-    }
-
-    msg.textContent = '提交中...';
-    msg.className = '';
-
-    const res = await fetch('/api/submit', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(site)
-    });
-    const text = await res.text();
-    if (text.includes('成功')) {
-      msg.textContent = '提交成功，等待管理员审核';
-      msg.className = 'success';
-      e.target.reset();
-      generateCaptcha();
-      c1.selectedIndex = 0;
-      c2.innerHTML = '<option value="">请选择二级分类</option>';
-    } else {
-      msg.textContent = '提交失败：' + text;
-      msg.className = 'error';
-      generateCaptcha();
-    }
-  } catch {
-    msg.textContent = '网络错误，请重试';
-    msg.className = 'error';
-    generateCaptcha();
-  }
 }
-
-initPage();
 </script>
 </body>
 </html>
