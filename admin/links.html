@@ -52,6 +52,16 @@ header {
   padding:16px;
   overflow:auto;
 }
+.category-block {
+  margin-bottom:24px;
+}
+.category-block h3 {
+  margin:12px 0;
+  font-size:16px;
+  color:#1f2937;
+  border-bottom:1px solid #e5e7eb;
+  padding-bottom:4px;
+}
 .card-grid {
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
@@ -118,8 +128,8 @@ header {
   </div>
 </div>
 
-<div class="cards">
-  <div class="card-grid" id="list"></div>
+<div class="cards" id="cardsContainer">
+  <!-- 分类分组卡片显示 -->
 </div>
 
 </div>
@@ -157,25 +167,48 @@ function buildSub(){
     });
 }
 
+// 新版：按一级/二级分类显示卡片
 function renderCards(){
-  list.innerHTML='';
+  const container = document.getElementById('cardsContainer');
+  container.innerHTML='';
+
   xmlDoc.querySelectorAll('category').forEach(c=>{
+    const catBlock = document.createElement('div');
+    catBlock.className='category-block';
+    catBlock.innerHTML=`<h3>${c.getAttribute('name')}</h3>`;
+
     c.querySelectorAll('subcategory').forEach(s=>{
-      s.querySelectorAll('link').forEach(l=>{
+      const subLinks = s.querySelectorAll('link');
+      if(subLinks.length===0) return;
+      const subHeader = document.createElement('h4');
+      subHeader.style.margin='8px 0 4px';
+      subHeader.style.fontSize='14px';
+      subHeader.style.color='#374151';
+      subHeader.textContent = s.getAttribute('name');
+      catBlock.appendChild(subHeader);
+
+      const grid = document.createElement('div');
+      grid.className='card-grid';
+
+      subLinks.forEach(l=>{
         const d=document.createElement('div');
         d.className='card';
         d._ref=l;
         d.innerHTML=`
 <strong>${l.getAttribute('name')}</strong>
-<small>${c.getAttribute('name')} / ${s.getAttribute('name')}</small>
 <small>${l.getAttribute('url')}</small>
+<small>${l.getAttribute('desc') || ''}</small>
 <div class="actions">
 <button onclick="editLink(this)">编辑</button>
 <button onclick="delLink(this)">删除</button>
 </div>`;
-        list.appendChild(d);
+        grid.appendChild(d);
       });
+
+      catBlock.appendChild(grid);
     });
+
+    container.appendChild(catBlock);
   });
 }
 
