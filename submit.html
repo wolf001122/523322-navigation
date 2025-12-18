@@ -35,7 +35,7 @@
 <script>
 const API = '/api/data';
 
-// 全局变量（移到顶部，确保始终定义）
+// 全局变量
 let data = [];
 let c1 = document.getElementById('c1');
 let c2 = document.getElementById('c2');
@@ -47,26 +47,29 @@ let msg = document.getElementById('msg');
 let captchaQuestion = document.getElementById('captchaQuestion');
 let captchaAnswer = document.getElementById('captchaAnswer');
 
-// 立即生成验证码（不依赖分类数据）
+// 立即生成验证码（独立于分类加载）
 generateCaptcha();
 
-// 加载分类数据（异步，失败时提示但不影响其他功能）
-fetch(API).then(r=>r.text()).then(t=>{
-  const xml=new DOMParser().parseFromString(t,'text/xml');
-  data=[...xml.querySelectorAll('category')].map(c=>({
-    name:c.getAttribute('name'),
-    subs:[...c.querySelectorAll('subcategory')].map(s=({
-      name:s.getAttribute('name')
-    }))
-  }));
-  initCats();
-}).catch(() => {
-  msg.textContent = '加载分类失败，请刷新页面重试';
-  msg.className = 'error';
-});
+// 加载分类数据
+fetch(API)
+  .then(r => r.text())
+  .then(t => {
+    const xml = new DOMParser().parseFromString(t, 'text/xml');
+    data = [...xml.querySelectorAll('category')].map(c => ({
+      name: c.getAttribute('name'),
+      subs: [...c.querySelectorAll('subcategory')].map(s => ({
+        name: s.getAttribute('name')
+      }))
+    }));
+    initCats();
+  })
+  .catch(() => {
+    msg.textContent = '加载分类失败，请刷新页面重试';
+    msg.className = 'error';
+  });
 
 // 初始化分类下拉框
-function initCats(){
+function initCats() {
   c1.innerHTML = '<option value="">请选择一级分类</option>';
   data.forEach((cat, i) => {
     const opt = document.createElement('option');
