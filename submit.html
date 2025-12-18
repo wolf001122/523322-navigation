@@ -1,52 +1,3 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<title>网站提交</title>
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-<style>
-body{
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-  background:#f8f9fa;
-  color:#202124;
-}
-.submit-box{
-  max-width:720px;
-  margin:0 auto;
-  background:#fff;
-  padding:32px;
-  border-radius:12px;
-  box-shadow:0 1px 3px rgba(60,64,67,.3),0 4px 12px rgba(60,64,67,.15);
-}
-h1{font-size:24px;margin-bottom:24px}
-.form-row{margin-bottom:18px}
-label{display:block;font-size:14px;color:#5f6368;margin-bottom:6px}
-input,select,textarea{
-  width:100%;
-  padding:12px;
-  border:1px solid #dadce0;
-  border-radius:8px;
-  font-size:14px;
-}
-textarea{min-height:80px;resize:vertical}
-button{
-  padding:12px 28px;
-  border:none;
-  border-radius:24px;
-  background:#1a73e8;
-  color:#fff;
-  cursor:pointer;
-}
-.captcha{display:flex;align-items:center;gap:12px}
-.captcha span{font-weight:600}
-.error{color:#d93025;font-size:13px}
-.success{color:#188038;font-size:14px}
-</style>
-</head>
-
-<body>
-
 <div class="submit-box">
   <h1>网站提交</h1>
 
@@ -85,107 +36,138 @@ button{
   </div>
 
   <div class="form-row">
-    <button onclick="submitSite()">提交审核</button>
+    <button onclick="SubmitPage.submit()">提交审核</button>
   </div>
 
   <div id="msg"></div>
 </div>
 
+<style>
+.submit-box{
+  max-width:720px;margin:0 auto;background:#fff;padding:32px;
+  border-radius:12px;box-shadow:0 1px 3px rgba(60,64,67,.3)
+}
+.form-row{margin-bottom:18px}
+label{display:block;font-size:14px;color:#5f6368;margin-bottom:6px}
+input,select,textarea{
+  width:100%;padding:12px;border:1px solid #dadce0;border-radius:8px
+}
+textarea{min-height:80px}
+button{
+  padding:12px 28px;border:none;border-radius:24px;
+  background:#1a73e8;color:#fff;cursor:pointer
+}
+.captcha{display:flex;gap:12px;align-items:center}
+.error{color:#d93025;font-size:13px}
+.success{color:#188038;font-size:14px}
+</style>
+
 <script>
-const API='/api/data';
-let categories=[];
-let captchaAnswer=0;
+/* ===== 模块化，避免 script 不执行问题 ===== */
+window.SubmitPage = (() => {
 
-/* ===== DOM 完全就绪后执行 ===== */
-document.addEventListener('DOMContentLoaded',()=>{
-  loadCategories();
-  generateCaptcha();
-});
+  const API = '/api/data';
+  const SAVE_API = '/api/submit';
+  let categories = [];
+  let captchaAnswer = 0;
 
-/* ===== 从 Cloudflare KV 读取分类（与 index.html 一致） ===== */
-function loadCategories(){
-  fetch(API).then(r=>r.text()).then(t=>{
-    const xml=new DOMParser().parseFromString(t,'text/xml');
-    categories=[...xml.querySelectorAll('category')].map(c=>({
-      name:c.getAttribute('name'),
-      subs:[...c.querySelectorAll('subcategory')].map(s=>({
-        name:s.getAttribute('name')
-      }))
-    }));
+  /* ===== 初始化（立刻执行） ===== */
+  init();
 
-    const cat1=document.getElementById('cat1');
-    categories.forEach((c,i)=>{
-      const o=document.createElement('option');
-      o.value=i;
-      o.textContent=c.name;
-      cat1.appendChild(o);
-    });
-  });
-}
-
-/* ===== 一级 → 二级联动 ===== */
-document.getElementById('cat1').onchange=e=>{
-  const cat2=document.getElementById('cat2');
-  cat2.innerHTML='';
-  if(e.target.value===''){
-    cat2.disabled=true;
-    cat2.innerHTML='<option>请先选择一级分类</option>';
-    return;
-  }
-  cat2.disabled=false;
-  cat2.innerHTML='<option value="">请选择二级分类</option>';
-  categories[e.target.value].subs.forEach(s=>{
-    const o=document.createElement('option');
-    o.value=s.name;
-    o.textContent=s.name;
-    cat2.appendChild(o);
-  });
-};
-
-/* ===== 验证码（保证显示） ===== */
-function generateCaptcha(){
-  const a=Math.floor(Math.random()*10+1);
-  const b=Math.floor(Math.random()*10+1);
-  captchaAnswer=a+b;
-  document.getElementById('captcha-q').textContent=`验证：${a} + ${b} = ?`;
-}
-
-/* ===== 提交 ===== */
-function submitSite(){
-  const msg=document.getElementById('msg');
-  msg.innerHTML='';
-
-  const c1=document.getElementById('cat1').value;
-  const c2=document.getElementById('cat2').value;
-  const name=document.getElementById('name').value.trim();
-  const url=document.getElementById('url').value.trim();
-  const cap=document.getElementById('captcha-a').value.trim();
-
-  if(!c1||!c2||!name||!url){
-    msg.innerHTML='<div class="error">请填写完整信息</div>';
-    return;
-  }
-  if(!/^https?:\/\//.test(url)){
-    msg.innerHTML='<div class="error">网址格式错误</div>';
-    return;
-  }
-  if(Number(cap)!==captchaAnswer){
-    msg.innerHTML='<div class="error">验证码错误</div>';
+  function init(){
+    loadCategories();
     generateCaptcha();
-    return;
   }
 
-  /* 提交接口预留（Worker / KV / DB） */
-  console.log({
-    category:categories[c1].name,
-    subcategory:c2,
-    name,url
-  });
+  /* ===== 分类来自 Cloudflare KV / NAV_DATA ===== */
+  function loadCategories(){
+    fetch(API).then(r=>r.text()).then(t=>{
+      const xml=new DOMParser().parseFromString(t,'text/xml');
+      categories=[...xml.querySelectorAll('category')].map(c=>({
+        name:c.getAttribute('name'),
+        subs:[...c.querySelectorAll('subcategory')].map(s=>s.getAttribute('name'))
+      }));
 
-  msg.innerHTML='<div class="success">提交成功，等待审核</div>';
-  generateCaptcha();
-}
+      const cat1=document.getElementById('cat1');
+      categories.forEach((c,i)=>{
+        const o=document.createElement('option');
+        o.value=i;
+        o.textContent=c.name;
+        cat1.appendChild(o);
+      });
+    });
+  }
+
+  document.getElementById('cat1').onchange=e=>{
+    const cat2=document.getElementById('cat2');
+    cat2.innerHTML='';
+    if(e.target.value===''){
+      cat2.disabled=true;
+      cat2.innerHTML='<option>请先选择一级分类</option>';
+      return;
+    }
+    cat2.disabled=false;
+    cat2.innerHTML='<option value="">请选择二级分类</option>';
+    categories[e.target.value].subs.forEach(s=>{
+      const o=document.createElement('option');
+      o.value=s;o.textContent=s;cat2.appendChild(o);
+    });
+  };
+
+  /* ===== 验证题 ===== */
+  function generateCaptcha(){
+    const a=Math.floor(Math.random()*10+1);
+    const b=Math.floor(Math.random()*10+1);
+    captchaAnswer=a+b;
+    document.getElementById('captcha-q').textContent=`验证：${a} + ${b} = ?`;
+  }
+
+  /* ===== 提交到 KV/NAV_DATA.pending_sites ===== */
+  async function submit(){
+    const msg=document.getElementById('msg');
+    msg.innerHTML='';
+
+    const c1=document.getElementById('cat1').value;
+    const c2=document.getElementById('cat2').value;
+    const name=document.getElementById('name').value.trim();
+    const url=document.getElementById('url').value.trim();
+    const desc=document.getElementById('desc').value.trim();
+    const cap=document.getElementById('captcha-a').value.trim();
+
+    if(!c1||!c2||!name||!url){
+      msg.innerHTML='<div class="error">请填写完整信息</div>';return;
+    }
+    if(!/^https?:\/\//.test(url)){
+      msg.innerHTML='<div class="error">网址格式错误</div>';return;
+    }
+    if(Number(cap)!==captchaAnswer){
+      msg.innerHTML='<div class="error">验证错误</div>';
+      generateCaptcha();return;
+    }
+
+    const payload={
+      cat1:categories[c1].name,
+      cat2:c2,
+      name,url,desc,
+      id:Date.now(),
+      time:new Date().toISOString()
+    };
+
+    const res=await fetch(SAVE_API,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+
+    if(res.ok){
+      msg.innerHTML='<div class="success">提交成功，等待审核</div>';
+      generateCaptcha();
+    }else{
+      msg.innerHTML='<div class="error">提交失败</div>';
+    }
+  }
+
+  return { submit };
+
+})();
 </script>
-
-</body>
-</html>
