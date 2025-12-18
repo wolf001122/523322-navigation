@@ -1,111 +1,99 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>隐私政策 - 523322.xyz</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background: #f4f6f8;
-      color: #333;
-      line-height: 1.6;
-    }
-    .container {
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 0 16px;
-    }
-    h1 {
-      text-align: center;
-      font-size: 28px;
-      margin-bottom: 10px;
-      color: #1f2937;
-    }
-    .update-date {
-      text-align: center;
-      font-size: 14px;
-      color: #6b7280;
-      margin-bottom: 30px;
-    }
-    .card {
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      padding: 20px 24px;
-      margin-bottom: 24px;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-    }
-    h2 {
-      font-size: 20px;
-      margin-top: 0;
-      margin-bottom: 12px;
-      color: #111827;
-    }
-    p, li {
-      font-size: 15px;
-      color: #374151;
-      margin-bottom: 10px;
-    }
-    ol {
-      padding-left: 20px;
-      margin-bottom: 10px;
-    }
-    a {
-      color: #2563eb;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    @media (max-width: 600px) {
-      .container { padding: 0 12px; }
-      .card { padding: 16px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>隐私政策与免责声明</title>
+<style>
+  body {
+    margin: 0;
+    padding: 24px;
+    font-family: 'Roboto', Arial, sans-serif;
+    background: #f4f6f8;
+    color: #3c4043;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    margin-bottom: 24px;
+    padding: 24px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  }
+  .card h2 {
+    margin: 0;
+    font-size: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .card-content {
+    margin-top: 12px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  .card.open .card-content {
+    max-height: 1000px; /* 足够大以显示内容 */
+  }
+  .card-content p, .card-content li {
+    line-height: 1.6;
+    margin: 8px 0;
+  }
+  ul {
+    padding-left: 20px;
+  }
+  .footer-note {
+    margin-top: 12px;
+    font-size: 12px;
+    color: #666;
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>隐私政策</h1>
-    <div class="update-date">最后更新日期：2025年12月12日</div>
+<h1>隐私政策与免责声明</h1>
 
-    <div class="card">
-      <h2>1. 收集的信息</h2>
-      <p>本站为纯静态导航网站，不收集任何个人身份信息（如姓名、邮箱、手机号等）。</p>
-      <p>当您使用“网站提交”功能时，我们仅收集您自愿提供的网站名称、URL和简介，用于审核后添加到导航列表。</p>
-    </div>
-
-    <div class="card">
-      <h2>2. Cookie 与日志</h2>
-      <p>本站使用 Google AdSense 投放广告，可能通过 Cookie 记录匿名访问数据（如浏览页面、点击广告）以优化广告展示。这些数据由 Google 管理，详见其隐私政策。</p>
-      <p>服务器日志可能记录 IP 地址、浏览器类型等，用于站点统计和安全防护，不用于个人追踪。</p>
-    </div>
-
-    <div class="card">
-      <h2>3. 第三方服务</h2>
-      <p>本站使用 Google AdSense 和 Google Favicon 服务。这些第三方可能收集匿名数据，具体政策请参阅其官网。</p>
-    </div>
-
-    <div class="card">
-      <h2>4. 数据安全</h2>
-      <p>我们采取合理措施保护提交数据，但互联网传输不存在绝对安全。</p>
-    </div>
-
-    <div class="card">
-      <h2>5. 政策变更</h2>
-      <p>如有重大变更，我们将在本站更新隐私政策。</p>
-    </div>
-
-    <div class="card">
-      <h2>6. 联系我们</h2>
-      <p>如对隐私有疑问，请通过本站“<a href="/about.html">关于导航</a>”页面联系管理员。</p>
-      <p>感谢您使用本站！</p>
-    </div>
+<div class="card" onclick="toggleCard(this)">
+  <h2>隐私政策</h2>
+  <div class="card-content">
+    <p><strong>最后更新日期：</strong>2025年12月12日</p>
+    <p>本站（www.523322.xyz）非常重视用户隐私保护。以下是我们隐私政策的说明：</p>
+    <ul>
+      <li><strong>收集的信息：</strong>本站为纯静态导航网站，不收集任何个人身份信息（如姓名、邮箱、手机号等）。使用“网站提交”功能时，仅收集用户自愿提供的网站名称、URL和简介，用于审核后添加到导航列表。</li>
+      <li><strong>Cookie 和日志：</strong>本站使用 Google AdSense 投放广告，可能通过 Cookie 记录匿名访问数据（如浏览页面、点击广告）以优化广告展示，由 Google 管理。服务器日志可能记录 IP、浏览器类型等，用于统计和安全防护，不用于个人追踪。</li>
+      <li><strong>第三方服务：</strong>本站使用 Google AdSense 和 Google Favicon 服务，第三方可能收集匿名数据，详情请参阅其官网。</li>
+      <li><strong>数据安全：</strong>采取合理措施保护提交数据，但互联网传输不存在绝对安全。</li>
+      <li><strong>政策变更：</strong>如有重大变更，我们将在本站更新隐私政策。</li>
+      <li><strong>联系我们：</strong>如对隐私有疑问，请通过本站“关于导航”页面联系管理员。感谢您使用本站！</li>
+    </ul>
   </div>
+</div>
+
+<div class="card" onclick="toggleCard(this)">
+  <h2>免责声明</h2>
+  <div class="card-content">
+    <ul>
+      <li>本站提供的网站链接仅供用户参考与导航使用，不保证其内容的准确性、完整性或及时性。</li>
+      <li>对因访问或使用任何第三方网站内容而产生的任何损失或责任，本站不承担责任。</li>
+      <li>用户在使用本站提供的导航信息时，应遵守相关法律法规，本站不对任何违法行为承担责任。</li>
+      <li>本站保留随时修改或更新免责声明条款的权利。</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+function toggleCard(card) {
+  card.classList.toggle('open');
+}
+</script>
 </body>
 </html>
