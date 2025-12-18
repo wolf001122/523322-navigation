@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>导航</title>
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="google-adsense-account" content="ca-pub-9474229114991789">
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
 <script async
   src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9474229114991789"
@@ -31,13 +30,12 @@ body{
 .cat:hover{background:#f1f3f4;}
 .cat.active{background:#1a73e8;color:#fff;font-weight:500;}
 #side-bottom{border-top:1px solid #dadce0;padding:16px 24px;font-size:14px;color:#5f6368;flex-shrink:0;overflow-y:auto;}
-#side-bottom div{margin-bottom:12px;cursor:pointer;}
+#side-bottom div{margin-bottom:12px;cursor:pointer;transition:color 0.2s;}
 #side-bottom div:hover{color:#1a73e8;}
 /* 主区域 */
-#main{flex:1;display:flex;flex-direction:column;background:#f8f9fa;}
+#main{flex:1;overflow:hidden;display:flex;flex-direction:column;background:#f8f9fa;}
 #ad-top{background:#fff;border-bottom:1px solid #dadce0;padding:12px;text-align:center;box-shadow:0 1px 2px 0 rgba(60,64,67,0.3);flex-shrink:0;}
-/* 搜索页 */
-#search-page{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:40px;overflow:auto;}
+#search-page{height:calc(100% - 60px);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:40px;}
 #search-box{display:flex;width:100%;max-width:680px;}
 #search-box input{flex:1;padding:16px 20px;font-size:18px;border:1px solid #dadce0;border-radius:28px 0 0 28px;outline:none;box-shadow:0 1px 6px rgba(32,33,36,0.28);transition:box-shadow 0.2s;}
 #search-box input:focus{box-shadow:0 1px 6px rgba(32,33,36,0.38);}
@@ -47,8 +45,7 @@ body{
 #engines button:hover{background:#f1f3f4;box-shadow:0 1px 3px rgba(0,0,0,0.15);}
 #engines button.active{background:#e8f0fe;color:#1a73e8;}
 /* 内容页 */
-#content{flex:1;display:flex;flex-direction:column;}
-#external-frame{flex:1;width:100%;border:none;display:none;}
+#content{flex:1;display:none;overflow:hidden;}
 /* 广告位 */
 .ad-box{margin:32px 0;padding:16px;background:#fff;border:1px solid #dadce0;border-radius:8px;text-align:center;box-shadow:0 1px 2px 0 rgba(60,64,67,0.3);}
 /* 分类卡片 */
@@ -61,6 +58,7 @@ body{
 .text{margin-left:16px;overflow:hidden;}
 .name{font-size:15px;font-weight:500;color:#202124;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .desc{font-size:13px;color:#5f6368;white-space:normal;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-top:4px;}
+iframe#external-frame{flex:1;width:100%;border:none;display:block;}
 </style>
 </head>
 <body>
@@ -93,9 +91,7 @@ body{
         <button onclick="setEngine(this,'https://www.bing.com/search?q=')">Bing</button>
       </div>
     </div>
-    <div id="content">
-      <iframe id="external-frame" loading="lazy"></iframe>
-    </div>
+    <div id="content"></div>
   </div>
 </div>
 <script>
@@ -105,11 +101,17 @@ let data;
 const DEF_ICON='/icons/gray.png';
 const logo = document.getElementById('logo');
 
-function getDomain(url){
-  try{ const hostname = new URL(url).hostname; return hostname.startsWith('www.') ? hostname.slice(4) : hostname; }
-  catch(e){ return 'example.com'; }
+// 提取域名函数
+function getDomain(url) {
+  try {
+    const hostname = new URL(url).hostname;
+    return hostname.startsWith('www.') ? hostname.slice(4) : hostname;
+  } catch (e) {
+    return 'example.com';
+  }
 }
 
+/* ================= 分类数据 ================= */
 fetch(API).then(r=>r.text()).then(t=>{
   const xml=new DOMParser().parseFromString(t,'text/xml');
   data=[...xml.querySelectorAll('category')].map(c=>({
@@ -128,27 +130,38 @@ fetch(API).then(r=>r.text()).then(t=>{
   backToSearch();
 });
 
+/* ================= 渲染分类 + 高亮 ================= */
 function renderCats(){
   const box=document.getElementById('cats'); box.innerHTML='';
   data.forEach((c, idx)=>{
     const d=document.createElement('div');
-    d.className='cat'; d.textContent=c.name;
-    d.onclick=()=>{document.querySelectorAll('.cat').forEach(cat=>cat.classList.remove('active')); d.classList.add('active'); showCategory(c);}
+    d.className='cat';
+    d.textContent=c.name;
+    d.onclick=() => {
+      document.querySelectorAll('.cat').forEach(cat => cat.classList.remove('active'));
+      d.classList.add('active');
+      showCategory(c);
+    };
     box.appendChild(d);
   });
 }
 
+/* ================= 搜索 ================= */
 function go(){
   const q=document.getElementById('q').value.trim();
   if(q) window.open(engine+encodeURIComponent(q),'_blank');
 }
 function setEngine(btn,url){
-  engine=url; document.querySelectorAll('#engines button').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+  engine=url;
+  document.querySelectorAll('#engines button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
 }
 
+/* ================= 分类页显示 ================= */
 function showCategory(c){
   document.getElementById('search-page').style.display='none';
-  const cont=document.getElementById('content'); cont.style.display='flex';
+  const cont=document.getElementById('content'); 
+  cont.innerHTML=''; cont.style.display='block';
   cont.innerHTML=`<div class="category-title">${c.name}</div>
     <div class="ad-box">
       <ins class="adsbygoogle" style="display:block"
@@ -164,30 +177,42 @@ function showCategory(c){
     s.links.forEach(l=>{
       const a=document.createElement('a'); a.className='card'; a.href=l.url; a.target='_blank';
       const img=document.createElement('img');
-      if(l.icon&&l.icon.trim()){img.src=l.icon.trim();}
-      else{img.src=`https://www.google.com/s2/favicons?sz=64&domain=${getDomain(l.url)}`;}
-      img.onerror=()=>{img.onerror=null; img.src=DEF_ICON;};
+      if (l.icon && l.icon.trim()) img.src = l.icon.trim();
+      else img.src = `https://www.google.com/s2/favicons?sz=64&domain=${getDomain(l.url)}`;
+      img.onerror = () => { img.onerror=null; img.src=DEF_ICON; };
       const t=document.createElement('div'); t.className='text';
       t.innerHTML=`<div class="name">${l.name}</div><div class="desc">${l.desc||''}</div>`;
       a.appendChild(img); a.appendChild(t); box.appendChild(a);
     });
+    if(i===0){
+      cont.innerHTML+=`<div class="ad-box">
+        <ins class="adsbygoogle" style="display:block"
+          data-ad-client="ca-pub-9474229114991789"
+          data-ad-slot="1122334455"
+          data-ad-format="auto"></ins></div>`;
+      (adsbygoogle=window.adsbygoogle||[]).push({});
+    }
   });
   logo.classList.add('return-mode');
 }
 
+/* ================= 返回搜索首页 ================= */
 function backToSearch(){
   document.getElementById('content').style.display='none';
   document.getElementById('search-page').style.display='flex';
-  const frame=document.getElementById('external-frame'); frame.src=''; frame.style.display='none';
   logo.classList.remove('return-mode');
-  document.querySelectorAll('.cat').forEach(cat=>cat.classList.remove('active'));
+  document.querySelectorAll('.cat').forEach(cat => cat.classList.remove('active'));
 }
 
+/* ================= 外部页面加载 ================= */
 function loadExternal(url){
   document.getElementById('search-page').style.display='none';
-  const content=document.getElementById('content'); content.style.display='flex';
+  const content=document.getElementById('content');
+  content.innerHTML='<iframe id="external-frame" style="flex:1;width:100%;border:none;"></iframe>';
+  content.style.display='flex';
   const frame=document.getElementById('external-frame');
-  frame.src=url; frame.style.display='block';
+  frame.src=url;
+  frame.onload = ()=>frame.style.display='block';
   logo.classList.add('return-mode');
   document.querySelectorAll('.cat').forEach(cat=>cat.classList.remove('active'));
 }
