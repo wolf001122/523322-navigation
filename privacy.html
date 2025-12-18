@@ -38,12 +38,12 @@
   }
   .card-content {
     margin-top: 12px;
-    max-height: 0;
+    max-height: 1000px; /* 默认展开 */
     overflow: hidden;
     transition: max-height 0.3s ease;
   }
-  .card.open .card-content {
-    max-height: 1000px; /* 足够大以显示内容 */
+  .card.collapsed .card-content {
+    max-height: 0;
   }
   .card-content p, .card-content li {
     line-height: 1.6;
@@ -92,7 +92,7 @@
 
 <script>
 function toggleCard(card) {
-  card.classList.toggle('open');
+  card.classList.toggle('collapsed');
 }
 </script>
 </body>
