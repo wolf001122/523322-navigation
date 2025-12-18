@@ -1,4 +1,102 @@
-<h2>友情链接</h2>
-<div class="links">
-  <div class="card"><div class="text"><div class="name">虚位以待</div><div class="desc">欢迎交换友情链接</div></div></div>
-</div>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>友情链接</title>
+<style>
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system;
+    background: #f4f6f8;
+  }
+  header {
+    background: #1f2937;
+    color: #fff;
+    padding: 14px 20px;
+    font-size: 18px;
+  }
+  main {
+    padding: 16px;
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(220px,1fr));
+    gap: 16px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 120px;
+  }
+  .card a {
+    font-weight: 600;
+    font-size: 16px;
+    color: #1f2937;
+    text-decoration: none;
+  }
+  .card small {
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+  .placeholder {
+    text-align: center;
+    color: #9ca3af;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<header>友情链接</header>
+<main>
+  <div class="card-grid" id="linksContainer">
+    <p class="placeholder">加载中...</p>
+  </div>
+</main>
+
+<script>
+async function loadFriendlyLinks() {
+  const container = document.getElementById('linksContainer');
+  container.innerHTML = '<p class="placeholder">加载中...</p>';
+
+  try {
+    const res = await fetch('/api/friendly');
+    let links = [];
+    if (res.ok) {
+      links = await res.json();
+    }
+
+    container.innerHTML = '';
+    if (!links || links.length === 0) {
+      container.innerHTML = '<div class="placeholder">虚位以待<br>欢迎交换友情链接</div>';
+      return;
+    }
+
+    links.forEach(link => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <a href="${link.url}" target="_blank">${link.name}</a>
+        <small>${link.desc || ''}</small>
+      `;
+      container.appendChild(card);
+    });
+
+  } catch (e) {
+    container.innerHTML = '<div class="placeholder">加载失败<br>请稍后再试</div>';
+    console.error(e);
+  }
+}
+
+loadFriendlyLinks();
+</script>
+</body>
+</html>
