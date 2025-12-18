@@ -19,7 +19,7 @@
     button.danger:hover { background:#d33b2f; }
     .link-list { margin-top:20px; }
     .link-item { display:flex; align-items:center; justify-content:space-between; padding:16px; background:#f8f9fa; border-radius:8px; margin-bottom:12px; }
-    .link-item img { width:40px; height:40px; object-fit:contain; border-radius:6px; margin-right:16px; }
+    .link-item div.info { flex:1; }
     .status { margin-top:12px; padding:12px; border-radius:4px; font-size:14px; text-align:center; }
     .status.success { background:#e6f4ea; color:#137333; border:1px solid #34a853; }
     .status.error { background:#fce8e6; color:#c5221f; border:1px solid #ea4335; }
@@ -46,14 +46,6 @@
         <label>网站描述（可选）</label>
         <textarea id="desc" rows="3"></textarea>
       </div>
-      <div class="form-group">
-        <label>图标上传（可选，建议 60x60）</label>
-        <input type="file" id="iconFile" accept="image/*">
-        <button type="button" style="margin-top:8px;" onclick="uploadIcon()">上传图标</button>
-        <div id="iconPreview" style="margin-top:10px;"></div>
-        <p style="font-size:12px;color:#5f6368;margin-top:8px;">或手动输入图标 URL：</p>
-        <input type="url" id="icon" placeholder="https://example.com/logo.png">
-      </div>
       <button type="submit">添加友情链接</button>
     </form>
 
@@ -75,11 +67,10 @@
         } else {
           friendlyLinks = [];
         }
-        renderLinks();
       } catch (e) {
         friendlyLinks = [];
-        renderLinks();
       }
+      renderLinks();
     }
 
     // 渲染列表
@@ -95,14 +86,11 @@
         const div = document.createElement('div');
         div.className = 'link-item';
         div.innerHTML = `
-          <div style="display:flex;align-items:center;">
-            ${link.icon ? `<img src="${link.icon}" alt="${link.name}">` : '<div style="width:40px;height:40px;background:#ddd;border-radius:6px;margin-right:16px;"></div>'}
-            <div>
-              <strong><a href="${link.url}" target="_blank">${link.name}</a></strong><br>
-              <span style="color:#666;font-size:14px;">${link.desc || '无描述'}</span>
-            </div>
+          <div class="info">
+            <strong><a href="${link.url}" target="_blank">${link.name}</a></strong><br>
+            <span style="color:#666;font-size:14px;">${link.desc || ''}</span>
           </div>
-          <div>
+          <div style="display:flex; gap:8px;">
             <button onclick="editLink(${idx})">编辑</button>
             <button class="danger" onclick="deleteLink(${idx})">删除</button>
           </div>
@@ -117,14 +105,12 @@
       const name = document.getElementById('name').value.trim();
       const url = document.getElementById('url').value.trim();
       const desc = document.getElementById('desc').value.trim();
-      const icon = document.getElementById('icon').value.trim();
 
       if (!name || !url) return alert('名称和地址必填');
 
-      friendlyLinks.push({ name, url, desc, icon });
+      friendlyLinks.push({ name, url, desc });
       renderLinks();
       document.getElementById('addForm').reset();
-      document.getElementById('iconPreview').innerHTML = '';
     };
 
     // 编辑链接
@@ -132,11 +118,10 @@
       const link = friendlyLinks[idx];
       const newName = prompt('网站名称', link.name);
       const newUrl = prompt('网站地址', link.url);
-      const newDesc = prompt('描述', link.desc);
-      const newIcon = prompt('图标 URL', link.icon);
+      const newDesc = prompt('网站描述', link.desc);
 
       if (newName && newUrl) {
-        friendlyLinks[idx] = { name: newName, url: newUrl, desc: newDesc || '', icon: newIcon || '' };
+        friendlyLinks[idx] = { name: newName, url: newUrl, desc: newDesc || '' };
         renderLinks();
       }
     }
@@ -146,27 +131,6 @@
       if (confirm('确认删除此友情链接？')) {
         friendlyLinks.splice(idx, 1);
         renderLinks();
-      }
-    }
-
-    // 上传图标
-    async function uploadIcon() {
-      const fileInput = document.getElementById('iconFile');
-      const file = fileInput.files[0];
-      if (!file) return alert('请先选择图片');
-
-      const formData = new FormData();
-      formData.append('file', file);
-
-      try {
-        const res = await fetch('/api/upload', { method: 'POST', body: formData });
-        if (!res.ok) throw new Error('上传失败');
-        const url = (await res.text()).trim();
-
-        document.getElementById('icon').value = url;
-        document.getElementById('iconPreview').innerHTML = `<img src="${url}" style="width:80px;height:80px;object-fit:contain;border-radius:8px;border:1px solid #ddd;">`;
-      } catch (e) {
-        alert('上传失败：' + e.message);
       }
     }
 
