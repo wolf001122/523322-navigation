@@ -3,7 +3,6 @@ export async function onRequest(context) {
   const url = new URL(request.url);
 
   // ================= 后台页面强制登录（稳定版） =================
-  // 仅拦截明确的后台 HTML 页面
   if (
     url.pathname.startsWith('/admin/') &&
     url.pathname.endsWith('.html') &&
@@ -175,6 +174,30 @@ export async function onRequest(context) {
 
       await env.NAV_DATA.put('user_feedback', JSON.stringify(list));
 
+      return new Response('OK', { status: 200 });
+    } catch (e) {
+      return new Response('保存失败: ' + e.message, { status: 500 });
+    }
+  }
+
+  // ================= 友情链接读取
+  if (url.pathname === '/api/friendly' && request.method === 'GET') {
+    try {
+      let list = await env.NAV_DATA.get('friendly_links');
+      list = list ? JSON.parse(list) : [];
+      return new Response(JSON.stringify(list), {
+        headers: { 'Content-Type': 'application/json;charset=utf-8' }
+      });
+    } catch (e) {
+      return new Response('[]', { headers: { 'Content-Type': 'application/json;charset=utf-8' } });
+    }
+  }
+
+  // ================= 友情链接保存
+  if (url.pathname === '/api/friendly' && request.method === 'POST') {
+    try {
+      const links = await request.json();
+      await env.NAV_DATA.put('friendly_links', JSON.stringify(links));
       return new Response('OK', { status: 200 });
     } catch (e) {
       return new Response('保存失败: ' + e.message, { status: 500 });
