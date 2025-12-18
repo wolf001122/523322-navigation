@@ -9,17 +9,16 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     background: #f8f9fa;
     color: #202124;
-    padding: 40px 20px;
-    min-height: calc(100vh - 80px);
+    padding: 24px;
   }
-  h1 {
+  .category-title {
     font-size: 28px;
     font-weight: 500;
-    text-align: center;
-    margin-bottom: 32px;
     color: #202124;
+    margin-bottom: 32px;
+    text-align: center;
   }
-  .container {
+  .submit-container {
     max-width: 600px;
     margin: 0 auto;
     background: #fff;
@@ -30,15 +29,15 @@
   form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 20px;
   }
   label {
     font-size: 14px;
     color: #5f6368;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
   }
-  select,
-  input {
+  select, input[type="text"], input[type="url"] {
+    width: 100%;
     padding: 12px 16px;
     font-size: 16px;
     border: 1px solid #dadce0;
@@ -47,30 +46,32 @@
     background: #fff;
     transition: box-shadow 0.2s, border-color 0.2s;
   }
-  select:focus,
-  input:focus {
+  select:focus, input:focus {
     border-color: #1a73e8;
     box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+  }
+  .required::after {
+    content: " *";
+    color: #d93025;
   }
   #captcha {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
     margin-top: 8px;
   }
-  #captcha label {
-    margin: 0;
+  #captchaQuestion {
     font-size: 16px;
     color: #202124;
     white-space: nowrap;
   }
-  #captcha input {
+  #captchaAnswer {
     width: 120px;
     flex-shrink: 0;
   }
   button {
-    margin-top: 24px;
-    padding: 12px 24px;
+    margin-top: 12px;
+    padding: 14px;
     background: #1a73e8;
     color: #fff;
     font-size: 16px;
@@ -78,64 +79,65 @@
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: box-shadow 0.2s, transform 0.1s;
+    transition: all 0.2s;
   }
   button:hover {
     box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  }
-  button:active {
-    transform: translateY(1px);
+    background: #1669c1;
   }
   .note {
     font-size: 13px;
     color: #5f6368;
     text-align: center;
     margin-top: 24px;
+    line-height: 1.5;
   }
 </style>
 </head>
 <body>
-  <h1>提交您的网站</h1>
-  <div class="container">
-    <form id="submitForm">
-      <div>
-        <label for="cat1">一级分类</label>
-        <select id="cat1" required></select>
+
+<div class="category-title">提交您的网站</div>
+
+<div class="submit-container">
+  <form id="submitForm">
+    <div>
+      <label for="cat1" class="required">一级分类</label>
+      <select id="cat1" required></select>
+    </div>
+
+    <div>
+      <label for="cat2" class="required">二级分类</label>
+      <select id="cat2" required></select>
+    </div>
+
+    <div>
+      <label for="name" class="required">网站名称</label>
+      <input id="name" type="text" required maxlength="50" placeholder="请输入网站名称">
+    </div>
+
+    <div>
+      <label for="url" class="required">网站网址</label>
+      <input id="url" type="url" required placeholder="https://www.example.com">
+    </div>
+
+    <div>
+      <label for="desc">网站描述（可选）</label>
+      <input id="desc" type="text" maxlength="100" placeholder="简短描述您的网站，帮助更多人了解">
+    </div>
+
+    <div>
+      <label class="required">验证码</label>
+      <div id="captcha">
+        <div id="captchaQuestion"></div>
+        <input id="captchaAnswer" type="text" required placeholder="答案">
       </div>
+    </div>
 
-      <div>
-        <label for="cat2">二级分类</label>
-        <select id="cat2" required></select>
-      </div>
+    <button type="submit">提交网站</button>
+  </form>
 
-      <div>
-        <label for="name">网站名称 <span style="color:#d93025;">*</span></label>
-        <input id="name" type="text" required maxlength="50" placeholder="请输入网站名称">
-      </div>
-
-      <div>
-        <label for="url">网站网址 <span style="color:#d93025;">*</span></label>
-        <input id="url" type="url" required placeholder="https://www.example.com">
-      </div>
-
-      <div>
-        <label for="desc">网站描述（可选）</label>
-        <input id="desc" type="text" maxlength="100" placeholder="简短描述您的网站">
-      </div>
-
-      <div>
-        <label>验证码 <span style="color:#d93025;">*</span></label>
-        <div id="captcha">
-          <label id="captchaQuestion"></label>
-          <input id="captchaAnswer" type="text" required placeholder="答案">
-        </div>
-      </div>
-
-      <button type="submit">提交网站</button>
-    </form>
-
-    <p class="note">提交后将由管理员审核，感谢您的贡献！</p>
-  </div>
+  <p class="note">提交后将由管理员审核，一般24小时内完成。<br>感谢您为导航网站贡献优质资源！</p>
+</div>
 
 <script>
 let xmlDoc;
@@ -164,7 +166,7 @@ fetch('/api/data')
     buildCat1();
     generateCaptcha();
   })
-  .catch(e => alert('加载分类失败，请稍后再试'));
+  .catch(e => alert('加载分类失败，请刷新页面重试'));
 
 function buildCat1() {
   const cat1 = document.getElementById('cat1');
@@ -195,10 +197,9 @@ function isDomainExists(submitUrl) {
   const allLinks = xmlDoc.querySelectorAll('link');
   for (let link of allLinks) {
     const existingUrl = link.getAttribute('url');
+    if (!existingUrl) continue;
     const existingDomain = getDomain(existingUrl);
-    if (existingDomain === submitDomain) {
-      return true;
-    }
+    if (existingDomain === submitDomain) return true;
   }
   return false;
 }
@@ -206,13 +207,16 @@ function isDomainExists(submitUrl) {
 document.getElementById('submitForm').onsubmit = async function(e) {
   e.preventDefault();
 
+  // 验证码校验
   const userAnswer = parseInt(document.getElementById('captchaAnswer').value, 10);
-  if (userAnswer !== captchaAnswer) {
+  if (isNaN(userAnswer) || userAnswer !== captchaAnswer) {
     alert('验证码错误，请重新输入！');
     generateCaptcha();
+    document.getElementById('captchaAnswer').value = '';
     return;
   }
 
+  // 收集数据
   const urlInput = document.getElementById('url').value.trim();
   const data = {
     cat1: document.getElementById('cat1').value,
@@ -227,11 +231,13 @@ document.getElementById('submitForm').onsubmit = async function(e) {
     return;
   }
 
+  // 域名查重
   if (isDomainExists(urlInput)) {
     alert('该网站已收录，请勿重复提交！');
     return;
   }
 
+  // 提交
   try {
     const res = await fetch('/api/submit', {
       method: 'POST',
@@ -242,13 +248,13 @@ document.getElementById('submitForm').onsubmit = async function(e) {
     if (res.ok) {
       alert('提交成功！等待管理员审核');
       this.reset();
-      buildCat1();
-      generateCaptcha();
+      buildCat1();       // 重置下拉选项
+      generateCaptcha(); // 新验证码
     } else {
-      alert(await res.text());
+      alert('提交失败：' + await res.text());
     }
   } catch (e) {
-    alert('提交失败，请稍后再试');
+    alert('网络错误，请稍后再试');
   }
 };
 </script>
