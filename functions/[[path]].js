@@ -2,38 +2,23 @@ export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
 
-  // ================= 后台页面强制登录检查（修复版） =================
-  // 只对 /admin/ 下的 .html 页面（除 login.html 外）进行检查
-  // 同时兼容 Clean URLs（访问 /admin/categories 时实际加载 categories.html）
-  //if (url.pathname.startsWith('/admin/') && url.pathname !== '/admin/login.html') {
-    // 判断是否为后台页面（包含 .html 或无扩展名但在 /admin/ 下）
-    //const isAdminPage = url.pathname.endsWith('.html') || !url.pathname.includes('.');
-    //if (isAdminPage) {
-      //const cookie = request.headers.get('cookie') || '';
-      //if (!cookie.includes('admin_logged_in=true')) {
-        //return Response.redirect(new URL('/admin/login.html', request.url).toString(), 302);
-      //}
-    //}
-  //}
-
-// ================= 后台页面强制登录（稳定版） =================
-// 仅拦截明确的后台 HTML 页面
-if (
-  url.pathname.startsWith('/admin/') &&
-  url.pathname.endsWith('.html') &&
-  url.pathname !== '/admin/login.html'
-) {
-  const cookie = request.headers.get('cookie') || '';
-  if (!cookie.includes('admin_logged_in=true')) {
-    return Response.redirect(
-      new URL('/admin/login.html', request.url),
-      302
-    );
+  // ================= 后台页面强制登录（稳定版） =================
+  // 仅拦截明确的后台 HTML 页面
+  if (
+    url.pathname.startsWith('/admin/') &&
+    url.pathname.endsWith('.html') &&
+    url.pathname !== '/admin/login.html'
+  ) {
+    const cookie = request.headers.get('cookie') || '';
+    if (!cookie.includes('admin_logged_in=true')) {
+      return Response.redirect(
+        new URL('/admin/login.html', request.url),
+        302
+      );
+    }
   }
-}
 
-  
-  // GET /api/data - 读取 XML 数据（原有功能）
+  // ================= GET /api/data - 读取 XML 数据 =================
   if (url.pathname === '/api/data' && request.method === 'GET') {
     let xml = await env.NAV_DATA.get('nav_data');
     if (!xml) {
@@ -48,7 +33,7 @@ if (
     });
   }
 
-  // POST /api/save - 保存 XML 数据（原有功能）
+  // ================= POST /api/save - 保存 XML 数据 =================
   if (url.pathname === '/api/save' && request.method === 'POST') {
     try {
       const body = await request.text();
@@ -113,31 +98,25 @@ if (
         let xml = await env.NAV_DATA.get('nav_data');
         if (!xml) return new Response('正式数据异常', { status: 500 });
 
-        // 纯字符串操作添加链接（避免使用 DOMParser）
         const catName = site.cat1;
         const subName = site.cat2;
         const linkStr = `  <link name="${site.name}" url="${site.url}"${site.desc ? ` desc="${site.desc}"` : ''} />`;
 
-        // 查找或创建 category
         const catRegex = new RegExp(`<category name="${catName}"[^>]*>(.*?)</category>`, 's');
         const catMatch = xml.match(catRegex);
         if (catMatch) {
-          // 分类存在，查找或创建 subcategory
           const catContent = catMatch[1];
           const subRegex = new RegExp(`<subcategory name="${subName}"[^>]*>(.*?)</subcategory>`, 's');
           const subMatch = catContent.match(subRegex);
           if (subMatch) {
-            // 子分类存在，直接添加 link
             const newCatContent = catContent.replace(subRegex, `<subcategory name="${subName}"${subMatch[0].includes('/>') ? '>' : ''}${subMatch[1]}${linkStr}</subcategory>`);
             xml = xml.replace(catRegex, `<category name="${catName}"${catMatch[0].includes('/>') ? '>' : ''}${newCatContent}</category>`);
           } else {
-            // 子分类不存在，创建
             const newSub = `<subcategory name="${subName}">${linkStr}\n    </subcategory>`;
             const newCatContent = catContent.trim() ? catContent.trim() + '\n    ' + newSub : newSub;
             xml = xml.replace(catRegex, `<category name="${catName}"${catMatch[0].includes('/>') ? '>' : ''}${newCatContent}\n  </category>`);
           }
         } else {
-          // 分类不存在，创建
           const newCat = `<category name="${catName}">
     <subcategory name="${subName}">${linkStr}
     </subcategory>
@@ -148,7 +127,6 @@ if (
         await env.NAV_DATA.put('nav_data', xml);
       }
 
-      // 从待审核移除
       list.splice(index, 1);
       await env.NAV_DATA.put('pending_sites', JSON.stringify(list));
 
@@ -184,6 +162,25 @@ if (
     }
   }
 
-  // 其他请求放行
+  // ================= 用户反馈保存到 KV =================
+  if (url.pathname === '/api/kv/NAV_DATA/user_feedback' && request.method === 'POST') {
+    try {
+      const feedback = await request.json(); // { message, contact, time }
+      if (!feedback.message) return new Response('内容为空', { status: 400 });
+
+      let list = await env.NAV_DATA.get('user_feedback');
+      list = list ? JSON.parse(list) : [];
+
+      list.push(feedback);
+
+      await env.NAV_DATA.put('user_feedback', JSON.stringify(list));
+
+      return new Response('OK', { status: 200 });
+    } catch (e) {
+      return new Response('保存失败: ' + e.message, { status: 500 });
+    }
+  }
+
+  // ================= 其他请求放行 =================
   return await context.next();
 }
