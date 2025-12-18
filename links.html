@@ -27,23 +27,28 @@
   .card {
     background: #fff;
     border-radius: 8px;
-    padding: 16px;
+    padding: 12px 16px;
     box-shadow: 0 2px 6px rgba(0,0,0,.08);
+    cursor: pointer;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    height: 120px;
+    justify-content: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    min-height: 70px;
   }
-  .card a {
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  }
+  .card .name {
     font-weight: 600;
     font-size: 16px;
     color: #1f2937;
-    text-decoration: none;
+    margin-bottom: 4px;
   }
-  .card small {
+  .card .desc {
     font-size: 13px;
     color: #6b7280;
-    margin-top: 6px;
     line-height: 1.4;
   }
   .placeholder {
@@ -51,6 +56,7 @@
     color: #9ca3af;
     font-size: 16px;
     line-height: 1.6;
+    grid-column: 1 / -1;
   }
 </style>
 </head>
@@ -84,9 +90,11 @@ async function loadFriendlyLinks() {
       const card = document.createElement('div');
       card.className = 'card';
       card.innerHTML = `
-        <a href="${link.url}" target="_blank">${link.name}</a>
-        <small>${link.desc || ''}</small>
+        <div class="name">${link.name}</div>
+        <div class="desc">${link.desc || ''}</div>
       `;
+      // 整个卡片点击跳转
+      card.onclick = () => window.open(link.url, '_blank');
       container.appendChild(card);
     });
 
