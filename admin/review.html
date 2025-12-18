@@ -49,117 +49,160 @@ button {padding: 8px 16px; margin: 5px 5px 5px 0; border: none; border-radius: 4
 <script>
 let currentEditId = null;
 let categories = [];
-let existingRootDomains = new Set();  // 正式 XML 中所有一级域名集合
+let pendingList = [];
+let existingRootDomains = new Set();  
 
-// 简单获取一级域名（eTLD+1）函数
 function getRootDomain(hostname) {
   hostname = hostname.toLowerCase();
-  // 去除 www.
   if (hostname.startsWith('www.')) hostname = hostname.slice(4);
-
-  // 常见公共后缀列表（覆盖主流）
-  const publicSuffixes = ['com', 'net', 'org', 'gov', 'edu', 'co', 'ne', 'or', 'go', 'ac', 'mil', 'info', 'biz', 'name', 'mobi', 'pro', 'museum'];
-  const countrySuffixes = ['cn', 'uk', 'jp', 'de', 'fr', 'au', 'br', 'ru', 'in', 'ca', 'it', 'es', 'nl', 'kr', 'tw', 'hk', 'sg'];
-
+  const publicSuffixes = ['com','net','org','gov','edu','co','ne','or','go','ac','mil','info','biz','name','mobi','pro','museum'];
+  const countrySuffixes = ['cn','uk','jp','de','fr','au','br','ru','in','ca','it','es','nl','kr','tw','hk','sg'];
   const parts = hostname.split('.');
-  if (parts.length <= 2) return hostname;
-
-  const last = parts[parts.length - 1];
-  const secondLast = parts[parts.length - 2];
-
-  // 处理国家二级后缀如 co.uk, com.cn
-  if (countrySuffixes.includes(last) && publicSuffixes.includes(secondLast)) {
-    if (parts.length >= 3) {
-      return parts.slice(-3).join('.');
-    }
-  }
-
-  // 标准情况
+  if(parts.length <= 2) return hostname;
+  const last = parts[parts.length-1];
+  const secondLast = parts[parts.length-2];
+  if(countrySuffixes.includes(last) && publicSuffixes.includes(secondLast)) return parts.slice(-3).join('.');
   return parts.slice(-2).join('.');
 }
 
-// 加载正式数据 + 提取一级域名
+// 加载正式数据
 async function loadFormalData() {
   try {
     const res = await fetch('/api/data');
     const text = await res.text();
     const parser = new DOMParser();
-    const doc = parser.parseFromString(text, 'text/xml');
-
-    // 提取分类
+    const doc = parser.parseFromString(text,'text/xml');
     categories = [...doc.querySelectorAll('category')].map(c => ({
       name: c.getAttribute('name'),
       subs: [...c.querySelectorAll('subcategory')].map(s => s.getAttribute('name'))
     }));
-
-    // 提取所有一级域名
     existingRootDomains = new Set();
     doc.querySelectorAll('link').forEach(link => {
       let url = link.getAttribute('url');
-      if (url) {
-        try {
+      if(url) {
+        try{
           const hostname = new URL(url).hostname;
-          const root = getRootDomain(hostname);
-          existingRootDomains.add(root);
-        } catch {}
+          existingRootDomains.add(getRootDomain(hostname));
+        }catch{}
       }
     });
-  } catch (e) {
-    console.error('加载正式数据失败', e);
+  } catch(e) {
+    console.error(e);
   }
 }
 
-// 加载待审核列表 + 一级域名重复检测
+// 加载待审核列表
 async function loadPending() {
   await loadFormalData();
-
   try {
     const res = await fetch('/api/pending');
-    if (!res.ok) throw new Error('加载失败');
-    const list = await res.json();
-
+    if(!res.ok) throw new Error('加载失败');
+    pendingList = await res.json();
     const div = document.getElementById('list');
-    if (list.length === 0) {
-      div.innerHTML = '<p style="grid-column: 1 / -1; text-align:center;">暂无待审核提交</p>';
+    if(pendingList.length===0){
+      div.innerHTML='<p style="grid-column:1/-1;text-align:center;">暂无待审核提交</p>';
       return;
     }
-    div.innerHTML = '';
-    list.forEach(site => {
-      let pendingRoot = '';
-      try {
-        const hostname = new URL(site.url).hostname;
-        pendingRoot = getRootDomain(hostname);
-      } catch {}
-
+    div.innerHTML='';
+    pendingList.forEach(site=>{
+      let pendingRoot='';
+      try{ pendingRoot = getRootDomain(new URL(site.url).hostname); }catch{}
       const isDuplicate = pendingRoot && existingRootDomains.has(pendingRoot);
-
       const item = document.createElement('div');
-      item.className = `item ${isDuplicate ? 'duplicate' : ''}`;
-
-      item.innerHTML = `
-        ${isDuplicate ? '<div class="duplicate-notice">⚠️ 一级域名已存在（重复提交）</div>' : ''}
+      item.className=`item ${isDuplicate?'duplicate':''}`;
+      item.innerHTML=`
+        ${isDuplicate?'<div class="duplicate-notice">⚠️ 一级域名已存在（重复提交）</div>':''}
         <p><strong>网站名称：</strong>${site.name}</p>
         <p><strong>URL：</strong><a href="${site.url}" target="_blank">${site.url}</a></p>
         <p><strong>分类：</strong>${site.cat1} > ${site.cat2}</p>
         <p><strong>简介：</strong>${site.desc}</p>
         <p><strong>提交时间：</strong>${new Date(site.time).toLocaleString()}</p>
         <div style="margin-top:12px;">
-          <button class="approve" onclick="review(${site.id}, 'approve')">${isDuplicate ? '仍要通过' : '通过并上线'}</button>
+          <button class="approve" onclick="review(${site.id}, '${isDuplicate?'approve':'approve'})">${isDuplicate?'仍要通过':'通过并上线'}</button>
           <button class="edit" onclick="openEdit(${site.id})">修改</button>
           <button class="delete" onclick="review(${site.id}, 'delete')">删除</button>
         </div>
       `;
       div.appendChild(item);
     });
-  } catch (err) {
-    document.getElementById('list').innerHTML = '<p style="color:red; grid-column: 1 / -1; text-align:center;">加载失败：' + err.message + '</p>';
+  } catch(err){
+    document.getElementById('list').innerHTML='<p style="color:red; grid-column:1/-1;text-align:center;">加载失败：'+err.message+'</p>';
   }
 }
 
-// 其余函数（review, openEdit, fillEditCats, closeModal, saveEdit）保持您之前的代码不变
+// 审核操作
+async function review(id, action){
+  if(!confirm('确认执行此操作？')) return;
+  try{
+    const res = await fetch('/api/approve',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,action})});
+    if(!res.ok) throw new Error(await res.text());
+    loadPending();
+  }catch(e){
+    alert('操作失败：'+e.message);
+  }
+}
+
+// 打开修改弹窗
+function openEdit(id){
+  currentEditId = id;
+  const site = pendingList.find(s=>s.id===id);
+  if(!site) return;
+  fillEditCats(site.cat1, site.cat2);
+  document.getElementById('editName').value = site.name;
+  document.getElementById('editUrl').value = site.url;
+  document.getElementById('editDesc').value = site.desc;
+  document.getElementById('editModal').style.display='flex';
+  document.getElementById('editMsg').textContent='';
+}
+
+// 填充分类
+function fillEditCats(cat1Val, cat2Val){
+  const c1 = document.getElementById('editCat1');
+  const c2 = document.getElementById('editCat2');
+  c1.innerHTML=''; c2.innerHTML='';
+  categories.forEach(c=>{
+    const o=document.createElement('option'); o.value=c.name; o.textContent=c.name; c1.appendChild(o);
+  });
+  c1.value = cat1Val || categories[0]?.name || '';
+  const subs = categories.find(c=>c.name===c1.value)?.subs || [];
+  subs.forEach(s=>{
+    const o=document.createElement('option'); o.value=s; o.textContent=s; c2.appendChild(o);
+  });
+  c2.value = cat2Val || subs[0]||'';
+  c1.onchange = ()=>{
+    const subs = categories.find(c=>c.name===c1.value)?.subs||[];
+    c2.innerHTML='';
+    subs.forEach(s=>{
+      const o=document.createElement('option'); o.value=s; o.textContent=s; c2.appendChild(o);
+    });
+  };
+}
+
+// 关闭弹窗
+function closeModal(){ document.getElementById('editModal').style.display='none'; currentEditId=null; }
+
+// 保存修改
+async function saveEdit(){
+  const site = pendingList.find(s=>s.id===currentEditId);
+  if(!site) return;
+  const cat1 = document.getElementById('editCat1').value;
+  const cat2 = document.getElementById('editCat2').value;
+  const name = document.getElementById('editName').value.trim();
+  const url = document.getElementById('editUrl').value.trim();
+  const desc = document.getElementById('editDesc').value.trim();
+  if(!name||!url){ document.getElementById('editMsg').textContent='名称和网址不能为空'; return; }
+  try{
+    const res = await fetch('/api/edit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:currentEditId,cat1,cat2,name,url,desc})});
+    if(!res.ok) throw new Error(await res.text());
+    closeModal();
+    loadPending();
+  }catch(e){
+    document.getElementById('editMsg').textContent='保存失败：'+e.message;
+  }
+}
 
 loadPending();
-setInterval(loadPending, 30000);
+setInterval(loadPending,30000);
 </script>
 </body>
 </html>
