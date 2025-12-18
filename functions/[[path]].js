@@ -47,23 +47,17 @@ export async function onRequest(context) {
   if (url.pathname === '/api/submit' && request.method === 'POST') {
     try {
       const site = await request.json();
-
-      // 简单垃圾词过滤
       const spamWords = ['成人', '赌博', '贷款', '彩票', 'AV', 'porn', 'sex', 'casino', '博彩', '黄色', '约炮'];
       const text = `${site.name || ''}${site.desc || ''}${site.url || ''}`.toLowerCase();
       if (spamWords.some(word => text.includes(word))) {
         return new Response('包含敏感内容，提交失败', { status: 400 });
       }
-
       site.id = Date.now();
       site.time = new Date().toISOString();
-
       let pending = await env.NAV_DATA.get('pending_sites');
       let list = pending ? JSON.parse(pending) : [];
-
       list.push(site);
       await env.NAV_DATA.put('pending_sites', JSON.stringify(list));
-
       return new Response('提交成功，等待管理员审核', { status: 200 });
     } catch (e) {
       return new Response('提交失败: ' + e.message, { status: 500 });
@@ -79,7 +73,7 @@ export async function onRequest(context) {
     });
   }
 
-  // ================= 管理员审核操作（通过/仍要通过/删除） =================
+  // ================= 管理员审核操作（通过/删除/通过并上线） =================
   if (url.pathname === '/api/approve' && request.method === 'POST') {
     try {
       const { id, action } = await request.json();
@@ -91,10 +85,9 @@ export async function onRequest(context) {
       const index = list.findIndex(s => s.id === id);
       if (index === -1) return new Response('提交记录不存在', { status: 404 });
 
-      const site = list[index];
+      if (action === 'approve' || action === 'approve_online') {
+        const site = list[index];
 
-      // 通过并上线：将数据加入 nav_data
-      if (action === 'approve_online') {
         let xml = await env.NAV_DATA.get('nav_data');
         if (!xml) return new Response('正式数据异常', { status: 500 });
 
@@ -102,6 +95,7 @@ export async function onRequest(context) {
         const subName = site.cat2;
         const linkStr = `  <link name="${site.name}" url="${site.url}"${site.desc ? ` desc="${site.desc}"` : ''} />`;
 
+        // 检查分类是否存在
         const catRegex = new RegExp(`<category name="${catName}"[^>]*>(.*?)</category>`, 's');
         const catMatch = xml.match(catRegex);
         if (catMatch) {
@@ -109,12 +103,21 @@ export async function onRequest(context) {
           const subRegex = new RegExp(`<subcategory name="${subName}"[^>]*>(.*?)</subcategory>`, 's');
           const subMatch = catContent.match(subRegex);
           if (subMatch) {
-            const newCatContent = catContent.replace(subRegex, `<subcategory name="${subName}"${subMatch[0].includes('/>') ? '>' : ''}${subMatch[1]}${linkStr}</subcategory>`);
-            xml = xml.replace(catRegex, `<category name="${catName}"${catMatch[0].includes('/>') ? '>' : ''}${newCatContent}</category>`);
+            const newCatContent = catContent.replace(
+              subRegex,
+              `<subcategory name="${subName}"${subMatch[0].includes('/>') ? '>' : ''}${subMatch[1]}${linkStr}</subcategory>`
+            );
+            xml = xml.replace(
+              catRegex,
+              `<category name="${catName}"${catMatch[0].includes('/>') ? '>' : ''}${newCatContent}</category>`
+            );
           } else {
             const newSub = `<subcategory name="${subName}">${linkStr}\n    </subcategory>`;
             const newCatContent = catContent.trim() ? catContent.trim() + '\n    ' + newSub : newSub;
-            xml = xml.replace(catRegex, `<category name="${catName}"${catMatch[0].includes('/>') ? '>' : ''}${newCatContent}\n  </category>`);
+            xml = xml.replace(
+              catRegex,
+              `<category name="${catName}"${catMatch[0].includes('/>') ? '>' : ''}${newCatContent}\n  </category>`
+            );
           }
         } else {
           const newCat = `<category name="${catName}">
@@ -124,14 +127,15 @@ export async function onRequest(context) {
           xml = xml.replace('</navigation>', `  ${newCat}\n</navigation>`);
         }
 
-        await env.NAV_DATA.put('nav_data', xml);
+        if (action === 'approve_online') {
+          // 通过并上线：保存 nav_data
+          await env.NAV_DATA.put('nav_data', xml);
+        }
       }
 
-      // 仍要通过/删除
-      if (action === 'approve_keep' || action === 'approve_online' || action === 'delete') {
-        list.splice(index, 1);
-        await env.NAV_DATA.put('pending_sites', JSON.stringify(list));
-      }
+      // 删除待审核项
+      list.splice(index, 1);
+      await env.NAV_DATA.put('pending_sites', JSON.stringify(list));
 
       return new Response('操作成功', { status: 200 });
     } catch (e) {
