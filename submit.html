@@ -119,15 +119,25 @@ function generateCaptcha() {
   document.getElementById('captchaQuestion').textContent = `${captchaNum1} + ${captchaNum2} = ?`;
 }
 
+// 提取域名（和首页完全一致）
+function getDomain(url) {
+  try {
+    const hostname = new URL(url).hostname;
+    return hostname.startsWith('www.') ? hostname.slice(4) : hostname;
+  } catch (e) {
+    return '';
+  }
+}
+
 // 加载分类数据
 fetch('/api/data')
   .then(r => r.text())
   .then(t => {
     xmlDoc = new DOMParser().parseFromString(t, 'text/xml');
     buildCat1();
-    generateCaptcha(); // 初始化验证码
+    generateCaptcha();
   })
-  .catch(e => showMessage('加载分类失败: ' + e.message, true));
+  .catch(e => alert('加载分类失败，请稍后再试'));
 
 // 构建一级分类
 function buildCat1() {
@@ -154,51 +164,72 @@ function buildCat2() {
   });
 }
 
+// 查重函数：遍历所有 link 的 url，判断域名是否已存在
+function isDomainExists(submitUrl) {
+  const submitDomain = getDomain(submitUrl);
+  if (!submitDomain) return false;
+  
+  const allLinks = xmlDoc.querySelectorAll('link');
+  for (let link of allLinks) {
+    const existingUrl = link.getAttribute('url');
+    const existingDomain = getDomain(existingUrl);
+    if (existingDomain === submitDomain) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // 表单提交
 document.getElementById('submitForm').onsubmit = async function(e) {
   e.preventDefault();
+
   const userAnswer = parseInt(document.getElementById('captchaAnswer').value, 10);
   if (userAnswer !== captchaAnswer) {
-    showMessage('验证码错误，请重试', true);
+    alert('验证码错误，请重新输入！');
     generateCaptcha();
     return;
   }
+
+  const urlInput = document.getElementById('url').value.trim();
   const data = {
     cat1: document.getElementById('cat1').value,
     cat2: document.getElementById('cat2').value,
     name: document.getElementById('name').value.trim(),
-    url: document.getElementById('url').value.trim(),
+    url: urlInput,
     desc: document.getElementById('desc').value.trim()
   };
+
   if (!data.cat1 || !data.cat2 || !data.name || !data.url) {
-    showMessage('请填写必填项', true);
+    alert('请填写所有必填项！');
     return;
   }
+
+  // ★★★ 查重核心：提交前检查域名是否已存在 ★★★
+  if (isDomainExists(urlInput)) {
+    alert('该网站已收录，请勿重复提交！');
+    return;
+  }
+
   try {
     const res = await fetch('/api/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
+
     if (res.ok) {
-      showMessage('提交成功，等待审核');
+      alert('提交成功！等待管理员审核');
       this.reset();
-      buildCat1(); // 重置下拉框
-      generateCaptcha();
+      buildCat1();           // 重置分类
+      generateCaptcha();     // 刷新验证码
     } else {
-      showMessage(await res.text(), true);
+      alert(await res.text());
     }
   } catch (e) {
-    showMessage('提交失败: ' + e.message, true);
+    alert('提交失败，请稍后再试');
   }
 };
-
-// 显示消息
-function showMessage(msg, isError = false) {
-  const m = document.getElementById('message');
-  m.textContent = msg;
-  m.className = isError ? 'error' : '';
-}
 </script>
 </body>
 </html>
