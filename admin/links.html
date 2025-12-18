@@ -96,12 +96,26 @@ header {
   <label>描述</label>
   <input id="desc">
 
-  <label>图标</label>
-  <input id="linkIcon">
-
   <button class="btn-apply" onclick="applyEdit()">应用修改</button>
   <button class="btn-clear" onclick="clearForm()">清空</button>
   <button class="btn-save" onclick="saveKV()">保存到 KV</button>
+
+  <!-- 操作说明 -->
+  <div style="
+        margin-top:16px;
+        padding:12px;
+        background:#fef9c3;
+        border-left:4px solid #facc15;
+        border-radius:6px;
+        font-size:13px;
+        color:#92400e;
+        line-height:1.4;">
+    <strong>操作提示：</strong><br>
+    1️⃣ 请先添加或编辑链接，然后点击“应用修改”确认更改。<br>
+    2️⃣ 修改完成后，务必点击“保存到 KV”按钮，否则修改不会永久生效。<br>
+    3️⃣ 删除链接后，也需保存到 KV 才会生效。<br>
+    ⚠️ 请确保名称和网址必填，否则无法应用修改。
+  </div>
 </div>
 
 <div class="cards">
@@ -172,7 +186,6 @@ function editLink(btn){
   linkName.value = l.getAttribute('name') || '';
   url.value      = l.getAttribute('url')  || '';
   desc.value     = l.getAttribute('desc') || '';
-  linkIcon.value = l.getAttribute('icon') || '';
 
   cat.value = l.closest('category').getAttribute('name');
   buildSub();
@@ -194,7 +207,6 @@ function applyEdit(){
   editRef.setAttribute('name', linkName.value);
   editRef.setAttribute('url', url.value);
   editRef.setAttribute('desc', desc.value);
-  editRef.setAttribute('icon', linkIcon.value);
 
   clearForm();
   renderCards();
@@ -208,7 +220,7 @@ function delLink(btn){
 }
 
 function clearForm(){
-  linkName.value = url.value = desc.value = linkIcon.value = '';
+  linkName.value = url.value = desc.value = '';
   editRef = null;
 }
 
