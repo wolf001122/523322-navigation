@@ -45,7 +45,7 @@ body{
 #engines button:hover{background:#f1f3f4;box-shadow:0 1px 3px rgba(0,0,0,0.15);}
 #engines button.active{background:#e8f0fe;color:#1a73e8;}
 /* 内容页 */
-#content{flex:1;display:none;overflow:hidden;}
+#content{flex:1;display:none;overflow:auto;padding:16px;} /* 改为 overflow:auto 允许滚动 */
 /* 广告位 */
 .ad-box{margin:32px 0;padding:16px;background:#fff;border:1px solid #dadce0;border-radius:8px;text-align:center;box-shadow:0 1px 2px 0 rgba(60,64,67,0.3);}
 /* 分类卡片 */
@@ -101,17 +101,13 @@ let data;
 const DEF_ICON='/icons/gray.png';
 const logo = document.getElementById('logo');
 
-// 提取域名函数
 function getDomain(url) {
   try {
     const hostname = new URL(url).hostname;
     return hostname.startsWith('www.') ? hostname.slice(4) : hostname;
-  } catch (e) {
-    return 'example.com';
-  }
+  } catch (e) { return 'example.com'; }
 }
 
-/* ================= 分类数据 ================= */
 fetch(API).then(r=>r.text()).then(t=>{
   const xml=new DOMParser().parseFromString(t,'text/xml');
   data=[...xml.querySelectorAll('category')].map(c=>({
@@ -130,7 +126,6 @@ fetch(API).then(r=>r.text()).then(t=>{
   backToSearch();
 });
 
-/* ================= 渲染分类 + 高亮 ================= */
 function renderCats(){
   const box=document.getElementById('cats'); box.innerHTML='';
   data.forEach((c, idx)=>{
@@ -146,7 +141,6 @@ function renderCats(){
   });
 }
 
-/* ================= 搜索 ================= */
 function go(){
   const q=document.getElementById('q').value.trim();
   if(q) window.open(engine+encodeURIComponent(q),'_blank');
@@ -157,7 +151,6 @@ function setEngine(btn,url){
   btn.classList.add('active');
 }
 
-/* ================= 分类页显示 ================= */
 function showCategory(c){
   document.getElementById('search-page').style.display='none';
   const cont=document.getElementById('content'); 
@@ -196,7 +189,6 @@ function showCategory(c){
   logo.classList.add('return-mode');
 }
 
-/* ================= 返回搜索首页 ================= */
 function backToSearch(){
   document.getElementById('content').style.display='none';
   document.getElementById('search-page').style.display='flex';
@@ -204,7 +196,6 @@ function backToSearch(){
   document.querySelectorAll('.cat').forEach(cat => cat.classList.remove('active'));
 }
 
-/* ================= 外部页面加载 ================= */
 function loadExternal(url){
   document.getElementById('search-page').style.display='none';
   const content=document.getElementById('content');
