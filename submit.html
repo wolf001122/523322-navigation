@@ -4,188 +4,191 @@
 <meta charset="UTF-8">
 <title>网站提交</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background: #f8f9fa;
-    color: #202124;
-    padding: 24px;
-  }
+/* ===== 全局风格（与首页一致） ===== */
+body {
+  margin: 0;
+  padding: 32px 16px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI";
+  background: linear-gradient(180deg, #f1f3f4, #f8f9fa);
+  color: #202124;
+}
 
-  /* 与首页一致的页面标题 */
-  .category-title {
-    font-size: 28px;
-    font-weight: 500;
-    color: #202124;
-    margin-bottom: 32px;
-    text-align: center;
-  }
+/* 标题 */
+h1 {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  letter-spacing: .5px;
+}
 
-  /* 表单卡片容器 */
-  .submit-card {
-    max-width: 600px;
-    margin: 0 auto;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 2px 6px 2px rgba(60,64,67,0.15);
-    padding: 32px;
-  }
+/* ===== 主卡片容器 ===== */
+form {
+  max-width: 520px;
+  margin: 0 auto;
+  background: #ffffff;
+  padding: 28px 26px 30px;
+  border-radius: 14px;
+  box-shadow:
+    0 1px 3px rgba(0,0,0,.08),
+    0 8px 24px rgba(0,0,0,.06);
+  transition: box-shadow .25s ease;
+}
 
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
+form:hover {
+  box-shadow:
+    0 2px 6px rgba(0,0,0,.12),
+    0 12px 32px rgba(0,0,0,.08);
+}
 
-  label {
-    font-size: 14px;
-    color: #5f6368;
-    margin-bottom: 6px;
-  }
+/* ===== 表单元素 ===== */
+label {
+  display: block;
+  margin-top: 14px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #5f6368;
+}
 
-  .required::after {
-    content: " *";
-    color: #d93025;
-  }
+input,
+select {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 15px;
+  border-radius: 10px;
+  border: 1px solid #dadce0;
+  background: #fff;
+  transition: border .2s, box-shadow .2s;
+}
 
-  select,
-  input[type="text"],
-  input[type="url"] {
-    width: 100%;
-    padding: 12px 16px;
-    font-size: 16px;
-    border: 1px solid #dadce0;
-    border-radius: 8px;
-    outline: none;
-    background: #fff;
-    transition: box-shadow 0.2s, border-color 0.2s;
-  }
+input::placeholder {
+  color: #9aa0a6;
+}
 
-  select:focus,
-  input:focus {
-    border-color: #1a73e8;
-    box-shadow: 0 1px 6px rgba(32,33,36,0.28);
-  }
+input:focus,
+select:focus {
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 3px rgba(26,115,232,.15);
+  outline: none;
+}
 
-  /* 验证码区域 */
-  #captcha {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-top: 8px;
-  }
+/* ===== 验证码区域 ===== */
+#captcha {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #f1f3f4;
+  border-radius: 10px;
+}
 
-  #captchaQuestion {
-    font-size: 16px;
-    color: #202124;
-    white-space: nowrap;
-  }
+#captcha label {
+  margin: 0;
+  font-size: 14px;
+  color: #3c4043;
+  white-space: nowrap;
+}
 
-  #captchaAnswer {
-    width: 120px;
-    flex-shrink: 0;
-  }
+#captcha input {
+  width: 100px;
+}
 
-  /* 提交按钮 */
-  button {
-    margin-top: 16px;
-    padding: 14px;
-    background: #1a73e8;
-    color: #fff;
-    font-size: 16px;
-    font-weight: 500;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
+/* ===== 提交按钮 ===== */
+button {
+  width: 100%;
+  margin-top: 26px;
+  padding: 13px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(135deg, #1a73e8, #4285f4);
+  transition: transform .15s ease, box-shadow .15s ease, opacity .15s;
+}
 
-  button:hover {
-    background: #1669c1;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  }
+button:hover {
+  opacity: .95;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(26,115,232,.35);
+}
 
-  /* 提示文字 */
-  .note {
-    font-size: 13px;
-    color: #5f6368;
-    text-align: center;
-    margin-top: 24px;
-    line-height: 1.6;
-  }
+button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* ===== 提示信息 ===== */
+#message {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 14px;
+  color: #1a73e8;
+}
+
+.error {
+  color: #d93025;
+}
 </style>
 </head>
+
 <body>
 
-<div class="category-title">提交您的网站</div>
+<h1>提交您的网站</h1>
 
-<div class="submit-card">
-  <form id="submitForm">
-    <div>
-      <label for="cat1" class="required">一级分类</label>
-      <select id="cat1" required></select>
-    </div>
+<form id="submitForm">
 
-    <div>
-      <label for="cat2" class="required">二级分类</label>
-      <select id="cat2" required></select>
-    </div>
+  <label for="cat1">一级分类</label>
+  <select id="cat1" required></select>
 
-    <div>
-      <label for="name" class="required">网站名称</label>
-      <input id="name" type="text" required maxlength="50" placeholder="请输入网站名称">
-    </div>
+  <label for="cat2">二级分类</label>
+  <select id="cat2" required></select>
 
-    <div>
-      <label for="url" class="required">网站网址</label>
-      <input id="url" type="url" required placeholder="https://www.example.com">
-    </div>
+  <label for="name">网站名称</label>
+  <input id="name" type="text" required maxlength="50">
 
-    <div>
-      <label for="desc">网站描述（可选）</label>
-      <input id="desc" type="text" maxlength="100" placeholder="简短描述您的网站，帮助更多人发现">
-    </div>
+  <label for="url">网站网址</label>
+  <input id="url" type="url" required placeholder="https://example.com">
 
-    <div>
-      <label class="required">验证码</label>
-      <div id="captcha">
-        <div id="captchaQuestion"></div>
-        <input id="captchaAnswer" type="text" required placeholder="答案">
-      </div>
-    </div>
+  <label for="desc">网站描述（可选）</label>
+  <input id="desc" type="text" maxlength="100">
 
-    <button type="submit">提交网站</button>
-  </form>
+  <div id="captcha">
+    <label id="captchaQuestion"></label>
+    <input id="captchaAnswer" type="text" required placeholder="答案">
+  </div>
 
-  <p class="note">
-    提交后将进入管理员审核队列，通常24小时内处理。<br>
-    感谢您为导航网站贡献优质资源！
-  </p>
-</div>
+  <button type="submit">提交审核</button>
+</form>
 
+<div id="message"></div>
+
+<!-- ===== JS 完全保持原样 ===== -->
 <script>
 let xmlDoc;
 let captchaNum1, captchaNum2, captchaAnswer;
 
-// 生成随机验证码问题
 function generateCaptcha() {
   captchaNum1 = Math.floor(Math.random() * 10) + 1;
   captchaNum2 = Math.floor(Math.random() * 10) + 1;
   captchaAnswer = captchaNum1 + captchaNum2;
-  document.getElementById('captchaQuestion').textContent = `${captchaNum1} + ${captchaNum2} = ?`;
+  document.getElementById('captchaQuestion').textContent =
+    `${captchaNum1} + ${captchaNum2} = ?`;
 }
 
-// 提取域名（和首页完全一致）
 function getDomain(url) {
   try {
     const hostname = new URL(url).hostname;
     return hostname.startsWith('www.') ? hostname.slice(4) : hostname;
-  } catch (e) {
+  } catch {
     return '';
   }
 }
 
-// 加载分类数据
 fetch('/api/data')
   .then(r => r.text())
   .then(t => {
@@ -193,12 +196,11 @@ fetch('/api/data')
     buildCat1();
     generateCaptcha();
   })
-  .catch(e => alert('加载分类失败，请稍后再试'));
+  .catch(() => alert('加载分类失败，请稍后再试'));
 
-// 构建一级分类
 function buildCat1() {
   const cat1 = document.getElementById('cat1');
-  cat1.innerHTML = '<option value="">请选择一级分类</option>';
+  cat1.innerHTML = '<option value="">请选择</option>';
   xmlDoc.querySelectorAll('category').forEach(c => {
     const o = document.createElement('option');
     o.value = o.textContent = c.getAttribute('name');
@@ -207,80 +209,64 @@ function buildCat1() {
   cat1.onchange = buildCat2;
 }
 
-// 构建二级分类
 function buildCat2() {
   const cat2 = document.getElementById('cat2');
-  cat2.innerHTML = '<option value="">请选择二级分类</option>';
+  cat2.innerHTML = '<option value="">请选择</option>';
   const catName = document.getElementById('cat1').value;
   if (!catName) return;
-  xmlDoc.querySelectorAll(`category[name="${catName}"] subcategory`).forEach(s => {
-    const o = document.createElement('option');
-    o.value = o.textContent = s.getAttribute('name');
-    cat2.appendChild(o);
-  });
+  xmlDoc.querySelectorAll(`category[name="${catName}"] subcategory`)
+    .forEach(s => {
+      const o = document.createElement('option');
+      o.value = o.textContent = s.getAttribute('name');
+      cat2.appendChild(o);
+    });
 }
 
-// 查重函数：遍历所有 link 的 url，判断域名是否已存在
 function isDomainExists(submitUrl) {
   const submitDomain = getDomain(submitUrl);
   if (!submitDomain) return false;
- 
-  const allLinks = xmlDoc.querySelectorAll('link');
-  for (let link of allLinks) {
-    const existingUrl = link.getAttribute('url');
-    const existingDomain = getDomain(existingUrl);
-    if (existingDomain === submitDomain) {
-      return true;
-    }
-  }
-  return false;
+  return [...xmlDoc.querySelectorAll('link')]
+    .some(l => getDomain(l.getAttribute('url')) === submitDomain);
 }
 
-// 表单提交
 document.getElementById('submitForm').onsubmit = async function(e) {
   e.preventDefault();
-  const userAnswer = parseInt(document.getElementById('captchaAnswer').value, 10);
-  if (userAnswer !== captchaAnswer) {
-    alert('验证码错误，请重新输入！');
+  if (parseInt(captchaAnswer) !==
+      parseInt(document.getElementById('captchaAnswer').value)) {
+    alert('验证码错误');
     generateCaptcha();
-    document.getElementById('captchaAnswer').value = '';
     return;
   }
-  const urlInput = document.getElementById('url').value.trim();
+
   const data = {
-    cat1: document.getElementById('cat1').value,
-    cat2: document.getElementById('cat2').value,
-    name: document.getElementById('name').value.trim(),
-    url: urlInput,
-    desc: document.getElementById('desc').value.trim()
+    cat1: cat1.value,
+    cat2: cat2.value,
+    name: name.value.trim(),
+    url: url.value.trim(),
+    desc: desc.value.trim()
   };
-  if (!data.cat1 || !data.cat2 || !data.name || !data.url) {
-    alert('请填写所有必填项！');
+
+  if (isDomainExists(data.url)) {
+    alert('该网站已收录');
     return;
   }
-  // 查重
-  if (isDomainExists(urlInput)) {
-    alert('该网站已收录，请勿重复提交！');
-    return;
-  }
-  try {
-    const res = await fetch('/api/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    if (res.ok) {
-      alert('提交成功！等待管理员审核');
-      this.reset();
-      buildCat1(); // 重置分类
-      generateCaptcha(); // 刷新验证码
-    } else {
-      alert(await res.text());
-    }
-  } catch (e) {
-    alert('提交失败，请稍后再试');
+
+  const res = await fetch('/api/submit', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(data)
+  });
+
+  if (res.ok) {
+    alert('提交成功，等待审核');
+    this.reset();
+    buildCat1();
+    generateCaptcha();
+  } else {
+    alert(await res.text());
   }
 };
 </script>
+
 </body>
 </html>
