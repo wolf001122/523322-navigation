@@ -2,148 +2,155 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
+<title>网址导航</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>523322 导航</title>
 
 <style>
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  background: #f1f3f4;
+  font-family: system-ui, -apple-system;
+  background: #f5f6f7;
+  color: #202124;
 }
 
+/* 顶部 */
 header {
-  height: 60px;
-  background: #fff;
+  height: 56px;
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
   display: flex;
   align-items: center;
   padding: 0 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,.08);
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  font-size: 18px;
+  font-weight: 600;
 }
 
-#logo {
-  font-size: 20px;
-  font-weight: bold;
-  cursor: pointer;
+/* 主体布局 */
+.container {
+  display: flex;
+  height: calc(100vh - 56px);
 }
 
-#logo.return-mode::after {
-  content: " ← 返回";
-  font-size: 14px;
+/* 左侧导航 */
+nav {
+  width: 220px;
+  background: #ffffff;
+  border-right: 1px solid #e0e0e0;
+  padding: 12px 0;
+}
+
+nav a {
+  display: block;
+  padding: 12px 20px;
+  color: #202124;
+  text-decoration: none;
+  font-size: 15px;
+}
+
+nav a:hover,
+nav a.active {
+  background: #e8f0fe;
   color: #1a73e8;
 }
 
-#search-page {
-  padding: 40px 20px;
-}
-
-#content {
-  display: none;
-  padding: 0;
-}
-
-iframe {
-  width: 100%;
-  height: calc(100vh - 60px);
-  border: 0;
+/* 主窗口 */
+main {
+  flex: 1;
   background: #f8f9fa;
+  position: relative;
+}
+
+/* iframe */
+#mainFrame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #f8f9fa;
+  display: none;
+}
+
+/* 首页内容 */
+#homeContent {
+  padding: 24px;
+}
+
+.card {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.1);
+  margin: 8px;
+  cursor: pointer;
+  transition: transform .15s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <div id="logo">523322.xyz</div>
-</header>
+<header>网址导航</header>
 
-<!-- 首页搜索 / 卡片区域 -->
-<div id="search-page">
-  <h2>网址导航</h2>
-  <p>示例：首页搜索与卡片区域</p>
+<div class="container">
 
-  <p>
-    <a href="javascript:void(0)" onclick="loadExternal('/submit.html')">📤 网站提交</a>
-  </p>
+  <!-- 左侧菜单 -->
+  <nav>
+    <a href="#" class="active" data-page="home">首页</a>
+    <a href="#" data-page="submit">网站提交</a>
+  </nav>
+
+  <!-- 主窗口 -->
+  <main>
+    <!-- 首页 -->
+    <div id="homeContent">
+      <h2>欢迎使用网址导航</h2>
+      <div class="card">百度</div>
+      <div class="card">Google</div>
+      <div class="card">Bing</div>
+    </div>
+
+    <!-- iframe 功能页 -->
+    <iframe id="mainFrame"></iframe>
+  </main>
+
 </div>
 
-<!-- 主窗口 -->
-<div id="content"></div>
-
 <script>
-const logo = document.getElementById('logo');
-const searchPage = document.getElementById('search-page');
-const content = document.getElementById('content');
+const frame = document.getElementById('mainFrame');
+const home = document.getElementById('homeContent');
+const links = document.querySelectorAll('nav a');
 
-/* =========================
-   基础显示控制
-========================= */
-function showHome() {
-  searchPage.style.display = 'block';
-  content.style.display = 'none';
-  content.innerHTML = '';
-  logo.classList.remove('return-mode');
-}
+/* 切换页面 */
+function loadPage(page) {
+  links.forEach(a => a.classList.remove('active'));
+  document.querySelector(`nav a[data-page="${page}"]`).classList.add('active');
 
-function showPage(html) {
-  searchPage.style.display = 'none';
-  content.style.display = 'block';
-  content.innerHTML = html;
-}
-
-/* =========================
-   iframe 加载（功能页）
-========================= */
-function showIframe(url) {
-  searchPage.style.display = 'none';
-  content.style.display = 'block';
-  content.innerHTML = `
-    <iframe src="${url}" loading="lazy"></iframe>
-  `;
-}
-
-/* =========================
-   fetch 加载（内容页）
-========================= */
-async function loadHtmlPage(url) {
-  showPage('<p style="text-align:center;padding:40px;color:#666;">加载中...</p>');
-  try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('加载失败');
-    const html = await res.text();
-    showPage(html);
-  } catch (e) {
-    showPage('<p style="color:red;text-align:center;">页面加载失败</p>');
+  if (page === 'home') {
+    frame.style.display = 'none';
+    frame.src = '';
+    home.style.display = 'block';
+  } else if (page === 'submit') {
+    home.style.display = 'none';
+    frame.style.display = 'block';
+    frame.src = '/submit.html';
   }
-  logo.classList.add('return-mode');
 }
 
-/* =========================
-   统一入口
-========================= */
-function loadExternal(url) {
-  // submit 页面：必须 iframe
-  if (url.endsWith('/submit.html')) {
-    showIframe(url);
-    logo.classList.add('return-mode');
-    return;
-  }
-
-  // 其他页面：fetch
-  loadHtmlPage(url);
-}
-
-/* =========================
-   返回首页
-========================= */
-logo.addEventListener('click', () => {
-  if (logo.classList.contains('return-mode')) {
-    showHome();
-  }
+/* 菜单事件 */
+links.forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    loadPage(a.dataset.page);
+  });
 });
+
+/* 默认首页 */
+loadPage('home');
 </script>
 
 </body>
