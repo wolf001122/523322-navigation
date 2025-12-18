@@ -223,6 +223,7 @@ async function loadExternal(url) {
     if (!res.ok) throw new Error('加载失败');
     const html = await res.text();
     showPage(html);
+    if (window.initSubmitPage) window.initSubmitPage();
   } catch (e) {
     showPage(`<p style="color:red;text-align:center;">加载失败：${e.message}</p>`);
   }
@@ -237,4 +238,5 @@ function showPage(html){
 </script>
 </body>
 </html>
+
 
