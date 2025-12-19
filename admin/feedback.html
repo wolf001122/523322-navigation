@@ -2,226 +2,180 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>用户反馈管理</title>
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>反馈管理</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
 body{
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-  background:#f8f9fa;
-  color:#202124;
-  padding:20px;
+  margin:0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background:#f8fafc;
+  color:#0f172a;
 }
-h1{
-  font-size:24px;
-  margin-bottom:20px;
-  text-align:center;
+.header{
+  padding:16px 24px;
+  font-size:20px;
+  font-weight:600;
+  border-bottom:1px solid #e5e7eb;
 }
-#list{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-  gap:16px;
+.container{
+  padding:24px;
 }
-.card{
+.table{
+  width:100%;
+  border-collapse:collapse;
   background:#fff;
-  border-radius:12px;
-  padding:16px;
-  box-shadow:0 1px 2px rgba(60,64,67,.3),0 2px 6px rgba(60,64,67,.15);
-  display:flex;
-  flex-direction:column;
 }
-.card p{
-  margin:6px 0;
-  word-break:break-word;
+.table th,.table td{
+  border:1px solid #e5e7eb;
+  padding:12px;
+  text-align:left;
+  vertical-align:top;
 }
-.label{
-  font-weight:500;
-  color:#5f6368;
+.table th{
+  background:#f1f5f9;
+  font-weight:600;
 }
-.time{
-  font-size:13px;
-  color:#80868b;
-}
-.actions{
-  margin-top:12px;
-}
-button{
-  padding:8px 14px;
+.actions button{
+  margin-right:8px;
+  padding:6px 12px;
   border:none;
-  border-radius:6px;
+  border-radius:4px;
   cursor:pointer;
-  font-size:14px;
-  margin-right:6px;
 }
-.reply{
-  background:#1a73e8;
-  color:#fff;
-}
-.delete{
-  background:#d93025;
-  color:#fff;
-}
-.reply:disabled{
-  background:#9aa0a6;
-  cursor:not-allowed;
-}
-#msg{
-  text-align:center;
-  margin:16px 0;
-  color:#d93025;
-}
+.reply-btn{background:#3b82f6;color:#fff;}
+.delete-btn{background:#ef4444;color:#fff;}
 
-/* 回复弹窗 */
-#modal{
-  display:none;
+.modal{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.45);
+  background:rgba(0,0,0,.4);
+  display:none;
   align-items:center;
   justify-content:center;
-  z-index:100;
 }
-.modal-box{
+.modal-content{
   background:#fff;
-  width:90%;
-  max-width:480px;
-  border-radius:12px;
+  width:520px;
+  max-width:95%;
+  border-radius:8px;
   padding:20px;
 }
-.modal-box h2{
-  margin-bottom:12px;
-  font-size:20px;
+.modal h3{
+  margin-top:0;
 }
-.modal-box textarea{
+.modal input,.modal textarea{
   width:100%;
-  height:120px;
-  resize:none;
   padding:10px;
-  border:1px solid #dadce0;
-  border-radius:6px;
   margin-bottom:12px;
+  border:1px solid #cbd5f5;
+  border-radius:4px;
 }
-.modal-actions{
-  text-align:right;
-}
+.modal textarea{resize:none;height:120px;}
+.modal-actions{text-align:right;}
 .modal-actions button{
-  margin-left:8px;
+  padding:8px 16px;
+  border:none;
+  border-radius:4px;
+  cursor:pointer;
 }
+.send-btn{background:#22c55e;color:#fff;}
+.cancel-btn{background:#64748b;color:#fff;margin-right:8px;}
 </style>
 </head>
 <body>
 
-<h1>用户反馈管理</h1>
-
-<div id="list">加载中...</div>
-<div id="msg"></div>
+<div class="header">反馈管理</div>
+<div class="container">
+  <table class="table">
+    <thead>
+      <tr>
+        <th width="60">编号</th>
+        <th width="160">时间</th>
+        <th>反馈内容</th>
+        <th width="180">联系方式</th>
+        <th width="140">操作</th>
+      </tr>
+    </thead>
+    <tbody id="list"></tbody>
+  </table>
+</div>
 
 <!-- 回复弹窗 -->
-<div id="modal">
-  <div class="modal-box">
-    <h2>回复用户反馈</h2>
-    <p id="replyTo" class="time"></p>
-    <textarea id="replyText" placeholder="请输入回复内容..."></textarea>
+<div class="modal" id="replyModal">
+  <div class="modal-content">
+    <h3>回复用户反馈</h3>
+    <input id="mailTo" disabled>
+    <input id="mailSubject">
+    <textarea id="mailContent" placeholder="请输入回复内容…"></textarea>
     <div class="modal-actions">
-      <button onclick="closeModal()">取消</button>
-      <button class="reply" onclick="sendReply()">发送</button>
+      <button class="cancel-btn" onclick="closeModal()">取消</button>
+      <button class="send-btn" onclick="sendReply()">发送回复</button>
     </div>
   </div>
 </div>
 
 <script>
-let feedbackList = [];
-let currentEmail = '';
-let currentIndex = -1;
+let feedbackList=[];
+let currentIndex=-1;
 
 async function loadFeedback(){
-  try{
-    const res = await fetch('/api/feedback/list');
-    feedbackList = await res.json();
-
-    const box = document.getElementById('list');
-    if(!feedbackList.length){
-      box.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#5f6368;">暂无用户反馈</p>';
-      return;
-    }
-
-    box.innerHTML = '';
-    feedbackList.forEach((f, i)=>{
-      const card = document.createElement('div');
-      card.className = 'card';
-
-      const hasEmail = f.contact && f.contact.includes('@');
-
-      card.innerHTML = `
-        <p><span class="label">反馈内容：</span>${escapeHtml(f.message)}</p>
-        <p><span class="label">联系方式：</span>${f.contact || '未填写'}</p>
-        <p class="time">提交时间：${new Date(f.time).toLocaleString()}</p>
-        <div class="actions">
-          <button class="reply" ${hasEmail?'':'disabled'}
-            onclick="openReply(${i})">邮件回复</button>
-          <button class="delete" onclick="removeFeedback(${i})">删除</button>
-        </div>
-      `;
-      box.appendChild(card);
-    });
-  }catch(e){
-    document.getElementById('msg').textContent = '加载失败：'+e.message;
-  }
+  const res=await fetch('/api/admin/feedback');
+  feedbackList=await res.json();
+  const tbody=document.getElementById('list');
+  tbody.innerHTML='';
+  feedbackList.forEach((f,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>#${i+1}</td>
+      <td>${new Date(f.time).toLocaleString()}</td>
+      <td>${f.message}</td>
+      <td>${f.contact||'-'}</td>
+      <td class="actions">
+        ${isEmail(f.contact)?`<button class="reply-btn" onclick="openReply(${i})">回复</button>`:''}
+        <button class="delete-btn" onclick="remove(${i})">删除</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
 }
 
-function openReply(index){
-  currentIndex = index;
-  currentEmail = feedbackList[index].contact;
-  document.getElementById('replyTo').textContent = '收件人：'+currentEmail;
-  document.getElementById('replyText').value='';
-  document.getElementById('modal').style.display='flex';
+function isEmail(v){
+  return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v||'');
+}
+
+function openReply(i){
+  currentIndex=i;
+  const f=feedbackList[i];
+  document.getElementById('mailTo').value=f.contact;
+  const date=new Date(f.time).toISOString().slice(0,10);
+  document.getElementById('mailSubject').value=
+    `【导航站反馈回复｜${date}｜#${Date.parse(f.time)}】`;
+  document.getElementById('mailContent').value='';
+  document.getElementById('replyModal').style.display='flex';
 }
 
 function closeModal(){
-  document.getElementById('modal').style.display='none';
+  document.getElementById('replyModal').style.display='none';
 }
 
 async function sendReply(){
-  const text = document.getElementById('replyText').value.trim();
-  if(!text){ alert('请输入回复内容'); return; }
-
-  const res = await fetch('/api/feedback/reply',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      to: currentEmail,
-      message: text
-    })
-  });
-
-  if(res.ok){
-    alert('✅ 邮件已发送');
-    closeModal();
-  }else{
-    alert('❌ 发送失败');
+  const subject=document.getElementById('mailSubject').value.trim();
+  const content=document.getElementById('mailContent').value.trim();
+  if(!subject||!content){
+    alert('主题和回复内容不能为空');
+    return;
   }
+  alert('✅ 模拟发送成功（后续接入 Gmail / GAS）');
+  closeModal();
 }
 
-async function removeFeedback(index){
-  if(!confirm('确定要删除这条反馈吗？')) return;
-
-  const res = await fetch('/api/feedback/delete',{
+async function remove(i){
+  if(!confirm('确认删除该反馈？')) return;
+  await fetch('/api/admin/feedback/delete',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({ index })
+    body:JSON.stringify({index:i})
   });
-
-  if(res.ok){
-    loadFeedback();
-  }else{
-    alert('删除失败');
-  }
-}
-
-function escapeHtml(str){
-  return str.replace(/[&<>"']/g, m => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[m]));
+  loadFeedback();
 }
 
 loadFeedback();
