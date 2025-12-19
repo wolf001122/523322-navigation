@@ -137,6 +137,8 @@ button{
 let feedbackList = [];
 let currentEmail = '';
 let currentIndex = -1;
+
+// 你的 GAS Web App URL
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbxwdQ7x8qPmroKl6DHxz6RPq3ybKexJzqNRPophkhydA2pUClUds25ZJ9iIoj4tXlidHQ/exec';
 
 async function loadFeedback(){
@@ -154,6 +156,7 @@ async function loadFeedback(){
     feedbackList.forEach((f, i)=>{
       const card = document.createElement('div');
       card.className = 'card';
+
       const hasEmail = f.contact && f.contact.includes('@');
 
       card.innerHTML = `
@@ -161,7 +164,8 @@ async function loadFeedback(){
         <p><span class="label">联系方式：</span>${f.contact || '未填写'}</p>
         <p class="time">提交时间：${new Date(f.time).toLocaleString()}</p>
         <div class="actions">
-          <button class="reply" ${hasEmail?'':'disabled'} onclick="openReply(${i})">邮件回复</button>
+          <button class="reply" ${hasEmail?'':'disabled'}
+            onclick="openReply(${i})">邮件回复</button>
           <button class="delete" onclick="removeFeedback(${i})">删除</button>
         </div>
       `;
@@ -178,7 +182,10 @@ function openReply(index){
   currentEmail = f.contact || '';
   document.getElementById('replyTo').textContent = '收件人：'+currentEmail;
   document.getElementById('replyText').value='';
+
+  // 主题模板：带反馈时间戳
   document.getElementById('replySubject').value = `[反馈回复#${f.time ? new Date(f.time).getTime() : Date.now()}] 关于您的反馈`;
+
   document.getElementById('modal').style.display='flex';
 }
 
@@ -189,48 +196,51 @@ function closeModal(){
 async function sendReply(){
   const subject = document.getElementById('replySubject').value.trim();
   const text = document.getElementById('replyText').value.trim();
-  if(!currentEmail){ alert('收件人邮箱无效'); return; }
-  if(!subject){ alert('请输入邮件主题'); return; }
   if(!text){ alert('请输入回复内容'); return; }
+  if(!subject){ alert('请输入邮件主题'); return; }
+  if(!currentEmail){ alert('收件人邮箱为空'); return; }
 
-  try {
+  try{
     const res = await fetch(GAS_URL, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ to: currentEmail, subject, message: text })
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ to: currentEmail, subject, message: text })
     });
+
     const result = await res.json();
+
     if(result.status==='success'){
       alert('✅ 邮件已发送');
       closeModal();
     } else {
       alert('❌ 发送失败：'+result.message);
     }
-  } catch(e){
-    alert('发送异常：'+e.message);
+
+  }catch(err){
+    alert('发送异常：'+err.message);
   }
 }
 
 async function removeFeedback(index){
   if(!confirm('确定要删除这条反馈吗？')) return;
-  try {
-    const res = await fetch('/api/feedback/delete',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ index })
-    });
-    if(res.ok){
-      loadFeedback();
-    } else {
-      alert('删除失败');
-    }
-  } catch(e){
-    alert('删除异常：'+e.message);
+
+  const res = await fetch('/api/feedback/delete',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({ index })
+  });
+
+  if(res.ok){
+    loadFeedback();
+  }else{
+    alert('删除失败');
   }
 }
 
 function escapeHtml(str){
-  return str.replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  return str.replace(/[&<>"']/g, m => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[m]));
 }
 
 loadFeedback();
