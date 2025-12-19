@@ -5,7 +5,7 @@
 <title>用户反馈管理</title>
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+* {box-sizing:border-box;margin:0;padding:0}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   background:#f8f9fa;
@@ -70,7 +70,6 @@ button{
   margin:16px 0;
   color:#d93025;
 }
-
 /* 回复弹窗 */
 #modal{
   display:none;
@@ -113,12 +112,9 @@ button{
 </style>
 </head>
 <body>
-
 <h1>用户反馈管理</h1>
-
 <div id="list">加载中...</div>
 <div id="msg"></div>
-
 <!-- 回复弹窗 -->
 <div id="modal">
   <div class="modal-box">
@@ -132,32 +128,26 @@ button{
     </div>
   </div>
 </div>
-
 <script>
 let feedbackList = [];
 let currentEmail = '';
 let currentIndex = -1;
-
-// 你的 GAS Web App URL（GET 方式调用）
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwmmlL3Ml8XdnC1RF0f-r2lSfizi_zZnWqCRU9Ejg7J-k-qidlJ-2rA1tnIzLnRfT9KFw/exec';
-
+// 您的 GAS Web App URL（替换为您的部署 URL）
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbx2Pc1WiNnmjamOmc1JsD0swejoSVqLrDHDbTKWdlsrDvDc09jlwX9Bw7WC-X_HLOorZw/exec'; // ← 这里替换为您的 Web App URL
 async function loadFeedback(){
   try{
     const res = await fetch('/api/feedback/list');
     feedbackList = await res.json();
-
     const box = document.getElementById('list');
     if(!feedbackList.length){
       box.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#5f6368;">暂无用户反馈</p>';
       return;
     }
-
     box.innerHTML = '';
     feedbackList.forEach((f, i)=>{
       const card = document.createElement('div');
       card.className = 'card';
       const hasEmail = f.contact && f.contact.includes('@');
-
       card.innerHTML = `
         <p><span class="label">反馈内容：</span>${escapeHtml(f.message)}</p>
         <p><span class="label">联系方式：</span>${f.contact || '未填写'}</p>
@@ -173,37 +163,36 @@ async function loadFeedback(){
     document.getElementById('msg').textContent = '加载失败：'+e.message;
   }
 }
-
 function openReply(index){
   currentIndex = index;
   const f = feedbackList[index];
   currentEmail = f.contact || '';
   document.getElementById('replyTo').textContent = '收件人：'+currentEmail;
   document.getElementById('replyText').value='';
-
-  // 主题模板：带反馈时间戳
   document.getElementById('replySubject').value = `[反馈回复#${f.time ? new Date(f.time).getTime() : Date.now()}] 关于您的反馈`;
-
   document.getElementById('modal').style.display='flex';
 }
-
 function closeModal(){
   document.getElementById('modal').style.display='none';
 }
-
 async function sendReply(){
   const subject = document.getElementById('replySubject').value.trim();
   const text = document.getElementById('replyText').value.trim();
   if(!text){ alert('请输入回复内容'); return; }
   if(!subject){ alert('请输入邮件主题'); return; }
   if(!currentEmail){ alert('收件人邮箱为空'); return; }
-
   try{
-    // GET 调用 GAS Web App
-    const url = `${GAS_URL}?to=${encodeURIComponent(currentEmail)}&subject=${encodeURIComponent(subject)}&message=${encodeURIComponent(text)}`;
-    const res = await fetch(url);
+    // POST 调用 GAS Web App
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        to: currentEmail,
+        subject: subject,
+        message: text
+      })
+    });
     const result = await res.json();
-
     if(result.status==='success'){
       alert('✅ 邮件已发送');
       closeModal();
@@ -214,31 +203,25 @@ async function sendReply(){
     alert('发送异常：'+err.message);
   }
 }
-
 async function removeFeedback(index){
   if(!confirm('确定要删除这条反馈吗？')) return;
-
   const res = await fetch('/api/feedback/delete',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({ index })
   });
-
   if(res.ok){
     loadFeedback();
   }else{
     alert('删除失败');
   }
 }
-
 function escapeHtml(str){
   return str.replace(/[&<>"']/g, m => ({
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
   }[m]));
 }
-
 loadFeedback();
 </script>
-
 </body>
 </html>
