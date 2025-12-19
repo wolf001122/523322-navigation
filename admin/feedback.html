@@ -138,21 +138,21 @@ let feedbackList = [];
 let currentEmail = '';
 let currentIndex = -1;
 
+// 读取用户反馈列表
 async function loadFeedback(){
   const box = document.getElementById('list');
   box.textContent = '加载中...';
   document.getElementById('msg').textContent = '';
-  try{
+  try {
     const res = await fetch('/api/feedback/list');
     let data;
-    try{
+    try {
       data = await res.json();
-    }catch(e){
+    } catch (err) {
       const text = await res.text();
-      throw new Error('返回非 JSON 数据：'+text.slice(0,200));
+      throw new Error('返回内容不是 JSON: '+text.substring(0,200));
     }
-
-    feedbackList = data;
+    feedbackList = data || [];
 
     if(!feedbackList.length){
       box.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#5f6368;">暂无用户反馈</p>';
@@ -160,14 +160,13 @@ async function loadFeedback(){
     }
 
     box.innerHTML = '';
-    feedbackList.forEach((f,i)=>{
+    feedbackList.forEach((f, i) => {
       const card = document.createElement('div');
       card.className = 'card';
       const hasEmail = f.contact && f.contact.includes('@');
-
       card.innerHTML = `
         <p><span class="label">反馈内容：</span>${escapeHtml(f.message)}</p>
-        <p><span class="label">联系方式：</span>${f.contact || '未填写'}</p>
+        <p><span class="label">联系方式：</span>${escapeHtml(f.contact||'未填写')}</p>
         <p class="time">提交时间：${new Date(f.time).toLocaleString()}</p>
         <div class="actions">
           <button class="reply" ${hasEmail?'':'disabled'} onclick="openReply(${i})">邮件回复</button>
@@ -177,27 +176,30 @@ async function loadFeedback(){
       box.appendChild(card);
     });
 
-  }catch(e){
+  } catch(e) {
     document.getElementById('msg').textContent = '加载失败：'+e.message;
     box.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#d93025;">加载失败</p>';
     console.error(e);
   }
 }
 
+// 打开发送邮件弹窗
 function openReply(index){
   currentIndex = index;
   const f = feedbackList[index];
-  currentEmail = f.contact;
+  currentEmail = f.contact || '';
   document.getElementById('replyTo').textContent = '收件人：'+currentEmail;
-  document.getElementById('replyText').value='';
-  document.getElementById('replySubject').value = `[反馈回复#${f.time ? new Date(f.time).getTime() : Date.now()}] 关于您的反馈`;
-  document.getElementById('modal').style.display='flex';
+  document.getElementById('replyText').value = '';
+  document.getElementById('replySubject').value = `[反馈回复#${f.time?new Date(f.time).getTime():Date.now()}] 关于您的反馈`;
+  document.getElementById('modal').style.display = 'flex';
 }
 
+// 关闭弹窗
 function closeModal(){
   document.getElementById('modal').style.display='none';
 }
 
+// 发送邮件（调用你后端转发接口 /api/feedback/send）
 async function sendReply(){
   const subject = document.getElementById('replySubject').value.trim();
   const text = document.getElementById('replyText').value.trim();
@@ -205,23 +207,28 @@ async function sendReply(){
   if(!subject){ alert('请输入邮件主题'); return; }
 
   try{
-    const res = await fetch('https://script.google.com/macros/s/AKfycbx74_1pABTLSwwe0WbuP4RI0k4y-9-McRQDElKupsb6ZPgHMagoBdXm0G2Qg5rjEklDtw/exec',{
+    const res = await fetch('/api/feedback/send',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({to: currentEmail, subject, message: text})
+      body:JSON.stringify({
+        to: currentEmail,
+        subject: subject,
+        message: text
+      })
     });
     const result = await res.json();
-    if(result.status==='success'){
+    if(result.status === 'success'){
       alert('✅ 邮件已发送');
       closeModal();
-    }else{
-      alert('❌ 发送失败：'+result.message);
+    } else {
+      alert('❌ 发送失败：'+(result.message||'未知错误'));
     }
   }catch(e){
-    alert('❌ 发送失败：'+e.message);
+    alert('❌ 发送异常：'+e.message);
   }
 }
 
+// 删除反馈
 async function removeFeedback(index){
   if(!confirm('确定要删除这条反馈吗？')) return;
 
@@ -234,17 +241,22 @@ async function removeFeedback(index){
     if(res.ok){
       loadFeedback();
     }else{
-      alert('删除失败');
+      const text = await res.text();
+      alert('删除失败：'+ text);
     }
   }catch(e){
-    alert('删除失败：'+e.message);
+    alert('删除异常：'+e.message);
   }
 }
 
+// 防止 XSS 注入
 function escapeHtml(str){
-  return str.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  return str.replace(/[&<>"']/g, m => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[m]));
 }
 
+// 初次加载
 loadFeedback();
 </script>
 
