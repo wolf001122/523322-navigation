@@ -137,20 +137,12 @@ button{
 let feedbackList = [];
 let currentEmail = '';
 let currentIndex = -1;
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwR456Mnk4cKiJ9nMjR_rZ3InMb2OzK1_qZExXzCq_6SAhdjVUzFR5jazzt3NIxgyZrAg/exec';
 
-// 加载反馈列表
 async function loadFeedback(){
   try{
     const res = await fetch('/api/feedback/list');
-    const text = await res.text();
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch(e) {
-      document.getElementById('msg').textContent = '加载失败，非JSON返回：'+text;
-      return;
-    }
-    feedbackList = data;
+    feedbackList = await res.json();
 
     const box = document.getElementById('list');
     if(!feedbackList.length){
@@ -162,7 +154,6 @@ async function loadFeedback(){
     feedbackList.forEach((f, i)=>{
       const card = document.createElement('div');
       card.className = 'card';
-
       const hasEmail = f.contact && f.contact.includes('@');
 
       card.innerHTML = `
@@ -170,23 +161,21 @@ async function loadFeedback(){
         <p><span class="label">联系方式：</span>${f.contact || '未填写'}</p>
         <p class="time">提交时间：${new Date(f.time).toLocaleString()}</p>
         <div class="actions">
-          <button class="reply" ${hasEmail?'':'disabled'}
-            onclick="openReply(${i})">邮件回复</button>
+          <button class="reply" ${hasEmail?'':'disabled'} onclick="openReply(${i})">邮件回复</button>
           <button class="delete" onclick="removeFeedback(${i})">删除</button>
         </div>
       `;
       box.appendChild(card);
     });
   }catch(e){
-    document.getElementById('msg').textContent = '加载异常：'+e.message;
+    document.getElementById('msg').textContent = '加载失败：'+e.message;
   }
 }
 
-// 打开回复弹窗
 function openReply(index){
   currentIndex = index;
   const f = feedbackList[index];
-  currentEmail = f.contact;
+  currentEmail = f.contact || '';
   document.getElementById('replyTo').textContent = '收件人：'+currentEmail;
   document.getElementById('replyText').value='';
   document.getElementById('replySubject').value = `[反馈回复#${f.time ? new Date(f.time).getTime() : Date.now()}] 关于您的反馈`;
@@ -197,49 +186,34 @@ function closeModal(){
   document.getElementById('modal').style.display='none';
 }
 
-// 发送邮件
 async function sendReply(){
   const subject = document.getElementById('replySubject').value.trim();
   const text = document.getElementById('replyText').value.trim();
-  if(!text){ alert('请输入回复内容'); return; }
+  if(!currentEmail){ alert('收件人邮箱无效'); return; }
   if(!subject){ alert('请输入邮件主题'); return; }
+  if(!text){ alert('请输入回复内容'); return; }
 
   try {
-    const res = await fetch('https://script.google.com/macros/s/AKfycbzJopZRLJwB1i9mVEQYtPbGBIjlBhF_N5uZcSftjJbsdNqGBRdU_nQTW1Oabhfmesumcg/exec',{
+    const res = await fetch(GAS_URL, {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        to: currentEmail,
-        subject: subject,
-        message: text
-      })
+      body:JSON.stringify({ to: currentEmail, subject, message: text })
     });
-
-    const responseText = await res.text();
-    let result;
-    try{
-      result = JSON.parse(responseText);
-    }catch(e){
-      alert('❌ 发送失败，返回内容不是JSON:\n'+responseText);
-      return;
-    }
-
+    const result = await res.json();
     if(result.status==='success'){
       alert('✅ 邮件已发送');
       closeModal();
-    }else{
-      alert('❌ 发送失败：'+(result.message||'未知错误'));
+    } else {
+      alert('❌ 发送失败：'+result.message);
     }
-  }catch(err){
-    alert('❌ 发送异常：'+err.message);
+  } catch(e){
+    alert('发送异常：'+e.message);
   }
 }
 
-// 删除反馈
 async function removeFeedback(index){
   if(!confirm('确定要删除这条反馈吗？')) return;
-
-  try{
+  try {
     const res = await fetch('/api/feedback/delete',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
@@ -247,19 +221,16 @@ async function removeFeedback(index){
     });
     if(res.ok){
       loadFeedback();
-    }else{
+    } else {
       alert('删除失败');
     }
-  }catch(err){
-    alert('删除异常：'+err.message);
+  } catch(e){
+    alert('删除异常：'+e.message);
   }
 }
 
-// HTML转义
 function escapeHtml(str){
-  return str.replace(/[&<>"']/g, m => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[m]));
+  return str.replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
 
 loadFeedback();
