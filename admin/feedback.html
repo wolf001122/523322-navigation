@@ -5,7 +5,7 @@
 <title>用户反馈管理</title>
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <style>
-* {box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   background:#f8f9fa;
@@ -133,7 +133,7 @@ let feedbackList = [];
 let currentEmail = '';
 let currentIndex = -1;
 // 您的 GAS Web App URL（替换为您的部署 URL）
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbx2Pc1WiNnmjamOmc1JsD0swejoSVqLrDHDbTKWdlsrDvDc09jlwX9Bw7WC-X_HLOorZw/exec'; // ← 这里替换为您的 Web App URL
+const GAS_URL = 'https://script.google.com/macros/library/d/1BNqMV8XJldHozGOsvzkUSCT4mJhyMuNpz9OAWJAin0HMQK79R-ts8pc8/8'; // ← 替换为您的 GAS URL
 async function loadFeedback(){
   try{
     const res = await fetch('/api/feedback/list');
@@ -182,7 +182,7 @@ async function sendReply(){
   if(!subject){ alert('请输入邮件主题'); return; }
   if(!currentEmail){ alert('收件人邮箱为空'); return; }
   try{
-    // POST 调用 GAS Web App
+    // POST 调用 GAS
     const res = await fetch(GAS_URL, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
