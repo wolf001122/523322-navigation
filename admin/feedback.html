@@ -92,14 +92,17 @@ button{
   margin-bottom:12px;
   font-size:20px;
 }
-.modal-box textarea{
+.modal-box input, .modal-box textarea{
   width:100%;
-  height:120px;
-  resize:none;
   padding:10px;
   border:1px solid #dadce0;
   border-radius:6px;
   margin-bottom:12px;
+  font-size:14px;
+}
+.modal-box textarea{
+  height:120px;
+  resize:none;
 }
 .modal-actions{
   text-align:right;
@@ -121,6 +124,8 @@ button{
   <div class="modal-box">
     <h2>回复用户反馈</h2>
     <p id="replyTo" class="time"></p>
+    <!-- 新增：邮件主题输入 -->
+    <input id="replySubject" placeholder="邮件主题（可修改）">
     <textarea id="replyText" placeholder="请输入回复内容..."></textarea>
     <div class="modal-actions">
       <button onclick="closeModal()">取消</button>
@@ -137,7 +142,6 @@ let currentIndex = -1;
 async function loadFeedback(){
   try{
     const res = await fetch('/api/feedback/list');
-    if(!res.ok) throw new Error(res.status+' '+res.statusText);
     feedbackList = await res.json();
 
     const box = document.getElementById('list');
@@ -152,12 +156,11 @@ async function loadFeedback(){
       card.className = 'card';
 
       const hasEmail = f.contact && f.contact.includes('@');
-      const displayTime = new Date(f.time).toLocaleString();
 
       card.innerHTML = `
         <p><span class="label">反馈内容：</span>${escapeHtml(f.message)}</p>
         <p><span class="label">联系方式：</span>${f.contact || '未填写'}</p>
-        <p class="time">提交时间：${displayTime}</p>
+        <p class="time">提交时间：${new Date(f.time).toLocaleString()}</p>
         <div class="actions">
           <button class="reply" ${hasEmail?'':'disabled'}
             onclick="openReply(${i})">邮件回复</button>
@@ -173,10 +176,12 @@ async function loadFeedback(){
 
 function openReply(index){
   currentIndex = index;
-  currentEmail = feedbackList[index].contact || '';
   const f = feedbackList[index];
-  document.getElementById('replyTo').textContent = `收件人：${currentEmail || '未填写'} | 反馈ID：${index}`;
+  currentEmail = f.contact;
+  document.getElementById('replyTo').textContent = '收件人：'+currentEmail;
   document.getElementById('replyText').value='';
+  // 新增：默认主题模板，带反馈编号（时间戳）
+  document.getElementById('replySubject').value = `[反馈回复#${f.time ? new Date(f.time).getTime() : Date.now()}] 关于您的反馈`;
   document.getElementById('modal').style.display='flex';
 }
 
@@ -185,20 +190,17 @@ function closeModal(){
 }
 
 async function sendReply(){
+  const subject = document.getElementById('replySubject').value.trim();
   const text = document.getElementById('replyText').value.trim();
   if(!text){ alert('请输入回复内容'); return; }
-
-  // 使用主题模板：包含反馈索引+时间
-  const f = feedbackList[currentIndex];
-  const timestamp = new Date().toLocaleString();
-  const subject = `[反馈ID-${currentIndex}] 关于您的反馈 (${timestamp})`;
+  if(!subject){ alert('请输入邮件主题'); return; }
 
   const res = await fetch('/api/feedback/reply',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
       to: currentEmail,
-      subject,
+      subject: subject,
       message: text
     })
   });
@@ -207,8 +209,7 @@ async function sendReply(){
     alert('✅ 邮件已发送');
     closeModal();
   }else{
-    const text = await res.text();
-    alert('❌ 发送失败：'+text);
+    alert('❌ 发送失败');
   }
 }
 
@@ -224,8 +225,7 @@ async function removeFeedback(index){
   if(res.ok){
     loadFeedback();
   }else{
-    const text = await res.text();
-    alert('删除失败：'+text);
+    alert('删除失败');
   }
 }
 
