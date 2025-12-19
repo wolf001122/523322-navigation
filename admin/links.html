@@ -68,13 +68,13 @@ header {
 }
 .card {
   background:#fff;
-  padding:12px;
+  padding:10px; /* 减少padding，减少空白 */
   border-radius:6px;
   box-shadow:0 2px 6px rgba(0,0,0,.08);
-  height: 120px; /* 固定高度 */
+  height: 100px; /* 降低高度，减少空白 */
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-between; /* 均匀分布，减少空白 */
 }
 .card .info {
   flex: 1;
@@ -96,7 +96,7 @@ header {
   overflow: hidden;
 }
 .card .actions {
-  margin-top:8px;
+  margin-top:6px; /* 减少margin，减少空白 */
   display:flex;
   gap:8px;
 }
@@ -173,6 +173,7 @@ function buildSub(){
       sub.appendChild(o);
     });
 }
+// 新版：按一级/二级分类显示卡片
 function renderCards(){
   const container = document.getElementById('cardsContainer');
   container.innerHTML='';
