@@ -138,8 +138,8 @@ let feedbackList = [];
 let currentEmail = '';
 let currentIndex = -1;
 
-// 你的 GAS Web App URL
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbxwdQ7x8qPmroKl6DHxz6RPq3ybKexJzqNRPophkhydA2pUClUds25ZJ9iIoj4tXlidHQ/exec';
+// 你的 GAS Web App URL（GET 方式调用）
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwR456Mnk4cKiJ9nMjR_rZ3InMb2OzK1_qZExXzCq_6SAhdjVUzFR5jazzt3NIxgyZrAg/exec';
 
 async function loadFeedback(){
   try{
@@ -156,7 +156,6 @@ async function loadFeedback(){
     feedbackList.forEach((f, i)=>{
       const card = document.createElement('div');
       card.className = 'card';
-
       const hasEmail = f.contact && f.contact.includes('@');
 
       card.innerHTML = `
@@ -164,8 +163,7 @@ async function loadFeedback(){
         <p><span class="label">联系方式：</span>${f.contact || '未填写'}</p>
         <p class="time">提交时间：${new Date(f.time).toLocaleString()}</p>
         <div class="actions">
-          <button class="reply" ${hasEmail?'':'disabled'}
-            onclick="openReply(${i})">邮件回复</button>
+          <button class="reply" ${hasEmail?'':'disabled'} onclick="openReply(${i})">邮件回复</button>
           <button class="delete" onclick="removeFeedback(${i})">删除</button>
         </div>
       `;
@@ -201,12 +199,9 @@ async function sendReply(){
   if(!currentEmail){ alert('收件人邮箱为空'); return; }
 
   try{
-    const res = await fetch(GAS_URL, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ to: currentEmail, subject, message: text })
-    });
-
+    // GET 调用 GAS Web App
+    const url = `${GAS_URL}?to=${encodeURIComponent(currentEmail)}&subject=${encodeURIComponent(subject)}&message=${encodeURIComponent(text)}`;
+    const res = await fetch(url);
     const result = await res.json();
 
     if(result.status==='success'){
@@ -215,7 +210,6 @@ async function sendReply(){
     } else {
       alert('❌ 发送失败：'+result.message);
     }
-
   }catch(err){
     alert('发送异常：'+err.message);
   }
