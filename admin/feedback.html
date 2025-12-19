@@ -92,17 +92,14 @@ button{
   margin-bottom:12px;
   font-size:20px;
 }
-.modal-box input[type="text"], .modal-box textarea{
+.modal-box textarea{
   width:100%;
+  height:120px;
+  resize:none;
   padding:10px;
   border:1px solid #dadce0;
   border-radius:6px;
   margin-bottom:12px;
-  font-size:14px;
-}
-.modal-box textarea{
-  height:120px;
-  resize:none;
 }
 .modal-actions{
   text-align:right;
@@ -124,8 +121,6 @@ button{
   <div class="modal-box">
     <h2>回复用户反馈</h2>
     <p id="replyTo" class="time"></p>
-    <!-- 新增主题输入框 -->
-    <input type="text" id="subjectText" placeholder="请输入邮件主题...">
     <textarea id="replyText" placeholder="请输入回复内容..."></textarea>
     <div class="modal-actions">
       <button onclick="closeModal()">取消</button>
@@ -139,16 +134,13 @@ let feedbackList = [];
 let currentEmail = '';
 let currentIndex = -1;
 
-// 加载反馈列表
 async function loadFeedback(){
-  const box = document.getElementById('list');
-  const msg = document.getElementById('msg');
-  msg.textContent = '';
-  box.innerHTML = '加载中...';
   try{
-    const res = await fetch('/api/kv/NAV_DATA/user_feedback');
-    if(!res.ok) throw new Error('接口请求失败');
+    const res = await fetch('/api/feedback/list');
+    if(!res.ok) throw new Error(res.status+' '+res.statusText);
     feedbackList = await res.json();
+
+    const box = document.getElementById('list');
     if(!feedbackList.length){
       box.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#5f6368;">暂无用户反馈</p>';
       return;
@@ -158,100 +150,91 @@ async function loadFeedback(){
     feedbackList.forEach((f, i)=>{
       const card = document.createElement('div');
       card.className = 'card';
+
       const hasEmail = f.contact && f.contact.includes('@');
+      const displayTime = new Date(f.time).toLocaleString();
 
       card.innerHTML = `
         <p><span class="label">反馈内容：</span>${escapeHtml(f.message)}</p>
-        <p><span class="label">联系方式：</span>${escapeHtml(f.contact || '未填写')}</p>
-        <p class="time">提交时间：${new Date(f.time).toLocaleString()}</p>
+        <p><span class="label">联系方式：</span>${f.contact || '未填写'}</p>
+        <p class="time">提交时间：${displayTime}</p>
         <div class="actions">
-          <button class="reply" ${hasEmail?'':'disabled'} onclick="openReply(${i})">邮件回复</button>
+          <button class="reply" ${hasEmail?'':'disabled'}
+            onclick="openReply(${i})">邮件回复</button>
           <button class="delete" onclick="removeFeedback(${i})">删除</button>
         </div>
       `;
       box.appendChild(card);
     });
   }catch(e){
-    box.innerHTML='';
-    msg.textContent = '加载失败：'+e.message;
+    document.getElementById('msg').textContent = '加载失败：'+e.message;
   }
 }
 
-// 打开回复弹窗
 function openReply(index){
   currentIndex = index;
-  const feedback = feedbackList[index];
-  currentEmail = feedback.contact;
-  document.getElementById('replyTo').textContent = '收件人：'+currentEmail;
+  currentEmail = feedbackList[index].contact || '';
+  const f = feedbackList[index];
+  document.getElementById('replyTo').textContent = `收件人：${currentEmail || '未填写'} | 反馈ID：${index}`;
   document.getElementById('replyText').value='';
-  // 自动生成主题模板：用户反馈编号 + 日期
-  const defaultSubject = `用户反馈回复 - 编号${index+1} - ${new Date().toLocaleString()}`;
-  document.getElementById('subjectText').value = defaultSubject;
   document.getElementById('modal').style.display='flex';
 }
 
-// 关闭弹窗
 function closeModal(){
   document.getElementById('modal').style.display='none';
 }
 
-// 发送邮件
 async function sendReply(){
   const text = document.getElementById('replyText').value.trim();
-  const subject = document.getElementById('subjectText').value.trim();
   if(!text){ alert('请输入回复内容'); return; }
-  if(!subject){ alert('请输入邮件主题'); return; }
 
-  try{
-    const res = await fetch('/api/feedback/reply',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        to: currentEmail,
-        subject,
-        message: text
-      })
-    });
-    if(res.ok){
-      alert('✅ 邮件已发送');
-      closeModal();
-    }else{
-      const t = await res.text();
-      alert('❌ 发送失败: '+t);
-    }
-  }catch(e){
-    alert('❌ 发送异常: '+e.message);
+  // 使用主题模板：包含反馈索引+时间
+  const f = feedbackList[currentIndex];
+  const timestamp = new Date().toLocaleString();
+  const subject = `[反馈ID-${currentIndex}] 关于您的反馈 (${timestamp})`;
+
+  const res = await fetch('/api/feedback/reply',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      to: currentEmail,
+      subject,
+      message: text
+    })
+  });
+
+  if(res.ok){
+    alert('✅ 邮件已发送');
+    closeModal();
+  }else{
+    const text = await res.text();
+    alert('❌ 发送失败：'+text);
   }
 }
 
-// 删除反馈
 async function removeFeedback(index){
   if(!confirm('确定要删除这条反馈吗？')) return;
-  try{
-    const res = await fetch('/api/feedback/delete',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ index })
-    });
-    if(res.ok){
-      loadFeedback();
-    }else{
-      const t = await res.text();
-      alert('删除失败: '+t);
-    }
-  }catch(e){
-    alert('删除异常：'+e.message);
+
+  const res = await fetch('/api/feedback/delete',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({ index })
+  });
+
+  if(res.ok){
+    loadFeedback();
+  }else{
+    const text = await res.text();
+    alert('删除失败：'+text);
   }
 }
 
-// 防止 HTML 注入
 function escapeHtml(str){
   return str.replace(/[&<>"']/g, m => ({
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
   }[m]));
 }
 
-// 初始化加载
 loadFeedback();
 </script>
 
