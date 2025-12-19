@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>链接管理</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
 <style>
 body {
   margin: 0;
@@ -45,8 +45,7 @@ header {
 }
 .btn-apply { background:#409eff;color:#fff;}
 .btn-clear { background:#9ca3af;color:#fff;}
-.btn-save  { background:#22c55e;color:#fff;font-weight:600;}
-
+.btn-save { background:#22c55e;color:#fff;font-weight:600;}
 .cards {
   flex:1;
   padding:16px;
@@ -72,6 +71,29 @@ header {
   padding:12px;
   border-radius:6px;
   box-shadow:0 2px 6px rgba(0,0,0,.08);
+  height: 120px; /* 固定高度 */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.card .info {
+  flex: 1;
+  overflow: hidden;
+}
+.card .name-domain {
+  font-weight: bold;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.card .desc {
+  font-size: 12px;
+  color: #6b7280;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .card .actions {
   margin-top:8px;
@@ -84,32 +106,23 @@ header {
 }
 </style>
 </head>
-
 <body>
 <header>链接管理</header>
-
 <div class="container">
-
 <div class="editor">
   <label>一级分类</label>
   <select id="cat"></select>
-
   <label>二级分类</label>
   <select id="sub"></select>
-
   <label>名称</label>
   <input id="linkName">
-
   <label>网址</label>
   <input id="url">
-
   <label>描述</label>
   <input id="desc">
-
   <button class="btn-apply" onclick="applyEdit()">应用修改</button>
   <button class="btn-clear" onclick="clearForm()">清空</button>
   <button class="btn-save" onclick="saveKV()">保存到 KV</button>
-
   <!-- 操作说明 -->
   <div style="
         margin-top:16px;
@@ -127,17 +140,13 @@ header {
     ⚠️ 请确保名称和网址必填，否则无法应用修改。
   </div>
 </div>
-
 <div class="cards" id="cardsContainer">
   <!-- 分类分组卡片显示 -->
 </div>
-
 </div>
-
 <script>
 let xmlDoc;
 let editRef = null;
-
 fetch('/api/data')
   .then(r => r.text())
   .then(t => {
@@ -145,7 +154,6 @@ fetch('/api/data')
     buildSelectors();
     renderCards();
   });
-
 function buildSelectors(){
   cat.innerHTML='';
   xmlDoc.querySelectorAll('category').forEach(c=>{
@@ -156,7 +164,6 @@ function buildSelectors(){
   buildSub();
   cat.onchange=buildSub;
 }
-
 function buildSub(){
   sub.innerHTML='';
   xmlDoc.querySelectorAll(`category[name="${cat.value}"] subcategory`)
@@ -166,17 +173,13 @@ function buildSub(){
       sub.appendChild(o);
     });
 }
-
-// 新版：按一级/二级分类显示卡片
 function renderCards(){
   const container = document.getElementById('cardsContainer');
   container.innerHTML='';
-
   xmlDoc.querySelectorAll('category').forEach(c=>{
     const catBlock = document.createElement('div');
     catBlock.className='category-block';
     catBlock.innerHTML=`<h3>${c.getAttribute('name')}</h3>`;
-
     c.querySelectorAll('subcategory').forEach(s=>{
       const subLinks = s.querySelectorAll('link');
       if(subLinks.length===0) return;
@@ -186,45 +189,55 @@ function renderCards(){
       subHeader.style.color='#374151';
       subHeader.textContent = s.getAttribute('name');
       catBlock.appendChild(subHeader);
-
       const grid = document.createElement('div');
       grid.className='card-grid';
-
       subLinks.forEach(l=>{
         const d=document.createElement('div');
         d.className='card';
         d._ref=l;
+        const domain = new URL(l.getAttribute('url')).hostname.replace('www.', '');
         d.innerHTML=`
-<strong>${l.getAttribute('name')}</strong>
-<small>${l.getAttribute('url')}</small>
-<small>${l.getAttribute('desc') || ''}</small>
+<div class="info">
+  <div class="name-domain">${l.getAttribute('name')} - ${domain}</div>
+  <div class="desc">${l.getAttribute('desc') || ''}</div>
+</div>
 <div class="actions">
-<button onclick="editLink(this)">编辑</button>
-<button onclick="delLink(this)">删除</button>
+  <button onclick="editLink(this)">编辑</button>
+  <button onclick="delLink(this)">删除</button>
 </div>`;
         grid.appendChild(d);
       });
-
       catBlock.appendChild(grid);
+      // 添加拖拽排序
+      new Sortable(grid, {
+        animation: 150,
+        onEnd: (evt) => {
+          const oldIndex = evt.oldIndex;
+          const newIndex = evt.newIndex;
+          const parentSub = s;
+          const links = Array.from(parentSub.querySelectorAll('link'));
+          const movedLink = links.splice(oldIndex, 1)[0];
+          links.splice(newIndex, 0, movedLink);
+          // 更新 XML 结构
+          parentSub.innerHTML = '';
+          links.forEach(link => parentSub.appendChild(link));
+          renderCards(); // 重新渲染
+        }
+      });
     });
-
     container.appendChild(catBlock);
   });
 }
-
 function editLink(btn){
   const l = btn.closest('.card')._ref;
   editRef = l;
-
   linkName.value = l.getAttribute('name') || '';
-  url.value      = l.getAttribute('url')  || '';
-  desc.value     = l.getAttribute('desc') || '';
-
+  url.value = l.getAttribute('url') || '';
+  desc.value = l.getAttribute('desc') || '';
   cat.value = l.closest('category').getAttribute('name');
   buildSub();
   sub.value = l.closest('subcategory').getAttribute('name');
 }
-
 function applyEdit(){
   if(!linkName.value || !url.value){
     alert('名称和网址不能为空');
@@ -240,23 +253,19 @@ function applyEdit(){
   editRef.setAttribute('name', linkName.value);
   editRef.setAttribute('url', url.value);
   editRef.setAttribute('desc', desc.value);
-
   clearForm();
   renderCards();
 }
-
 function delLink(btn){
   if(confirm('确定删除？')){
     btn.closest('.card')._ref.remove();
     renderCards();
   }
 }
-
 function clearForm(){
   linkName.value = url.value = desc.value = '';
   editRef = null;
 }
-
 function saveKV(){
   const xml = new XMLSerializer().serializeToString(xmlDoc);
   fetch('/api/save',{method:'POST',body:xml})
