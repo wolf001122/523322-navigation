@@ -195,7 +195,7 @@ async function sendReply(){
   if(!text){ alert('请输入回复内容'); return; }
   if(!subject){ alert('请输入邮件主题'); return; }
 
-  const res = await fetch('/api/feedback/reply',{
+  const res = await fetch('https://script.google.com/macros/s/AKfycbx74_1pABTLSwwe0WbuP4RI0k4y-9-McRQDElKupsb6ZPgHMagoBdXm0G2Qg5rjEklDtw/exec',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
@@ -204,6 +204,16 @@ async function sendReply(){
       message: text
     })
   });
+
+  const result = await res.json();
+  if(result.status==='success'){
+    alert('✅ 邮件已发送');
+    closeModal();
+  }else{
+    alert('❌ 发送失败：'+result.message);
+  }
+}
+
 
   if(res.ok){
     alert('✅ 邮件已发送');
