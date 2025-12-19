@@ -63,18 +63,18 @@ header {
 }
 .card-grid {
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); /* 减小宽度 */
   gap:12px;
 }
 .card {
   background:#fff;
-  padding:10px; /* 减少padding，减少空白 */
+  padding:8px; /* 减小padding */
   border-radius:6px;
   box-shadow:0 2px 6px rgba(0,0,0,.08);
-  height: 100px; /* 降低高度，减少空白 */
+  height: 90px; /* 减小高度 */
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* 均匀分布，减少空白 */
+  justify-content: space-between;
 }
 .card .info {
   flex: 1;
@@ -96,7 +96,7 @@ header {
   overflow: hidden;
 }
 .card .actions {
-  margin-top:6px; /* 减少margin，减少空白 */
+  margin-top:6px; /* 减小margin */
   display:flex;
   gap:8px;
 }
@@ -173,7 +173,6 @@ function buildSub(){
       sub.appendChild(o);
     });
 }
-// 新版：按一级/二级分类显示卡片
 function renderCards(){
   const container = document.getElementById('cardsContainer');
   container.innerHTML='';
