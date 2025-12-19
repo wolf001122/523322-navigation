@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.523322.xyz/</loc>
+    <lastmod>2025-12-19</lastmod>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.523322.xyz/submit.html</loc>
+    <lastmod>2025-12-19</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.523322.xyz/privacy.html</loc>
+    <lastmod>2025-12-19</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.523322.xyz/links.html</loc>
+    <lastmod>2025-12-19</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.523322.xyz/about.html</loc>
+    <lastmod>2025-12-19</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <!-- 如果有更多分类或页面，手动添加，如类别页如果有固定 URL -->
+</urlset>
