@@ -92,14 +92,17 @@ button{
   margin-bottom:12px;
   font-size:20px;
 }
-.modal-box textarea{
+.modal-box input[type="text"], .modal-box textarea{
   width:100%;
-  height:120px;
-  resize:none;
   padding:10px;
   border:1px solid #dadce0;
   border-radius:6px;
   margin-bottom:12px;
+  font-size:14px;
+}
+.modal-box textarea{
+  height:120px;
+  resize:none;
 }
 .modal-actions{
   text-align:right;
@@ -121,6 +124,8 @@ button{
   <div class="modal-box">
     <h2>回复用户反馈</h2>
     <p id="replyTo" class="time"></p>
+    <!-- 新增主题输入框 -->
+    <input type="text" id="subjectText" placeholder="请输入邮件主题...">
     <textarea id="replyText" placeholder="请输入回复内容..."></textarea>
     <div class="modal-actions">
       <button onclick="closeModal()">取消</button>
@@ -134,7 +139,7 @@ let feedbackList = [];
 let currentEmail = '';
 let currentIndex = -1;
 
-// 加载反馈
+// 加载反馈列表
 async function loadFeedback(){
   const box = document.getElementById('list');
   const msg = document.getElementById('msg');
@@ -175,9 +180,13 @@ async function loadFeedback(){
 // 打开回复弹窗
 function openReply(index){
   currentIndex = index;
-  currentEmail = feedbackList[index].contact;
+  const feedback = feedbackList[index];
+  currentEmail = feedback.contact;
   document.getElementById('replyTo').textContent = '收件人：'+currentEmail;
   document.getElementById('replyText').value='';
+  // 自动生成主题模板：用户反馈编号 + 日期
+  const defaultSubject = `用户反馈回复 - 编号${index+1} - ${new Date().toLocaleString()}`;
+  document.getElementById('subjectText').value = defaultSubject;
   document.getElementById('modal').style.display='flex';
 }
 
@@ -189,10 +198,9 @@ function closeModal(){
 // 发送邮件
 async function sendReply(){
   const text = document.getElementById('replyText').value.trim();
+  const subject = document.getElementById('subjectText').value.trim();
   if(!text){ alert('请输入回复内容'); return; }
-
-  const feedback = feedbackList[currentIndex];
-  const subject = `用户反馈回复 - ${new Date().toLocaleString()}`;
+  if(!subject){ alert('请输入邮件主题'); return; }
 
   try{
     const res = await fetch('/api/feedback/reply',{
@@ -208,8 +216,8 @@ async function sendReply(){
       alert('✅ 邮件已发送');
       closeModal();
     }else{
-      const text = await res.text();
-      alert('❌ 发送失败: '+text);
+      const t = await res.text();
+      alert('❌ 发送失败: '+t);
     }
   }catch(e){
     alert('❌ 发送异常: '+e.message);
@@ -228,11 +236,11 @@ async function removeFeedback(index){
     if(res.ok){
       loadFeedback();
     }else{
-      const text = await res.text();
-      alert('删除失败: '+text);
+      const t = await res.text();
+      alert('删除失败: '+t);
     }
   }catch(e){
-    alert('删除异常: '+e.message);
+    alert('删除异常：'+e.message);
   }
 }
 
