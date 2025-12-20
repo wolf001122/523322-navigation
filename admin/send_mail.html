@@ -2,15 +2,26 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>邮件发送测试</title>
+  <title>邮件发送测试（Resend + Worker）</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    input, textarea { width: 400px; padding: 5px; margin: 5px 0; }
+    button { padding: 8px 16px; }
+    pre { background: #f4f4f4; padding: 10px; }
+  </style>
 </head>
 <body>
 
-<h2>GitHub Pages → Cloudflare Worker → Resend</h2>
+<h2>Cloudflare Worker + Resend 邮件发送测试</h2>
 
-<input id="to" value="qsl@21cn.com" placeholder="收件人邮箱"><br><br>
-<input id="subject" value="测试邮件" placeholder="标题"><br><br>
-<textarea id="content">Hello from GitHub Pages!</textarea><br><br>
+<label>收件人邮箱：</label><br>
+<input id="to" type="email" value="qsl@21cn.com" placeholder="收件人邮箱"><br>
+
+<label>邮件标题：</label><br>
+<input id="subject" type="text" value="测试邮件" placeholder="邮件标题"><br>
+
+<label>邮件内容：</label><br>
+<textarea id="content" rows="5">Hello from GitHub Pages + Worker!</textarea><br>
 
 <button onclick="sendMail()">发送邮件</button>
 
@@ -23,7 +34,7 @@ async function sendMail() {
 
   try {
     const resp = await fetch(
-      "https://resend-mail-worker.cnjszzy.workers.dev", // ← 这里是你的 Worker
+      "https://resend-mail-worker.cnjszzy.workers.dev", // ← 替换成你的 Worker URL
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -35,8 +46,13 @@ async function sendMail() {
       }
     );
 
-    const text = await resp.text();
-    result.textContent = resp.ok ? "✅ 发送成功" : "❌ 失败:\n" + text;
+    if (!resp.ok) {
+      const text = await resp.text();
+      result.textContent = "❌ 发送失败:\n" + text;
+      return;
+    }
+
+    result.textContent = "✅ 邮件发送成功！请检查收件箱。";
 
   } catch (e) {
     result.textContent = "❌ 网络错误:\n" + e;
