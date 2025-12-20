@@ -2,15 +2,15 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>邮件发送测试（Resend）</title>
+  <title>邮件发送测试</title>
 </head>
 <body>
 
-<h2>邮件发送（安全版）</h2>
+<h2>GitHub Pages → Cloudflare Worker → Resend</h2>
 
 <input id="to" value="qsl@21cn.com" placeholder="收件人邮箱"><br><br>
 <input id="subject" value="测试邮件" placeholder="标题"><br><br>
-<textarea id="content">Hello from Resend + Cloudflare!</textarea><br><br>
+<textarea id="content">Hello from GitHub Pages!</textarea><br><br>
 
 <button onclick="sendMail()">发送邮件</button>
 
@@ -23,7 +23,7 @@ async function sendMail() {
 
   try {
     const resp = await fetch(
-      "https://resend-mail-worker.xxx.workers.dev", // ← 换成你的
+      "https://resend-mail-worker.cnjszzy.workers.dev", // ← 这里是你的 Worker
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -36,10 +36,10 @@ async function sendMail() {
     );
 
     const text = await resp.text();
-    result.textContent = resp.ok ? "✅ 发送成功" : "❌ 失败\n" + text;
+    result.textContent = resp.ok ? "✅ 发送成功" : "❌ 失败:\n" + text;
 
   } catch (e) {
-    result.textContent = "❌ 网络错误\n" + e;
+    result.textContent = "❌ 网络错误:\n" + e;
   }
 }
 </script>
