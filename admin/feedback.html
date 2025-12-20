@@ -8,14 +8,15 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-  background:#f8f9fa;
+  background:#f4f6f8;
   color:#202124;
   padding:20px;
 }
 h1{
-  font-size:24px;
+  font-size:28px;
   margin-bottom:20px;
   text-align:center;
+  color:#1a73e8;
 }
 #list{
   display:grid;
@@ -26,9 +27,13 @@ h1{
   background:#fff;
   border-radius:12px;
   padding:16px;
-  box-shadow:0 1px 2px rgba(60,64,67,.3),0 2px 6px rgba(60,64,67,.15);
+  box-shadow:0 2px 4px rgba(0,0,0,.1);
   display:flex;
   flex-direction:column;
+  transition:transform .2s;
+}
+.card:hover{
+  transform: translateY(-2px);
 }
 .card p{
   margin:6px 0;
@@ -52,6 +57,10 @@ button{
   cursor:pointer;
   font-size:14px;
   margin-right:6px;
+  transition:all .2s;
+}
+button:hover:not(:disabled){
+  opacity:0.85;
 }
 .reply{
   background:#1a73e8;
@@ -69,49 +78,63 @@ button{
   text-align:center;
   margin:16px 0;
   color:#d93025;
+  font-weight:500;
 }
-/* 回复弹窗 */
+
+/* 弹窗样式优化 */
 #modal{
   display:none;
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.45);
+  background:rgba(0,0,0,.5);
   align-items:center;
   justify-content:center;
   z-index:100;
 }
 .modal-box{
   background:#fff;
-  width:90%;
-  max-width:480px;
+  width:95%;
+  max-width:600px;
   border-radius:12px;
-  padding:20px;
+  padding:24px;
+  box-shadow:0 4px 20px rgba(0,0,0,.2);
+  animation:fadeIn 0.2s ease-out;
+}
+@keyframes fadeIn{
+  from{opacity:0; transform:scale(0.95);}
+  to{opacity:1; transform:scale(1);}
 }
 .modal-box h2{
-  margin-bottom:12px;
-  font-size:20px;
+  margin-bottom:16px;
+  font-size:24px;
+  color:#1a73e8;
 }
 .modal-box input, .modal-box textarea{
   width:100%;
-  padding:10px;
+  padding:12px;
   border:1px solid #dadce0;
   border-radius:6px;
-  margin-bottom:12px;
-  font-size:14px;
+  margin-bottom:16px;
+  font-size:15px;
+}
+.modal-box input:focus, .modal-box textarea:focus{
+  border-color:#1a73e8;
+  outline:none;
 }
 .modal-box textarea{
-  height:120px;
+  height:160px;
   resize:none;
 }
 .modal-actions{
   text-align:right;
 }
 .modal-actions button{
-  margin-left:8px;
+  margin-left:10px;
 }
 </style>
 </head>
 <body>
+
 <h1>用户反馈管理</h1>
 <div id="list">加载中...</div>
 <div id="msg"></div>
@@ -120,7 +143,7 @@ button{
 <div id="modal">
   <div class="modal-box">
     <h2>回复用户反馈</h2>
-    <p id="replyTo" class="time"></p>
+    <input id="replyEmail" type="email" placeholder="收件人邮箱">
     <input id="replySubject" placeholder="邮件主题（可修改）">
     <textarea id="replyText" placeholder="请输入回复内容..."></textarea>
     <div class="modal-actions">
@@ -132,12 +155,10 @@ button{
 
 <script>
 let feedbackList = [];
-let currentEmail = '';
 let currentIndex = -1;
+const MAIL_URL = 'https://resend-mail-worker.cnjszzy.workers.dev'; // 替换为你的邮件 Worker/GAS URL
 
-// 使用你自己的邮件 Worker URL 或 GAS URL
-const MAIL_URL = 'https://resend-mail-worker.cnjszzy.workers.dev';
-
+// 加载反馈列表
 async function loadFeedback(){
   try{
     const res = await fetch('/api/feedback/list');
@@ -168,36 +189,35 @@ async function loadFeedback(){
   }
 }
 
+// 打开回复弹窗
 function openReply(index){
   currentIndex = index;
   const f = feedbackList[index];
-  currentEmail = f.contact || '';
-  document.getElementById('replyTo').textContent = '收件人：'+currentEmail;
-  document.getElementById('replyText').value='';
+  document.getElementById('replyEmail').value = f.contact || '';
   document.getElementById('replySubject').value = `[反馈回复#${f.time ? new Date(f.time).getTime() : Date.now()}] 关于您的反馈`;
-  document.getElementById('modal').style.display='flex';
+  document.getElementById('replyText').value = '';
+  document.getElementById('modal').style.display = 'flex';
 }
 
+// 关闭弹窗
 function closeModal(){
-  document.getElementById('modal').style.display='none';
+  document.getElementById('modal').style.display = 'none';
 }
 
+// 发送邮件
 async function sendReply(){
+  const email = document.getElementById('replyEmail').value.trim();
   const subject = document.getElementById('replySubject').value.trim();
   const text = document.getElementById('replyText').value.trim();
-  if(!text){ alert('请输入回复内容'); return; }
+  if(!email){ alert('请输入收件人邮箱'); return; }
   if(!subject){ alert('请输入邮件主题'); return; }
-  if(!currentEmail){ alert('收件人邮箱为空'); return; }
+  if(!text){ alert('请输入回复内容'); return; }
 
   try {
     const resp = await fetch(MAIL_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        to: currentEmail,
-        subject: subject,
-        content: text
-      })
+      body: JSON.stringify({ to: email, subject: subject, content: text })
     });
     if(!resp.ok){
       const txt = await resp.text();
@@ -211,6 +231,7 @@ async function sendReply(){
   }
 }
 
+// 删除反馈
 async function removeFeedback(index){
   if(!confirm('确定要删除这条反馈吗？')) return;
   const res = await fetch('/api/feedback/delete',{
@@ -225,6 +246,7 @@ async function removeFeedback(index){
   }
 }
 
+// HTML 转义
 function escapeHtml(str){
   return str.replace(/[&<>"']/g, m => ({
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
@@ -233,5 +255,6 @@ function escapeHtml(str){
 
 loadFeedback();
 </script>
+
 </body>
 </html>
