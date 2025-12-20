@@ -28,7 +28,6 @@ body{
   flex-direction:column;
   box-shadow:0 1px 2px 0 rgba(60,64,67,0.3),0 1px 3px 1px rgba(60,64,67,0.15);
   transition: transform 0.3s ease;
-  z-index:200;
 }
 #sidebar.hidden{
   transform: translateX(-100%);
@@ -83,7 +82,6 @@ body{
   cursor:pointer;
   flex-direction:column;
   justify-content:space-between;
-  z-index:300;
 }
 #hamburger span{
   display:block;
@@ -93,19 +91,10 @@ body{
   transition: all 0.3s;
 }
 
-/* 遮罩层 */
-#overlay{
-  display:none;
-  position:fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background:rgba(0,0,0,0.4);
-  z-index:150;
-  transition: opacity 0.3s;
-}
-
 /* 主区域 */
 #main{flex:1;overflow:hidden;display:flex;flex-direction:column;background:#f8f9fa;transition: margin-left 0.3s;}
+#main.shifted{margin-left:240px;}
+
 #ad-top{background:#fff;border-bottom:1px solid #dadce0;padding:12px;text-align:center;box-shadow:0 1px 2px 0 rgba(60,64,67,0.3);flex-shrink:0;}
 #search-page{height:calc(100% - 60px);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:40px;}
 #search-box{display:flex;width:100%;max-width:680px;}
@@ -137,7 +126,7 @@ iframe#external-frame{flex:1;width:100%;border:none;display:block;}
 
 /* 手机适配 */
 @media (max-width:768px){
-  #sidebar{position:fixed;top:0;left:0;height:100%;transform:translateX(-100%);}
+  #sidebar{position:fixed;top:0;left:0;height:100%;z-index:200;transform:translateX(-100%);}
   #main.shifted{margin-left:0;}
   #hamburger{display:flex;}
 }
@@ -145,7 +134,7 @@ iframe#external-frame{flex:1;width:100%;border:none;display:block;}
 </head>
 <body>
 <div id="layout">
-  <div id="sidebar" class="hidden">
+  <div id="sidebar">
     <div id="logo" onclick="backToSearch()">导　航</div>
     <div id="cats"></div>
     <div id="side-bottom">
@@ -183,8 +172,6 @@ iframe#external-frame{flex:1;width:100%;border:none;display:block;}
   </div>
 </div>
 
-<div id="overlay" onclick="closeSidebarOnMobile()"></div>
-
 <script>
 const API='/api/data';
 let engine='https://www.google.com/search?q=';
@@ -193,7 +180,6 @@ const DEF_ICON='/icons/gray.png';
 const logo = document.getElementById('logo');
 const sidebar = document.getElementById('sidebar');
 const main = document.getElementById('main');
-const overlay = document.getElementById('overlay');
 
 function getDomain(url){
   try{ const hostname=new URL(url).hostname; return hostname.startsWith('www.')?hostname.slice(4):hostname; }
@@ -302,19 +288,11 @@ function loadExternal(url){
 
 // 汉堡菜单
 function toggleSidebar(){
-  const isHidden = sidebar.classList.contains('hidden');
-  if(isHidden){
-    sidebar.classList.remove('hidden');
-    overlay.style.display='block';
-  } else {
-    sidebar.classList.add('hidden');
-    overlay.style.display='none';
-  }
+  sidebar.classList.toggle('hidden');
 }
 function closeSidebarOnMobile(){
   if(window.innerWidth<=768){
     sidebar.classList.add('hidden');
-    overlay.style.display='none';
   }
 }
 </script>
