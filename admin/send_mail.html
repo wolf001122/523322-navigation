@@ -2,29 +2,16 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>邮件发送测试（Resend + Worker）</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    input, textarea { width: 400px; padding: 5px; margin: 5px 0; }
-    button { padding: 8px 16px; }
-    pre { background: #f4f4f4; padding: 10px; }
-  </style>
+  <title>邮件发送测试</title>
 </head>
 <body>
 
-<h2>Cloudflare Worker + Resend 邮件发送测试</h2>
+<h2>发送测试邮件</h2>
 
-<label>收件人邮箱：</label><br>
-<input id="to" type="email" value="qsl@21cn.com" placeholder="收件人邮箱"><br>
-
-<label>邮件标题：</label><br>
-<input id="subject" type="text" value="测试邮件" placeholder="邮件标题"><br>
-
-<label>邮件内容：</label><br>
-<textarea id="content" rows="5">Hello from GitHub Pages + Worker!</textarea><br>
-
+<input id="to" type="email" value="qsl@21cn.com"><br>
+<input id="subject" type="text" value="测试邮件"><br>
+<textarea id="content">Hello from GitHub Pages + Worker!</textarea><br>
 <button onclick="sendMail()">发送邮件</button>
-
 <pre id="result"></pre>
 
 <script>
@@ -33,18 +20,15 @@ async function sendMail() {
   result.textContent = "发送中…";
 
   try {
-    const resp = await fetch(
-      "https://resend-mail-worker.cnjszzy.workers.dev", // ← 替换成你的 Worker URL
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: document.getElementById("to").value,
-          subject: document.getElementById("subject").value,
-          content: document.getElementById("content").value
-        })
-      }
-    );
+    const resp = await fetch("https://resend-mail-worker.cnjszzy.workers.dev", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        to: document.getElementById("to").value,
+        subject: document.getElementById("subject").value,
+        content: document.getElementById("content").value
+      })
+    });
 
     if (!resp.ok) {
       const text = await resp.text();
@@ -52,8 +36,7 @@ async function sendMail() {
       return;
     }
 
-    result.textContent = "✅ 邮件发送成功！请检查收件箱。";
-
+    result.textContent = "✅ 邮件发送成功！";
   } catch (e) {
     result.textContent = "❌ 网络错误:\n" + e;
   }
