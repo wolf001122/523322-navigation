@@ -40,7 +40,7 @@
 <p>数据来源：<a href="https://traffic-signal-worker.cnjszzy.workers.dev/traffic_snapshot" target="_blank">traffic-signal-worker</a></p>
 
 <script>
-// Worker 绝对 URL
+// 绝对路径 Worker URL
 const WORKER_URL = "https://523322.xyz/traffic_snapshot";
 
 // 渲染表格
@@ -49,7 +49,9 @@ function renderTable(data) {
   tbody.innerHTML = "";
 
   data.forEach(site => {
-    const isPlaceholder = site.signals.index_pages === 0; // 占位数据
+    // 判断是否占位数据：index_pages === 0 或信号值为 0
+    const isPlaceholder = site.signals.index_pages === 0;
+
     const tr = document.createElement("tr");
     tr.className = isPlaceholder ? "placeholder" : "updated";
 
@@ -71,14 +73,18 @@ function renderTable(data) {
 async function loadTrafficData() {
   try {
     const resp = await fetch(WORKER_URL);
+    if(!resp.ok) throw new Error("Worker 返回错误: " + resp.status);
     const data = await resp.json();
     renderTable(data);
   } catch(e) {
     console.log("加载数据失败:", e);
+    // 显示占位提示
+    const tbody = document.querySelector("#traffic-table tbody");
+    tbody.innerHTML = `<tr><td colspan="8" style="color:#999;">数据加载失败，请稍候刷新</td></tr>`;
   }
 }
 
-// 首次加载
+// 页面首次加载
 loadTrafficData();
 
 // 每 3 秒刷新一次
