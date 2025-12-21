@@ -32,29 +32,22 @@
       <th>更新时间</th>
     </tr>
   </thead>
-  <tbody>
-    <!-- 表格数据由 JS 填充 -->
-  </tbody>
+  <tbody></tbody>
 </table>
 
 <p>数据来源：<a href="https://traffic-signal-worker.cnjszzy.workers.dev/traffic_snapshot" target="_blank">traffic-signal-worker</a></p>
 
 <script>
-// 绝对路径 Worker URL
 const WORKER_URL = "https://523322.xyz/traffic_snapshot";
 
 // 渲染表格
 function renderTable(data) {
   const tbody = document.querySelector("#traffic-table tbody");
   tbody.innerHTML = "";
-
   data.forEach(site => {
-    // 判断是否占位数据：index_pages === 0 或信号值为 0
     const isPlaceholder = site.signals.index_pages === 0;
-
     const tr = document.createElement("tr");
     tr.className = isPlaceholder ? "placeholder" : "updated";
-
     tr.innerHTML = `
       <td>${site.name}</td>
       <td>${site.domain}</td>
@@ -78,7 +71,6 @@ async function loadTrafficData() {
     renderTable(data);
   } catch(e) {
     console.log("加载数据失败:", e);
-    // 显示占位提示
     const tbody = document.querySelector("#traffic-table tbody");
     tbody.innerHTML = `<tr><td colspan="8" style="color:#999;">数据加载失败，请稍候刷新</td></tr>`;
   }
