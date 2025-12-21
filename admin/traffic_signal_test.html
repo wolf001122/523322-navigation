@@ -11,7 +11,6 @@
   th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
   th { background: #eee; }
   .placeholder { color: #999; }
-  .updated { color: #090; font-weight: bold; }
 </style>
 </head>
 <body>
@@ -40,16 +39,14 @@
 <p>数据来源：<a href="https://523322.xyz/traffic_snapshot" target="_blank">traffic-signal-worker</a></p>
 
 <script>
-const WORKER_URL = "https://523322.xyz/traffic_snapshot"; // 必须是绝对 URL
+const WORKER_URL = "https://523322.xyz/traffic_snapshot"; // 必须使用绝对 URL
 
 // 渲染表格
 function renderTable(data) {
   const tbody = document.querySelector("#traffic-table tbody");
   tbody.innerHTML = "";
   data.forEach(site => {
-    const isPlaceholder = site.signals.index_pages === 0;
     const tr = document.createElement("tr");
-    tr.className = isPlaceholder ? "placeholder" : "updated";
     tr.innerHTML = `
       <td>${site.name}</td>
       <td>${site.domain}</td>
@@ -80,9 +77,6 @@ async function loadTrafficData() {
 
 // 页面首次加载
 loadTrafficData();
-
-// 每 3 秒刷新一次
-setInterval(loadTrafficData, 3000);
 </script>
 
 </body>
