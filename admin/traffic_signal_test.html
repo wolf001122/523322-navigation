@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Traffic Signal 测试页（内部）</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+  background: #f5f6f7;
+  color: #333;
+}
+.container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+}
+h1 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+.notice {
+  background: #fff3cd;
+  border-left: 4px solid #ffb300;
+  padding: 10px 15px;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  font-size: 13px;
+  text-align: left;
+}
+th {
+  background: #fafafa;
+}
+.level {
+  font-weight: bold;
+}
+.level.S { color: #c00; }
+.level.A { color: #d47f00; }
+.level.B { color: #2b7; }
+.level.C { color: #2d8cf0; }
+.level.D { color: #888; }
+.level.E { color: #aaa; }
+.footer {
+  margin-top: 15px;
+  font-size: 12px;
+  color: #999;
+}
+pre {
+  white-space: pre-wrap;
+  font-size: 12px;
+  color: #666;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h1>📊 Traffic Signal 后台测试展示页</h1>
+
+  <div class="notice">
+    本页面仅用于观察 traffic-signal-worker 输出结果。<br>
+    不做任何修正、不做任何判断，仅供人工评估。
+  </div>
+
+  <table id="table">
+    <thead>
+      <tr>
+        <th>网站</th>
+        <th>域名</th>
+        <th>等级</th>
+        <th>区间</th>
+        <th>索引页</th>
+        <th>首页可达</th>
+        <th>页面大小(KB)</th>
+        <th>更新时间</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div class="footer">
+    数据来源：
+    <code>https://traffic-signal-worker.cnjszzy.workers.dev/traffic_snapshot</code>
+  </div>
+</div>
+
+<script>
+const API = "https://traffic-signal-worker.cnjszzy.workers.dev/traffic_snapshot";
+
+fetch(API)
+  .then(res => res.json())
+  .then(data => {
+    const tbody = document.querySelector("#table tbody");
+    data.forEach(item => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${item.name}</td>
+        <td>${item.domain}</td>
+        <td class="level ${item.traffic_level}">${item.traffic_level}</td>
+        <td>${item.traffic_range}</td>
+        <td>${item.signals.index_pages}</td>
+        <td>${item.signals.homepage_ok ? "✔" : "✖"}</td>
+        <td>${item.signals.page_size_kb}</td>
+        <td>${item.updated}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  })
+  .catch(err => {
+    alert("加载数据失败：" + err);
+  });
+</script>
+</body>
+</html>
