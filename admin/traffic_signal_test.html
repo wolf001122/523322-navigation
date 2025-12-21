@@ -33,20 +33,23 @@
     </tr>
   </thead>
   <tbody>
-    <!-- 表格数据将由 JS 填充 -->
+    <!-- 表格数据由 JS 填充 -->
   </tbody>
 </table>
 
 <p>数据来源：<a href="https://traffic-signal-worker.cnjszzy.workers.dev/traffic_snapshot" target="_blank">traffic-signal-worker</a></p>
 
 <script>
+// Worker 绝对 URL
+const WORKER_URL = "https://523322.xyz/traffic_snapshot";
+
 // 渲染表格
 function renderTable(data) {
   const tbody = document.querySelector("#traffic-table tbody");
-  tbody.innerHTML = ""; // 清空旧数据
+  tbody.innerHTML = "";
 
   data.forEach(site => {
-    const isPlaceholder = site.signals.index_pages === 0; // 判断是否占位
+    const isPlaceholder = site.signals.index_pages === 0; // 占位数据
     const tr = document.createElement("tr");
     tr.className = isPlaceholder ? "placeholder" : "updated";
 
@@ -67,7 +70,7 @@ function renderTable(data) {
 // 加载数据
 async function loadTrafficData() {
   try {
-    const resp = await fetch("/traffic_snapshot");
+    const resp = await fetch(WORKER_URL);
     const data = await resp.json();
     renderTable(data);
   } catch(e) {
