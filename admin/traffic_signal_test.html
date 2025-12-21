@@ -32,13 +32,15 @@
       <th>更新时间</th>
     </tr>
   </thead>
-  <tbody></tbody>
+  <tbody>
+    <tr><td colspan="8" style="color:#999;">数据加载中...</td></tr>
+  </tbody>
 </table>
 
 <p>数据来源：<a href="https://523322.xyz/traffic_snapshot" target="_blank">traffic-signal-worker</a></p>
 
 <script>
-const WORKER_URL = "https://523322.xyz/traffic_snapshot";
+const WORKER_URL = "https://523322.xyz/traffic_snapshot"; // 必须是绝对 URL
 
 // 渲染表格
 function renderTable(data) {
@@ -66,10 +68,10 @@ function renderTable(data) {
 async function loadTrafficData() {
   try {
     const resp = await fetch(WORKER_URL);
-    if(!resp.ok) throw new Error("Worker 返回错误: " + resp.status);
+    if (!resp.ok) throw new Error("Worker 返回错误: " + resp.status);
     const data = await resp.json();
     renderTable(data);
-  } catch(e) {
+  } catch (e) {
     console.log("加载数据失败:", e);
     const tbody = document.querySelector("#traffic-table tbody");
     tbody.innerHTML = `<tr><td colspan="8" style="color:#999;">数据加载失败，请稍候刷新</td></tr>`;
