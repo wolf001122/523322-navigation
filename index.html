@@ -189,11 +189,23 @@ const API='/api/data';
 let engine='https://www.google.com/search?q=';
 let data;
 const DEF_ICON='/icons/gray.png';
+let IS_CN=false; // 大陆标记
 const sidebar = document.getElementById('sidebar');
+
+// 获取用户IP地区，设置 IS_CN
+fetch('https://ipapi.co/json/').then(r=>r.json()).then(j=>{
+  if(j && j.country_code==='CN') IS_CN=true;
+}).catch(e=>{console.warn('IP check failed, assume non-CN')});
 
 function getDomain(url){
   try{ const hostname=new URL(url).hostname; return hostname.startsWith('www.')?hostname.slice(4):hostname; }
   catch(e){ return 'example.com'; }
+}
+
+// 最小闭环：返回 favicon URL，根据大陆/非大陆分流
+function getFaviconURL(domain){
+  if(IS_CN) return `https://gstatic.loli.net/favicon.ico?domain=${domain}`;
+  return `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
 }
 
 fetch(API).then(r=>r.text()).then(t=>{
@@ -312,3 +324,4 @@ function closeSidebarOnMobile(){
 </script>
 </body>
 </html>
+
