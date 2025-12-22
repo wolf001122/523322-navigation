@@ -135,9 +135,7 @@ iframe#external-frame{flex:1;width:100%;border:none;display:block;}
     z-index:200;
     transform:translateX(-100%);
   }
-  #sidebar.visible{
-    transform:translateX(0);
-  }
+  #sidebar.visible{transform:translateX(0);}
   #hamburger{display:flex;}
   body.sidebar-open #overlay{display:block;}
   #ad-top{padding-left:60px;}
@@ -145,6 +143,7 @@ iframe#external-frame{flex:1;width:100%;border:none;display:block;}
 }
 </style>
 </head>
+
 <body>
 <div id="layout">
   <div id="sidebar">
@@ -160,9 +159,7 @@ iframe#external-frame{flex:1;width:100%;border:none;display:block;}
   <div id="main">
     <div id="overlay" onclick="toggleSidebar()"></div>
     <div id="hamburger" onclick="toggleSidebar()">
-      <span></span>
-      <span></span>
-      <span></span>
+      <span></span><span></span><span></span>
     </div>
     <div id="ad-top">
       <ins class="adsbygoogle" style="display:block"
@@ -184,7 +181,22 @@ iframe#external-frame{flex:1;width:100%;border:none;display:block;}
     <div id="content"></div>
   </div>
 </div>
+
 <script>
+/* ===== ★ favicon 分流新增（仅新增，不影响原逻辑） ===== */
+let isChinaMainland = false;
+fetch('https://ipapi.co/json/')
+  .then(r=>r.json())
+  .then(d=>{ if(d && d.country_code==='CN') isChinaMainland=true; })
+  .catch(()=>{});
+
+const FAVICON_GOOGLE='https://www.google.com/s2/favicons?sz=64&domain=';
+const FAVICON_CN='https://gstatic.loli.net/s2/favicons?sz=64&domain=';
+function getFavicon(domain){
+  return (isChinaMainland?FAVICON_CN:FAVICON_GOOGLE)+domain;
+}
+/* ===== favicon 分流新增结束 ===== */
+
 const API='/api/data';
 let engine='https://www.google.com/search?q=';
 let data;
@@ -216,11 +228,11 @@ fetch(API).then(r=>r.text()).then(t=>{
 
 function renderCats(){
   const box=document.getElementById('cats'); box.innerHTML='';
-  data.forEach((c, idx)=>{
+  data.forEach((c)=>{
     const d=document.createElement('div');
     d.className='cat';
     d.textContent=c.name;
-    d.onclick=() => {
+    d.onclick=()=>{
       document.querySelectorAll('.cat').forEach(cat=>cat.classList.remove('active'));
       d.classList.add('active');
       showCategory(c);
@@ -260,7 +272,7 @@ function showCategory(c){
       const a=document.createElement('a'); a.className='card'; a.href=l.url; a.target='_blank';
       const img=document.createElement('img');
       if (l.icon && l.icon.trim()) img.src=l.icon.trim();
-      else img.src=`https://www.google.com/s2/favicons?sz=64&domain=${getDomain(l.url)}`;
+      else img.src=getFavicon(getDomain(l.url)); /* ★ 唯一替换点 */
       img.onerror=()=>{ img.onerror=null; img.src=DEF_ICON; };
       const t=document.createElement('div'); t.className='text';
       t.innerHTML=`<div class="name">${l.name}</div><div class="desc">${l.desc||''}</div>`;
