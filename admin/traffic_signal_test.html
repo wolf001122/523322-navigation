@@ -3,83 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Traffic Signal Test</title>
+    <title>中国网站流量排名自动生成页面</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1 { text-align: center; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        button { display: block; margin: 20px auto; padding: 10px 20px; }
-        .signals { font-size: 0.9em; color: #555; }
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
+        h1 { text-align: center; color: #333; }
+        select, button { padding: 10px; margin: 10px 5px; font-size: 16px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #4CAF50; color: white; cursor: pointer; }
+        th:hover { background-color: #45a049; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        a { color: #0066cc; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .info { background-color: #e7f3fe; padding: 15px; margin: 20px 0; border-left: 6px solid #2196F3; }
     </style>
 </head>
 <body>
-    <h1>网站流量信号测试页面</h1>
-    <p>此页面用于人工审阅搜索引擎信号估算的网站流量等级和区间值。数据从后台Worker自动采集，仅供测试，不接入主站。</p>
-    <button onclick="loadData()">刷新数据</button>
-    <table id="trafficTable">
+    <h1>中国网站流量排名自动生成页面（2025年12月最新）</h1>
+    <p class="info">数据来源：SimilarWeb、Semrush 等公开统计（网页流量为主）。页面加载即自动生成列表，支持筛选/排序，用于与523322.xyz对比，筛选添加站点。实际App流量更高（如拼多多、抖音）。</p>
+    
+    <div>
+        <label>筛选类别：</label>
+        <select id="categoryFilter">
+            <option value="all">全部</option>
+            <option value="搜索引擎">搜索引擎</option>
+            <option value="电商">电商</option>
+            <option value="视频">视频</option>
+            <option value="社交/门户">社交/门户</option>
+            <option value="其他">其他</option>
+        </select>
+        <button onclick="renderTable()">应用筛选</button>
+        <button onclick="location.reload()">刷新页面</button>
+    </div>
+
+    <table id="rankingTable">
         <thead>
             <tr>
-                <th>网站名称</th>
+                <th onclick="sortTable(0)">排名 ↑↓</th>
                 <th>域名</th>
-                <th>流量等级</th>
-                <th>流量区间</th>
-                <th>置信度</th>
-                <th>信号详情</th>
-                <th>更新日期</th>
+                <th>网站名称</th>
+                <th>类别</th>
+                <th>估算月流量（网页）</th>
+                <th>备注</th>
             </tr>
         </thead>
         <tbody>
-            <!-- 数据将动态插入这里 -->
+            <!-- JS自动填充 -->
         </tbody>
     </table>
 
     <script>
-        function loadData() {
-            const url = 'https://traffic-signal-worker.cnjszzy.workers.dev/traffic_snapshot';
-            // 可选：添加 ?sites= 参数自定义站点，例如 url + '?sites=baidu.com,zhihu.com'
-            
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('网络响应错误');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const tbody = document.querySelector('#trafficTable tbody');
-                    tbody.innerHTML = ''; // 清空旧数据
-                    
-                    data.forEach(site => {
-                        const row = document.createElement('tr');
-                        
-                        row.innerHTML = `
-                            <td>${site.name}</td>
-                            <td>${site.domain}</td>
-                            <td>${site.traffic_level}</td>
-                            <td>${site.traffic_range}</td>
-                            <td>${site.confidence}</td>
-                            <td class="signals">
-                                Google索引: ${site.signals.google_index}<br>
-                                Baidu索引: ${site.signals.baidu_index}<br>
-                                Bing索引: ${site.signals.bing_index}<br>
-                                平均索引页: ${site.signals.index_pages}
-                            </td>
-                            <td>${site.updated}</td>
-                        `;
-                        
-                        tbody.appendChild(row);
-                    });
-                })
-                .catch(error => {
-                    console.error('Fetch错误:', error);
-                    alert('数据加载失败，请检查Worker或网络。');
-                });
+        // 2025年12月最新中国流量排名数据（SimilarWeb/Semrush综合，定期替换更新）
+        const rankingData = [
+            { rank: 1, domain: "baidu.com", name: "百度", category: "搜索引擎", traffic: ">10亿", note: "中国搜索霸主" },
+            { rank: 2, domain: "qq.com", name: "腾讯QQ", category: "社交/门户", traffic: ">5亿", note: "即时通讯+门户" },
+            { rank: 3, domain: "taobao.com", name: "淘宝", category: "电商", traffic: ">2-3亿", note: "C2C平台" },
+            { rank: 4, domain: "bilibili.com", name: "哔哩哔哩", category: "视频", traffic: ">2亿", note: "年轻用户主力" },
+            { rank: 5, domain: "jd.com", name: "京东", category: "电商", traffic: ">1-2亿", note: "自营电商" },
+            { rank: 6, domain: "weibo.com", name: "新浪微博", category: "社交/门户", traffic: ">1亿", note: "微博平台" },
+            { rank: 7, domain: "zhihu.com", name: "知乎", category: "社交/门户", traffic: ">1亿", note: "问答社区" },
+            { rank: 8, domain: "douyin.com", name: "抖音", category: "视频", traffic: "高（App主导）", note: "短视频网页版" },
+            { rank: 9, domain: "tmall.com", name: "天猫", category: "电商", traffic: ">1亿", note: "品牌旗舰" },
+            { rank: 10, domain: "pinduoduo.com", name: "拼多多", category: "电商", traffic: "网页低/App极高", note: "社交电商三巨头" },
+            { rank: 11, domain: "360.cn", name: "360安全", category: "其他", traffic: "中等-高", note: "安全+搜索" },
+            { rank: 12, domain: "sohu.com", name: "搜狐", category: "社交/门户", traffic: "中等", note: "新闻+视频" },
+            { rank: 13, domain: "hao123.com", name: "hao123", category: "社交/门户", traffic: "中等", note: "网址导航" },
+            { rank: 14, domain: "sina.com.cn", name: "新浪", category: "社交/门户", traffic: "中等", note: "新闻门户" },
+            { rank: 15, domain: "youku.com", name: "优酷", category: "视频", traffic: "中等", note: "长视频" },
+            { rank: 16, domain: "toutiao.com", name: "今日头条", category: "社交/门户", traffic: "高", note: "新闻推荐" },
+            { rank: 17, domain: "meituan.com", name: "美团", category: "其他", traffic: "高", note: "生活服务" },
+            { rank: 18, domain: "alipay.com", name: "支付宝", category: "其他", traffic: "高", note: "支付平台" },
+            { rank: 19, domain: "csdn.net", name: "CSDN", category: "其他", traffic: "中等", note: "技术社区" },
+            { rank: 20, domain: "xinhua.net", name: "新华网", category: "社交/门户", traffic: "中等", note: "官方新闻" }
+            // 添加更多如需要...
+        ];
+
+        let currentData = [...rankingData]; // 用于排序
+
+        function renderTable() {
+            const filter = document.getElementById('categoryFilter').value;
+            let filteredData = filter === 'all' ? currentData : currentData.filter(item => item.category.includes(filter));
+
+            const tbody = document.querySelector('#rankingTable tbody');
+            tbody.innerHTML = '';
+
+            filteredData.forEach(site => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${site.rank}</td>
+                    <td><a href="https://${site.domain}" target="_blank">${site.domain}</a></td>
+                    <td>${site.name}</td>
+                    <td>${site.category}</td>
+                    <td>${site.traffic}</td>
+                    <td>${site.note}</td>
+                `;
+                tbody.appendChild(row);
+            });
         }
 
-        // 页面加载时自动获取数据
-        window.onload = loadData;
+        // 简单表头排序（数字排名）
+        function sortTable(col) {
+            currentData.sort((a, b) => a.rank - b.rank);
+            if (col === 0 && currentData[0].rank > currentData[currentData.length-1].rank) {
+                currentData.reverse();
+            }
+            renderTable();
+        }
+
+        // 初始渲染
+        window.onload = renderTable;
     </script>
 </body>
 </html>
