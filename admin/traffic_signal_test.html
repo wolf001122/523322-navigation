@@ -16,12 +16,13 @@
         a { color: #0066cc; text-decoration: none; }
         a:hover { text-decoration: underline; }
         .info { background-color: #e7f3fe; padding: 15px; margin: 20px 0; border-left: 6px solid #2196F3; }
-        .loading { text-align: center; font-style: italic; color: #666; }
+        .loading { text-align: center; font-style: italic; color: #666; margin: 20px 0; }
+        .error { color: red; text-align: center; }
     </style>
 </head>
 <body>
     <h1>中国网站流量排名实时页面（2025年12月最新）</h1>
-    <p class="info">数据从后台 Cloudflare Worker 实时获取（基于权威公开来源如 Cloudflare Radar、SimilarWeb、Semrush 等最新统计）。页面加载/刷新时自动拉取，支持类别筛选，用于人工审阅与523322.xyz对比，筛选潜在添加站点。</p>
+    <p class="info">数据从后台 Cloudflare Worker 实时获取（基于 SimilarWeb、Semrush、Cloudflare Radar 等权威来源综合最新统计，网页流量为主，App/小程序流量更高如拼多多、抖音）。页面加载/刷新时自动拉取，支持筛选，用于人工审阅与523322.xyz对比，筛选潜在添加站点。</p>
     
     <div>
         <label>筛选类别：</label>
@@ -37,11 +38,12 @@
     </div>
 
     <div id="loading" class="loading">加载中，请稍等...</div>
+    <div id="error" class="error" style="display:none;"></div>
 
     <table id="rankingTable" style="display:none;">
         <thead>
             <tr>
-                <th onclick="sortTable(0)">排名 ↑↓</th>
+                <th onclick="sortTable()">排名 ↑↓</th>
                 <th>域名</th>
                 <th>网站名称</th>
                 <th>类别</th>
@@ -50,72 +52,76 @@
             </tr>
         </thead>
         <tbody>
-            <!-- JS实时填充 -->
+            <!-- 实时填充 -->
         </tbody>
     </table>
 
     <script>
-        const workerUrl = 'https://traffic-signal-worker.cnjszzy.workers.dev/ranking_snapshot'; // 替换为您的Worker URL
+        const workerUrl = 'https://traffic-signal-worker.cnjszzy.workers.dev/ranking_snapshot'; // 您的Worker URL
+
+        let fullData = [];
 
         function loadData() {
             document.getElementById('loading').style.display = 'block';
-            document.getElementById('rankingTable').style.display = 'none';
             document.getElementById('loading').textContent = '正在从Worker实时拉取数据，请稍等...';
+            document.getElementById('rankingTable').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
 
             fetch(workerUrl)
                 .then(response => {
-                    if (!response.ok) throw new Error('Worker响应错误');
+                    if (!response.ok) throw new Error('Worker响应错误：' + response.status);
                     return response.json();
                 })
                 .then(data => {
-                    if (data.error) {
-                        alert('数据获取失败：' + data.error);
-                        return;
+                    if (data.error || !Array.isArray(data)) {
+                        throw new Error(data.error || '数据格式错误');
                     }
 
-                    const filter = document.getElementById('categoryFilter').value;
-                    let filtered = filter === 'all' ? data : data.filter(item => item.category && item.category.includes(filter));
+                    fullData = data;
 
-                    const tbody = document.querySelector('#rankingTable tbody');
-                    tbody.innerHTML = '';
-
-                    filtered.forEach(site => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${site.rank}</td>
-                            <td><a href="https://${site.domain}" target="_blank">${site.domain}</a></td>
-                            <td>${site.name || site.domain}</td>
-                            <td>${site.category || '未知'}</td>
-                            <td>${site.traffic || '高流行度'}</td>
-                            <td>${site.note || '实时来源'}</td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('rankingTable').style.display = 'table';
+                    renderTable();
                 })
                 .catch(err => {
-                    document.getElementById('loading').textContent = '加载失败：' + err.message + '（请检查Worker是否运行正常）';
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('error').style.display = 'block';
+                    document.getElementById('error').textContent = '加载失败：' + err.message + '（检查Worker是否返回正确JSON）';
                     console.error(err);
                 });
         }
 
-        // 简单排名排序（升序/降序切换）
+        function renderTable() {
+            const filter = document.getElementById('categoryFilter').value;
+            let displayData = filter === 'all' ? fullData : fullData.filter(item => item.category && item.category.includes(filter));
+
+            const tbody = document.querySelector('#rankingTable tbody');
+            tbody.innerHTML = '';
+
+            displayData.forEach(site => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${site.rank}</td>
+                    <td><a href="https://${site.domain}" target="_blank">${site.domain}</a></td>
+                    <td>${site.name || '未知'}</td>
+                    <td>${site.category || '未知'}</td>
+                    <td>${site.traffic || '高'}</td>
+                    <td>${site.note || ''}</td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('rankingTable').style.display = 'table';
+        }
+
+        // 排名排序切换
         let sortAsc = true;
         function sortTable() {
-            const rows = Array.from(document.querySelectorAll('#rankingTable tbody tr'));
-            rows.sort((a, b) => {
-                const rankA = parseInt(a.cells[0].textContent);
-                const rankB = parseInt(b.cells[0].textContent);
-                return sortAsc ? rankA - rankB : rankB - rankA;
-            });
-            const tbody = document.querySelector('#rankingTable tbody');
-            rows.forEach(row => tbody.appendChild(row));
+            fullData.sort((a, b) => sortAsc ? a.rank - b.rank : b.rank - a.rank);
+            renderTable();
             sortAsc = !sortAsc;
         }
 
-        // 页面加载时自动拉取
+        // 初始加载
         window.onload = loadData;
     </script>
 </body>
