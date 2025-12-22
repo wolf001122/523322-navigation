@@ -258,9 +258,12 @@ function showCategory(c){
     const box=document.getElementById('l'+i);
     s.links.forEach(l=>{
       const a=document.createElement('a'); a.className='card'; a.href=l.url; a.target='_blank';
+      
       const img=document.createElement('img');
       if (l.icon && l.icon.trim()) img.src=l.icon.trim();
-      else img.src=`https://www.google.com/s2/favicons?sz=64&domain=${getDomain(l.url)}`;
+      else  img.src = `https://gstatic.loli.net/favicon.ico?domain=${domain}`;
+img.onerror = () => { img.src = `https://www.google.com/s2/favicons?sz=64&domain=${domain}`; };
+      
       img.onerror=()=>{ img.onerror=null; img.src=DEF_ICON; };
       const t=document.createElement('div'); t.className='text';
       t.innerHTML=`<div class="name">${l.name}</div><div class="desc">${l.desc||''}</div>`;
@@ -312,3 +315,4 @@ function closeSidebarOnMobile(){
 </script>
 </body>
 </html>
+
