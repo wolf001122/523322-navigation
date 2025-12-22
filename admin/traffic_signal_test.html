@@ -1,78 +1,85 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
-<meta charset="UTF-8">
-<title>📊 Traffic Signal 后台测试展示页</title>
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<style>
-  body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
-  h1 { font-size: 24px; margin-bottom: 10px; }
-  table { border-collapse: collapse; width: 100%; background: #fff; }
-  th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-  th { background: #eee; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Signal Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        button { display: block; margin: 20px auto; padding: 10px 20px; }
+        .signals { font-size: 0.9em; color: #555; }
+    </style>
 </head>
 <body>
+    <h1>网站流量信号测试页面</h1>
+    <p>此页面用于人工审阅搜索引擎信号估算的网站流量等级和区间值。数据从后台Worker自动采集，仅供测试，不接入主站。</p>
+    <button onclick="loadData()">刷新数据</button>
+    <table id="trafficTable">
+        <thead>
+            <tr>
+                <th>网站名称</th>
+                <th>域名</th>
+                <th>流量等级</th>
+                <th>流量区间</th>
+                <th>置信度</th>
+                <th>信号详情</th>
+                <th>更新日期</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- 数据将动态插入这里 -->
+        </tbody>
+    </table>
 
-<h1>📊 Traffic Signal 后台测试展示页</h1>
-<p>本页面仅用于观察 <code>traffic-signal-worker</code> 输出结果，不做任何修正，仅供人工评估。</p>
+    <script>
+        function loadData() {
+            const url = 'https://traffic-signal-worker.cnjszzy.workers.dev/traffic_snapshot';
+            // 可选：添加 ?sites= 参数自定义站点，例如 url + '?sites=baidu.com,zhihu.com'
+            
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('网络响应错误');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const tbody = document.querySelector('#trafficTable tbody');
+                    tbody.innerHTML = ''; // 清空旧数据
+                    
+                    data.forEach(site => {
+                        const row = document.createElement('tr');
+                        
+                        row.innerHTML = `
+                            <td>${site.name}</td>
+                            <td>${site.domain}</td>
+                            <td>${site.traffic_level}</td>
+                            <td>${site.traffic_range}</td>
+                            <td>${site.confidence}</td>
+                            <td class="signals">
+                                Google索引: ${site.signals.google_index}<br>
+                                Baidu索引: ${site.signals.baidu_index}<br>
+                                Bing索引: ${site.signals.bing_index}<br>
+                                平均索引页: ${site.signals.index_pages}
+                            </td>
+                            <td>${site.updated}</td>
+                        `;
+                        
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Fetch错误:', error);
+                    alert('数据加载失败，请检查Worker或网络。');
+                });
+        }
 
-<table id="traffic-table">
-  <thead>
-    <tr>
-      <th>网站</th>
-      <th>域名</th>
-      <th>等级</th>
-      <th>区间</th>
-      <th>索引页</th>
-      <th>首页可达</th>
-      <th>页面大小(KB)</th>
-      <th>更新时间</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td colspan="8" style="color:#999;">数据加载中...</td></tr>
-  </tbody>
-</table>
-
-<p>数据来源：<a href="https://523322.xyz/traffic_snapshot" target="_blank">traffic-signal-worker</a></p>
-
-<script>
-const WORKER_URL = "https://523322.xyz/traffic_snapshot"; // 使用绝对 URL
-
-async function loadTrafficData() {
-  try {
-    const resp = await fetch(WORKER_URL);
-    if (!resp.ok) throw new Error("Worker 返回错误: " + resp.status);
-    const data = await resp.json();
-
-    const tbody = document.querySelector("#traffic-table tbody");
-    tbody.innerHTML = "";
-    data.forEach(site => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${site.name}</td>
-        <td>${site.domain}</td>
-        <td>${site.traffic_level}</td>
-        <td>${site.traffic_range}</td>
-        <td>${site.signals.index_pages}</td>
-        <td>${site.signals.homepage_ok ? "✔" : "✖"}</td>
-        <td>${site.signals.page_size_kb}</td>
-        <td>${site.updated}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-
-  } catch (e) {
-    console.log("加载数据失败:", e);
-    const tbody = document.querySelector("#traffic-table tbody");
-    tbody.innerHTML = `<tr><td colspan="8" style="color:#999;">数据加载失败，请稍候刷新</td></tr>`;
-  }
-}
-
-// 页面首次加载
-loadTrafficData();
-</script>
-
+        // 页面加载时自动获取数据
+        window.onload = loadData;
+    </script>
 </body>
 </html>
