@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9474229114991789" crossorigin="anonymous"></script>
+
 <style>
 :root {
   --primary: #1a73e8;
@@ -19,6 +20,7 @@
   --shadow: 0 6px 18px rgba(0,0,0,.08);
   --transition: all .25s ease;
 }
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
@@ -27,9 +29,11 @@ body {
   height: 100vh;
   overflow: hidden;
 }
+
 /* ===== 布局 ===== */
 #layout { display: flex; height: 100vh; width: 100vw; }
 #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
 /* ===== 侧边栏 ===== */
 #sidebar {
   width: 220px;
@@ -68,6 +72,7 @@ body {
   transition: opacity 0.2s;
 }
 #logo.return-mode:hover::after { opacity: 1; }
+
 #cats { flex: 1; overflow-y: auto; padding: 8px 0; }
 .cat {
   padding: 14px 24px;
@@ -82,6 +87,7 @@ body {
   color: #fff;
   font-weight: 600;
 }
+
 #side-bottom {
   border-top: 1px solid var(--border);
   padding: 20px 24px;
@@ -94,6 +100,7 @@ body {
   transition: color 0.2s;
 }
 #side-bottom div:hover { color: var(--primary); }
+
 /* ===== 移动端 ===== */
 #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 199; }
 #hamburger {
@@ -116,6 +123,7 @@ body {
   body.sidebar-open #overlay { display: block; }
   #ad-top { padding-left: 64px; }
 }
+
 /* ===== 顶部广告栏 ===== */
 #ad-top {
   background: var(--card-bg);
@@ -125,8 +133,10 @@ body {
   box-shadow: var(--shadow-sm);
   min-height: 70px;
 }
+
 /* ===== 主内容区 ===== */
 #content { flex: 1; overflow: auto; padding: 28px; background: var(--bg); }
+
 /* ===== 首页搜索 ===== */
 #search-page {
   flex: 1;
@@ -165,6 +175,7 @@ body {
   transition: var(--transition);
 }
 #search-box button:hover { background: var(--primary-hover); }
+
 #engines {
   margin-top: 36px;
   display: flex;
@@ -188,48 +199,7 @@ body {
   color: var(--primary);
   font-weight: 600;
 }
-/* ===== 热搜榜 ===== */
-#hot-search { 
-  margin-top: 40px; 
-  width: 100%; 
-  max-width: 1200px; 
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-}
-@media (max-width: 1024px) {
-  #hot-search { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 600px) {
-  #hot-search { grid-template-columns: 1fr; }
-}
-.hot-board { 
-  background: var(--card-bg);
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: var(--shadow-sm);
-  height: fit-content;
-}
-.hot-board-title { 
-  font-weight: 600; 
-  margin-bottom: 12px; 
-  font-size: 16px;
-}
-.hot-list { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 8px; 
-}
-.hot-item {
-  padding: 8px 12px;
-  font-size: 14px;
-  cursor: pointer;
-  border-radius: 12px;
-  transition: var(--transition);
-}
-.hot-item:hover { 
-  background: #f1f3f4; 
-}
+
 /* ===== 分类页面 ===== */
 .category-title { font-size: 32px; font-weight: 600; margin-bottom: 16px; }
 .sub-title {
@@ -239,9 +209,13 @@ body {
   padding-bottom: 6px;
   border-bottom: 2px solid var(--primary);
 }
-/* ===== 卡片网格 ===== */
+
+/* ===== 卡片网格（自适应多列） ===== */
+/* ===== 卡片网格（1920px屏幕6列，自适应） ===== */
 .links {
   display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 16px;
   padding: 0 8px;
@@ -249,32 +223,47 @@ body {
 .card {
   display: flex;
   align-items: center;
+  padding: 18px;
   padding: 12px;
   background: var(--card-bg);
+  border-radius: 14px;
   border-radius: 12px;
   text-decoration: none;
   color: inherit;
+  height: 100px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   height: 90px;
   box-shadow: var(--shadow-sm);
   transition: var(--transition);
   overflow: hidden;
 }
 .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.14);
   transform: translateY(-3px);
   box-shadow: 0 6px 18px rgba(0,0,0,0.14);
 }
 .card img {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
   width: 48px;
   height: 48px;
   min-width: 48px;
   object-fit: contain;
   background: var(--bg);
+  border-radius: 10px;
+  padding: 6px;
   border-radius: 8px;
   padding: 4px;
 }
+.text { margin-left: 16px; overflow: hidden; flex: 1; }
+.name { font-size: 15.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.desc { font-size: 13px; color: var(--text-light); margin-top: 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .text { margin-left: 12px; overflow: hidden; flex: 1; }
 .name { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .desc { font-size: 13px; color: var(--text-light); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
 .ad-box {
   margin: 40px 0;
   padding: 24px;
@@ -287,6 +276,7 @@ body {
 iframe#external-frame { flex: 1; width: 100%; border: none; }
 </style>
 </head>
+
 <body>
 <div id="layout">
   <div id="sidebar">
@@ -308,6 +298,7 @@ iframe#external-frame { flex: 1; width: 100%; border: none; }
       <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9474229114991789" data-ad-slot="1234567890" data-ad-format="auto" data-full-width-responsive="true"></ins>
       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
+
     <div id="search-page">
       <div id="search-box">
         <input id="q" placeholder="搜索…" onkeydown="if(event.key==='Enter')go()">
@@ -318,26 +309,45 @@ iframe#external-frame { flex: 1; width: 100%; border: none; }
         <button class="active" onclick="setEngine(this,'https://www.baidu.com/s?wd=')">百度</button>
         <button onclick="setEngine(this,'https://www.bing.com/search?q=')">Bing</button>
       </div>
-      <div id="hot-search">
-        <div class="hot-board" id="hot-zhihu"><div class="hot-board-title">🔥 知乎热搜榜</div><div class="hot-list"></div></div>
-        <div class="hot-board" id="hot-baidu"><div class="hot-board-title">📈 百度热搜榜</div><div class="hot-list"></div></div>
-        <div class="hot-board" id="hot-bilibili"><div class="hot-board-title">🎥 B站热搜榜</div><div class="hot-list"></div></div>
-        <div class="hot-board" id="hot-weibo"><div class="hot-board-title">🐦 微博热搜榜</div><div class="hot-list"></div></div>
-      </div>
     </div>
+
     <div id="content"></div>
   </div>
 </div>
+
 <script>
+const API = '/api/data';
+const DEF_ICON = '/icons/gray.png';
+let engine = 'https://www.baidu.com/s?wd=';
+let data = [];
+let xmlDoc = null;
+const categoryCache = new Map();
 const API='/api/data';
 const DEF_ICON='/icons/gray.png';
 let engine='https://www.baidu.com/s?wd=';
 let data=[];
 let xmlDoc=null;
 const categoryCache=new Map();
+
+function getDomain(url){
+  try{ const h=new URL(url).hostname; return h.startsWith('www.')?h.slice(4):h; }catch{return 'example.com';}
+}
 function getDomain(url){try{const h=new URL(url).hostname;return h.startsWith('www.')?h.slice(4):h;}catch{return 'example.com';}}
-// ==== 分类数据加载 ====
+
 fetch(API)
+  .then(r=>r.text())
+  .then(text=>{
+    xmlDoc=new DOMParser().parseFromString(text,'text/xml');
+    data=[...xmlDoc.querySelectorAll('category')].map(c=>({
+      name:c.getAttribute('name'),
+      subs:[...c.querySelectorAll('subcategory')].map(s=>({
+        name:s.getAttribute('name'),
+        links:[...s.querySelectorAll('link')].map(l=>({
+          name:l.getAttribute('name'),
+          url:l.getAttribute('url'),
+          desc:l.getAttribute('desc')||'',
+          icon:l.getAttribute('icon')||''
+        }))
 .then(r=>r.text())
 .then(text=>{
   xmlDoc=new DOMParser().parseFromString(text,'text/xml');
@@ -345,18 +355,22 @@ fetch(API)
     name:c.getAttribute('name'),
     subs:[...c.querySelectorAll('subcategory')].map(s=>({
       name:s.getAttribute('name'),
-      links:[...s.querySelectorAll('link')].map(l=({
+      links:[...s.querySelectorAll('link')].map(l=>({
         name:l.getAttribute('name'),
         url:l.getAttribute('url'),
         desc:l.getAttribute('desc')||'',
         icon:l.getAttribute('icon')||''
       }))
+    }));
+    renderCats();
+    backToSearch();
+  });
     }))
   }));
   renderCats();
   backToSearch();
-  loadHotSearchBoards();
 });
+
 function renderCats(){
   const box=document.getElementById('cats');
   box.innerHTML='';
@@ -368,20 +382,24 @@ function renderCats(){
     box.appendChild(el);
   });
 }
+
 function loadCategory(idx){
   if(categoryCache.has(idx)){ showCategory(categoryCache.get(idx)); return; }
   const node=xmlDoc.querySelectorAll('category')[idx];
-  const catData={ name:node.getAttribute('name'), subs:[...node.querySelectorAll('subcategory')].map(s=>({ name:s.getAttribute('name'), links:[...s.querySelectorAll('link')].map(l=({ name:l.getAttribute('name'), url:l.getAttribute('url'), desc:l.getAttribute('desc')||'', icon:l.getAttribute('icon')||'' })) })) };
+  const catData={ name:node.getAttribute('name'), subs:[...node.querySelectorAll('subcategory')].map(s=>({ name:s.getAttribute('name'), links:[...s.querySelectorAll('link')].map(l=>({ name:l.getAttribute('name'), url:l.getAttribute('url'), desc:l.getAttribute('desc')||'', icon:l.getAttribute('icon')||'' })) })) };
   categoryCache.set(idx,catData);
   showCategory(catData);
 }
+
 function showCategory(cat){
   document.getElementById('search-page').style.display='none';
   const cont=document.getElementById('content');
   cont.style.display='block';
   cont.innerHTML=`<div class="category-title">${cat.name}</div>
+    <div class="ad-box"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9474229114991789" data-ad-slot="9876543210" data-ad-format="auto"></ins></div>`;
   <div class="ad-box"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9474229114991789" data-ad-slot="9876543210" data-ad-format="auto"></ins></div>`;
   (adsbygoogle=window.adsbygoogle||[]).push({});
+
   cat.subs.forEach(sub=>{
     if(!sub.links.length)return;
     cont.innerHTML+=`<div class="sub-title">${sub.name}</div><div class="links"></div>`;
@@ -399,42 +417,7 @@ function showCategory(cat){
   document.getElementById('logo').classList.add('return-mode');
   closeSidebarOnMobile();
 }
-// ==== 热搜榜加载（使用当前稳定免费的觅知API：https://api.98dou.cn） ====
-function loadHotSearchBoards(){
-  const base = 'https://api.98dou.cn/api/hotlist.html';
-  const boards = [
-    {id:'hot-zhihu', type:'zhihu'},      // 知乎热搜
-    {id:'hot-baidu', type:'baidu'},      // 百度热点
-    {id:'hot-bilibili', type:'bilihot'}, // B站热搜
-    {id:'hot-weibo', type:'weibo'}       // 微博热搜
-  ];
-  boards.forEach(b=>{
-    fetch(`${base}?type=${b.type}`)
-      .then(r=>r.json())
-      .then(json=>{
-        let list = [];
-        if (json.code === 200 && json.data && Array.isArray(json.data)) {
-          list = json.data.slice(0, 20).map(item => typeof item === 'string' ? item : (item.title || item.word || item.name || item));
-        } else if (Array.isArray(json.data)) {
-          list = json.data.slice(0, 20);
-        }
-        const container = document.querySelector('#'+b.id+' .hot-list');
-        container.innerHTML = '';
-        list.forEach((item, index) => {
-          const div = document.createElement('div');
-          div.className = 'hot-item';
-          div.textContent = `${index + 1}. ${item}`;
-          div.onclick = () => { document.getElementById('q').value = item; go(); };
-          container.appendChild(div);
-        });
-      })
-      .catch(err => {
-        console.error('加载热搜失败', b.id, err);
-        const container = document.querySelector('#'+b.id+' .hot-list');
-        container.innerHTML = '<div style="color:#999;padding:8px;">加载失败，稍后刷新重试</div>';
-      });
-  });
-}
+
 function backToSearch(){
   document.getElementById('content').style.display='none';
   document.getElementById('search-page').style.display='flex';
@@ -442,15 +425,18 @@ function backToSearch(){
   document.querySelectorAll('.cat').forEach(c=>c.classList.remove('active'));
   closeSidebarOnMobile();
 }
+
 function go(){
   const q=document.getElementById('q').value.trim();
   if(q) window.open(engine+encodeURIComponent(q),'_blank');
 }
+
 function setEngine(btn,url){
   engine=url;
   document.querySelectorAll('#engines button').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
 }
+
 function loadExternal(url){
   document.getElementById('search-page').style.display='none';
   const cont=document.getElementById('content');
@@ -460,10 +446,12 @@ function loadExternal(url){
   document.querySelectorAll('.cat').forEach(c=>c.classList.remove('active'));
   closeSidebarOnMobile();
 }
+
 function toggleSidebar(){
   document.getElementById('sidebar').classList.toggle('visible');
   document.body.classList.toggle('sidebar-open');
 }
+
 function closeSidebarOnMobile(){
   if(window.innerWidth<=868){
     document.getElementById('sidebar').classList.remove('visible');
