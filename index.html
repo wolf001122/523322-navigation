@@ -203,6 +203,8 @@ body {
 /* ===== 热搜榜 ===== */
 #hot-search { margin-top: 40px; width: 100%; max-width: 760px; }
 .hot-title { font-size: 20px; font-weight: 600; margin-bottom: 12px; color: var(--primary); }
+.hot-board { margin-bottom: 24px; }
+.hot-board-title { font-weight: 600; margin-bottom: 8px; }
 #hot-list { display: flex; flex-wrap: wrap; gap: 10px; }
 .hot-item {
   background: var(--card-bg);
@@ -308,8 +310,10 @@ iframe#external-frame { flex: 1; width: 100%; border: none; }
         <button onclick="setEngine(this,'https://www.bing.com/search?q=')">Bing</button>
       </div>
       <div id="hot-search">
-        <div class="hot-title">🔥 热搜榜</div>
-        <div id="hot-list"></div>
+        <div class="hot-board" id="hot-today"><div class="hot-board-title">🔥 今日热搜</div><div class="hot-list"></div></div>
+        <div class="hot-board" id="hot-yesterday"><div class="hot-board-title">📈 昨日热搜</div><div class="hot-list"></div></div>
+        <div class="hot-board" id="hot-week"><div class="hot-board-title">7 日热搜</div><div class="hot-list"></div></div>
+        <div class="hot-board" id="hot-month"><div class="hot-board-title">30 日热搜</div><div class="hot-list"></div></div>
       </div>
     </div>
 
@@ -319,7 +323,6 @@ iframe#external-frame { flex: 1; width: 100%; border: none; }
 
 <script>
 const API='/api/data';
-const HOT_API='/api/hot';
 const DEF_ICON='/icons/gray.png';
 let engine='https://www.baidu.com/s?wd=';
 let data=[];
@@ -347,7 +350,7 @@ fetch(API)
   }));
   renderCats();
   backToSearch();
-  loadHotSearch(); // 热搜榜加载
+  loadHotSearchBoards();
 });
 
 function renderCats(){
@@ -396,28 +399,29 @@ function showCategory(cat){
   closeSidebarOnMobile();
 }
 
-// ==== 热搜榜加载 ====
-function loadHotSearch(){
-  fetch(HOT_API)
-    .then(r => r.json())
-    .then(list => {
-      const hotList = document.getElementById('hot-list');
-      hotList.innerHTML = '';
-      list.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'hot-item';
-        div.textContent = item;
-        div.onclick = () => {
-          document.getElementById('q').value = item;
-          go();
-        };
-        hotList.appendChild(div);
+// ==== 热搜榜 4 板块加载 ====
+function loadHotSearchBoards(){
+  const boards = [
+    {id:'hot-today', api:'/api/hot/today'},
+    {id:'hot-yesterday', api:'/api/hot/yesterday'},
+    {id:'hot-week', api:'/api/hot/week'},
+    {id:'hot-month', api:'/api/hot/month'}
+  ];
+  boards.forEach(b=>{
+    fetch(b.api).then(r=>r.json()).then(list=>{
+      const container=document.querySelector('#'+b.id+' .hot-list');
+      container.innerHTML='';
+      list.forEach(item=>{
+        const div=document.createElement('div');
+        div.className='hot-item';
+        div.textContent=item;
+        div.onclick=()=>{document.getElementById('q').value=item; go();}
+        container.appendChild(div);
       });
-    })
-    .catch(err => { console.error('加载热搜失败', err); });
+    }).catch(err=>{console.error('加载热搜失败',b.id,err);});
+  });
 }
 
-// ==== 搜索 ====
 function backToSearch(){
   document.getElementById('content').style.display='none';
   document.getElementById('search-page').style.display='flex';
@@ -447,7 +451,6 @@ function loadExternal(url){
   closeSidebarOnMobile();
 }
 
-// ==== 侧边栏控制 ====
 function toggleSidebar(){
   document.getElementById('sidebar').classList.toggle('visible');
   document.body.classList.toggle('sidebar-open');
