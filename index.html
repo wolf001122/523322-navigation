@@ -200,6 +200,21 @@ body {
   font-weight: 600;
 }
 
+/* ===== 热搜榜 ===== */
+#hot-search { margin-top: 40px; width: 100%; max-width: 760px; }
+.hot-title { font-size: 20px; font-weight: 600; margin-bottom: 12px; color: var(--primary); }
+#hot-list { display: flex; flex-wrap: wrap; gap: 10px; }
+.hot-item {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.hot-item:hover { background: var(--primary); color: #fff; }
+
 /* ===== 分类页面 ===== */
 .category-title { font-size: 32px; font-weight: 600; margin-bottom: 16px; }
 .sub-title {
@@ -210,7 +225,7 @@ body {
   border-bottom: 2px solid var(--primary);
 }
 
-/* ===== 卡片网格（1920px屏幕6列，自适应） ===== */
+/* ===== 卡片网格 ===== */
 .links {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -292,6 +307,10 @@ iframe#external-frame { flex: 1; width: 100%; border: none; }
         <button class="active" onclick="setEngine(this,'https://www.baidu.com/s?wd=')">百度</button>
         <button onclick="setEngine(this,'https://www.bing.com/search?q=')">Bing</button>
       </div>
+      <div id="hot-search">
+        <div class="hot-title">🔥 热搜榜</div>
+        <div id="hot-list"></div>
+      </div>
     </div>
 
     <div id="content"></div>
@@ -300,6 +319,7 @@ iframe#external-frame { flex: 1; width: 100%; border: none; }
 
 <script>
 const API='/api/data';
+const HOT_API='/api/hot';
 const DEF_ICON='/icons/gray.png';
 let engine='https://www.baidu.com/s?wd=';
 let data=[];
@@ -308,6 +328,7 @@ const categoryCache=new Map();
 
 function getDomain(url){try{const h=new URL(url).hostname;return h.startsWith('www.')?h.slice(4):h;}catch{return 'example.com';}}
 
+// ==== 分类数据加载 ====
 fetch(API)
 .then(r=>r.text())
 .then(text=>{
@@ -326,6 +347,7 @@ fetch(API)
   }));
   renderCats();
   backToSearch();
+  loadHotSearch(); // 热搜榜加载
 });
 
 function renderCats(){
@@ -374,6 +396,28 @@ function showCategory(cat){
   closeSidebarOnMobile();
 }
 
+// ==== 热搜榜加载 ====
+function loadHotSearch(){
+  fetch(HOT_API)
+    .then(r => r.json())
+    .then(list => {
+      const hotList = document.getElementById('hot-list');
+      hotList.innerHTML = '';
+      list.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'hot-item';
+        div.textContent = item;
+        div.onclick = () => {
+          document.getElementById('q').value = item;
+          go();
+        };
+        hotList.appendChild(div);
+      });
+    })
+    .catch(err => { console.error('加载热搜失败', err); });
+}
+
+// ==== 搜索 ====
 function backToSearch(){
   document.getElementById('content').style.display='none';
   document.getElementById('search-page').style.display='flex';
@@ -403,6 +447,7 @@ function loadExternal(url){
   closeSidebarOnMobile();
 }
 
+// ==== 侧边栏控制 ====
 function toggleSidebar(){
   document.getElementById('sidebar').classList.toggle('visible');
   document.body.classList.toggle('sidebar-open');
