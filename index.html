@@ -32,7 +32,7 @@ body {
 #layout { display: flex; height: 100vh; width: 100vw; }
 #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 
-/* ======== 侧边栏（宽度优化为 220px，更紧凑美观） ======== */
+/* ======== 侧边栏（宽度 220px） ======== */
 #sidebar {
   width: 220px;
   background: var(--card-bg);
@@ -122,14 +122,14 @@ body {
   #ad-top { padding-left: 64px; }
 }
 
-/* ======== 顶部广告栏（高度降低，只保留必要空间） ======== */
+/* ======== 顶部广告栏（高度更低） ======== */
 #ad-top {
   background: var(--card-bg);
   border-bottom: 1px solid var(--border);
-  padding: 10px;               /* 原来16px → 10px，高度明显降低 */
+  padding: 10px;
   text-align: center;
   box-shadow: var(--shadow-sm);
-  min-height: 70px;            /* 防止广告太高时撑开，但整体更紧凑 */
+  min-height: 70px;
 }
 
 /* ======== 主内容区 ======== */
@@ -208,11 +208,12 @@ body {
   border-bottom: 2px solid var(--primary);
 }
 
-/* ======== 卡片网格（关键优化：一行5个以上） ======== */
+/* ======== 卡片网格（关键修复：避免窄屏一行一个） ======== */
 .links {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));  /* 最小220px → 1920屏可轻松5-6列 */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));  /* 最小宽度提升到280px，确保即使中等屏幕也不会一行一个 */
   gap: 20px;
+  padding: 0 8px;  /* 轻微内边距，避免极窄时贴边 */
 }
 .card {
   display: flex;
@@ -311,7 +312,7 @@ iframe#external-frame { flex: 1; width: 100%; border: none; }
 </div>
 
 <script>
-// JS 与上版完全一致，仅微调变量名以匹配新 CSS（功能零损失）
+// JS 与之前完全一致（功能零损失）
 const API = '/api/data';
 const DEF_ICON = '/icons/gray.png';
 let engine = 'https://www.google.com/search?q=';
