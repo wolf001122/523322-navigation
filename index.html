@@ -399,24 +399,25 @@ function showCategory(cat){
   document.getElementById('logo').classList.add('return-mode');
   closeSidebarOnMobile();
 }
-// ==== 热搜榜加载（稳定免费API：今日热榜 https://tophub.today） ====
+// ==== 热搜榜加载（使用当前稳定免费的觅知API：https://api.98dou.cn） ====
 function loadHotSearchBoards(){
-  const base = 'https://v2.alapi.cn/api/hot';
-  const token = 'YOUR_ALAPI_TOKEN'; // 需要免费注册获取：https://www.alapi.cn/
+  const base = 'https://api.98dou.cn/api/hotlist.html';
   const boards = [
-    {id:'hot-zhihu', platform:'zhihu'},      // 知乎热搜
-    {id:'hot-baidu', platform:'baidu'},      // 百度热搜
-    {id:'hot-bilibili', platform:'bilibili'}, // B站热搜
-    {id:'hot-weibo', platform:'weibo'}       // 微博热搜
+    {id:'hot-zhihu', type:'zhihu'},      // 知乎热搜
+    {id:'hot-baidu', type:'baidu'},      // 百度热点
+    {id:'hot-bilibili', type:'bilihot'}, // B站热搜
+    {id:'hot-weibo', type:'weibo'}       // 微博热搜
   ];
   boards.forEach(b=>{
-    fetch(`${base}?token=${token}&platform=${b.platform}`)
+    fetch(`${base}?type=${b.type}`)
       .then(r=>r.json())
       .then(json=>{
-        if (json.code !== 200 || !json.data || !Array.isArray(json.data.list)) {
-          throw new Error('API返回错误');
+        let list = [];
+        if (json.code === 200 && json.data && Array.isArray(json.data)) {
+          list = json.data.slice(0, 20).map(item => typeof item === 'string' ? item : (item.title || item.word || item.name || item));
+        } else if (Array.isArray(json.data)) {
+          list = json.data.slice(0, 20);
         }
-        let list = json.data.list.slice(0, 20).map(item => item.title || item.name || item.word || item);
         const container = document.querySelector('#'+b.id+' .hot-list');
         container.innerHTML = '';
         list.forEach((item, index) => {
@@ -430,7 +431,7 @@ function loadHotSearchBoards(){
       .catch(err => {
         console.error('加载热搜失败', b.id, err);
         const container = document.querySelector('#'+b.id+' .hot-list');
-        container.innerHTML = '<div style="color:#999;padding:8px;">加载失败，API需token</div>';
+        container.innerHTML = '<div style="color:#999;padding:8px;">加载失败，稍后刷新重试</div>';
       });
   });
 }
