@@ -189,21 +189,47 @@ body {
   font-weight: 600;
 }
 /* ===== 热搜榜 ===== */
-#hot-search { margin-top: 40px; width: 100%; max-width: 760px; }
-.hot-title { font-size: 20px; font-weight: 600; margin-bottom: 12px; color: var(--primary); }
-.hot-board { margin-bottom: 24px; }
-.hot-board-title { font-weight: 600; margin-bottom: 8px; }
-#hot-list { display: flex; flex-wrap: wrap; gap: 10px; }
-.hot-item {
+#hot-search { 
+  margin-top: 40px; 
+  width: 100%; 
+  max-width: 1200px; 
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+@media (max-width: 1024px) {
+  #hot-search { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  #hot-search { grid-template-columns: 1fr; }
+}
+.hot-board { 
   background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: 8px 16px;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  height: fit-content;
+}
+.hot-board-title { 
+  font-weight: 600; 
+  margin-bottom: 12px; 
+  font-size: 16px;
+}
+.hot-list { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 8px; 
+}
+.hot-item {
+  padding: 8px 12px;
   font-size: 14px;
   cursor: pointer;
+  border-radius: 12px;
   transition: var(--transition);
 }
-.hot-item:hover { background: var(--primary); color: #fff; }
+.hot-item:hover { 
+  background: #f1f3f4; 
+}
 /* ===== 分类页面 ===== */
 .category-title { font-size: 32px; font-weight: 600; margin-bottom: 16px; }
 .sub-title {
@@ -317,7 +343,7 @@ fetch(API)
   xmlDoc=new DOMParser().parseFromString(text,'text/xml');
   data=[...xmlDoc.querySelectorAll('category')].map(c=>({
     name:c.getAttribute('name'),
-    subs:[...c.querySelectorAll('subcategory')].map(s=>({
+    subs:[...c.querySelectorAll('subcategory')].map(s=({
       name:s.getAttribute('name'),
       links:[...s.querySelectorAll('link')].map(l=>({
         name:l.getAttribute('name'),
@@ -329,7 +355,7 @@ fetch(API)
   }));
   renderCats();
   backToSearch();
-  loadHotSearchBoards();  // 加载新添加的4个跨平台热搜榜
+  loadHotSearchBoards();
 });
 function renderCats(){
   const box=document.getElementById('cats');
@@ -373,32 +399,32 @@ function showCategory(cat){
   document.getElementById('logo').classList.add('return-mode');
   closeSidebarOnMobile();
 }
-// ==== 新增：模仿 Addog.vip 的 4 个跨平台热搜榜（动态获取） ====
+// ==== 热搜榜加载（使用稳定免费公共API） ====
 function loadHotSearchBoards(){
   const boards = [
-    {id:'hot-zhihu', api:'https://api.98dou.cn/doc/hotlist.html?type=zhihu', platform: 'zhihu'},  // 知乎热榜
-    {id:'hot-baidu', api:'https://api.98dou.cn/doc/hotlist.html?type=baidu', platform: 'baidu'},   // 百度热点
-    {id:'hot-bilibili', api:'https://api.98dou.cn/doc/hotlist.html?type=bilihot', platform: 'bilihot'},  // B站热搜
-    {id:'hot-weibo', api:'https://api.98dou.cn/doc/hotlist.html?type=weibo', platform: 'weibo'}   // 微博热搜
+    {id:'hot-zhihu', api:'https://v.api.aa1.cn/api/zhihu-hot/'}, // 知乎热搜
+    {id:'hot-baidu', api:'https://v.api.aa1.cn/api/topbaidu/'},   // 百度热点
+    {id:'hot-bilibili', api:'https://v.api.aa1.cn/api/bilibili-rs/'}, // B站热搜
+    {id:'hot-weibo', api:'https://v.api.aa1.cn/api/weibo-hot/'}    // 微博热搜
   ];
   boards.forEach(b=>{
     fetch(b.api)
       .then(r=>r.json())
       .then(json=>{
         let list = [];
-        if (json.data && Array.isArray(json.data)) {
-          list = json.data.slice(0, 20).map(item => item.title || item.name || item);  // 不同API结构统一取标题
-        } else if (json.list && Array.isArray(json.list)) {
-          list = json.list.slice(0, 20).map(item => item.title || item);
+        if (json.code === 1 && json.data) {
+          list = json.data.slice(0, 20).map(item => typeof item === 'string' ? item : item.title || item.word || item);
+        } else if (Array.isArray(json.data)) {
+          list = json.data.slice(0, 20).map(item => item.title || item.word || item);
         } else if (Array.isArray(json)) {
           list = json.slice(0, 20);
         }
         const container=document.querySelector('#'+b.id+' .hot-list');
         container.innerHTML='';
-        list.forEach(item=>{
+        list.forEach((item, index)=>{
           const div=document.createElement('div');
           div.className='hot-item';
-          div.textContent=item;
+          div.textContent=`${index+1}. ${item}`;
           div.onclick=()=>{document.getElementById('q').value=item; go();};
           container.appendChild(div);
         });
