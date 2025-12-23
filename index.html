@@ -6,7 +6,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9474229114991789" crossorigin="anonymous"></script>
-
 <style>
 :root {
   --primary: #1a73e8;
@@ -20,7 +19,6 @@
   --shadow: 0 6px 18px rgba(0,0,0,.08);
   --transition: all .25s ease;
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
@@ -29,11 +27,9 @@ body {
   height: 100vh;
   overflow: hidden;
 }
-
 /* ===== 布局 ===== */
 #layout { display: flex; height: 100vh; width: 100vw; }
 #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-
 /* ===== 侧边栏 ===== */
 #sidebar {
   width: 220px;
@@ -72,7 +68,6 @@ body {
   transition: opacity 0.2s;
 }
 #logo.return-mode:hover::after { opacity: 1; }
-
 #cats { flex: 1; overflow-y: auto; padding: 8px 0; }
 .cat {
   padding: 14px 24px;
@@ -87,7 +82,6 @@ body {
   color: #fff;
   font-weight: 600;
 }
-
 #side-bottom {
   border-top: 1px solid var(--border);
   padding: 20px 24px;
@@ -100,7 +94,6 @@ body {
   transition: color 0.2s;
 }
 #side-bottom div:hover { color: var(--primary); }
-
 /* ===== 移动端 ===== */
 #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 199; }
 #hamburger {
@@ -123,7 +116,6 @@ body {
   body.sidebar-open #overlay { display: block; }
   #ad-top { padding-left: 64px; }
 }
-
 /* ===== 顶部广告栏 ===== */
 #ad-top {
   background: var(--card-bg);
@@ -133,10 +125,8 @@ body {
   box-shadow: var(--shadow-sm);
   min-height: 70px;
 }
-
 /* ===== 主内容区 ===== */
 #content { flex: 1; overflow: auto; padding: 28px; background: var(--bg); }
-
 /* ===== 首页搜索 ===== */
 #search-page {
   flex: 1;
@@ -175,7 +165,6 @@ body {
   transition: var(--transition);
 }
 #search-box button:hover { background: var(--primary-hover); }
-
 #engines {
   margin-top: 36px;
   display: flex;
@@ -199,7 +188,6 @@ body {
   color: var(--primary);
   font-weight: 600;
 }
-
 /* ===== 热搜榜 ===== */
 #hot-search { margin-top: 40px; width: 100%; max-width: 760px; }
 .hot-title { font-size: 20px; font-weight: 600; margin-bottom: 12px; color: var(--primary); }
@@ -216,7 +204,6 @@ body {
   transition: var(--transition);
 }
 .hot-item:hover { background: var(--primary); color: #fff; }
-
 /* ===== 分类页面 ===== */
 .category-title { font-size: 32px; font-weight: 600; margin-bottom: 16px; }
 .sub-title {
@@ -226,7 +213,6 @@ body {
   padding-bottom: 6px;
   border-bottom: 2px solid var(--primary);
 }
-
 /* ===== 卡片网格 ===== */
 .links {
   display: grid;
@@ -263,7 +249,6 @@ body {
 .text { margin-left: 12px; overflow: hidden; flex: 1; }
 .name { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .desc { font-size: 13px; color: var(--text-light); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
 .ad-box {
   margin: 40px 0;
   padding: 24px;
@@ -276,7 +261,6 @@ body {
 iframe#external-frame { flex: 1; width: 100%; border: none; }
 </style>
 </head>
-
 <body>
 <div id="layout">
   <div id="sidebar">
@@ -298,7 +282,6 @@ iframe#external-frame { flex: 1; width: 100%; border: none; }
       <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9474229114991789" data-ad-slot="1234567890" data-ad-format="auto" data-full-width-responsive="true"></ins>
       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
-
     <div id="search-page">
       <div id="search-box">
         <input id="q" placeholder="搜索…" onkeydown="if(event.key==='Enter')go()">
@@ -310,17 +293,15 @@ iframe#external-frame { flex: 1; width: 100%; border: none; }
         <button onclick="setEngine(this,'https://www.bing.com/search?q=')">Bing</button>
       </div>
       <div id="hot-search">
-        <div class="hot-board" id="hot-today"><div class="hot-board-title">🔥 今日热搜</div><div class="hot-list"></div></div>
-        <div class="hot-board" id="hot-yesterday"><div class="hot-board-title">📈 昨日热搜</div><div class="hot-list"></div></div>
-        <div class="hot-board" id="hot-week"><div class="hot-board-title">7 日热搜</div><div class="hot-list"></div></div>
-        <div class="hot-board" id="hot-month"><div class="hot-board-title">30 日热搜</div><div class="hot-list"></div></div>
+        <div class="hot-board" id="hot-zhihu"><div class="hot-board-title">🔥 知乎热搜榜</div><div class="hot-list"></div></div>
+        <div class="hot-board" id="hot-baidu"><div class="hot-board-title">📈 百度热搜榜</div><div class="hot-list"></div></div>
+        <div class="hot-board" id="hot-bilibili"><div class="hot-board-title">🎥 B站热搜榜</div><div class="hot-list"></div></div>
+        <div class="hot-board" id="hot-weibo"><div class="hot-board-title">🐦 微博热搜榜</div><div class="hot-list"></div></div>
       </div>
     </div>
-
     <div id="content"></div>
   </div>
 </div>
-
 <script>
 const API='/api/data';
 const DEF_ICON='/icons/gray.png';
@@ -328,9 +309,7 @@ let engine='https://www.baidu.com/s?wd=';
 let data=[];
 let xmlDoc=null;
 const categoryCache=new Map();
-
 function getDomain(url){try{const h=new URL(url).hostname;return h.startsWith('www.')?h.slice(4):h;}catch{return 'example.com';}}
-
 // ==== 分类数据加载 ====
 fetch(API)
 .then(r=>r.text())
@@ -350,9 +329,8 @@ fetch(API)
   }));
   renderCats();
   backToSearch();
-  loadHotSearchBoards();
+  loadHotSearchBoards();  // 加载新添加的4个跨平台热搜榜
 });
-
 function renderCats(){
   const box=document.getElementById('cats');
   box.innerHTML='';
@@ -364,7 +342,6 @@ function renderCats(){
     box.appendChild(el);
   });
 }
-
 function loadCategory(idx){
   if(categoryCache.has(idx)){ showCategory(categoryCache.get(idx)); return; }
   const node=xmlDoc.querySelectorAll('category')[idx];
@@ -372,7 +349,6 @@ function loadCategory(idx){
   categoryCache.set(idx,catData);
   showCategory(catData);
 }
-
 function showCategory(cat){
   document.getElementById('search-page').style.display='none';
   const cont=document.getElementById('content');
@@ -380,7 +356,6 @@ function showCategory(cat){
   cont.innerHTML=`<div class="category-title">${cat.name}</div>
   <div class="ad-box"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9474229114991789" data-ad-slot="9876543210" data-ad-format="auto"></ins></div>`;
   (adsbygoogle=window.adsbygoogle||[]).push({});
-
   cat.subs.forEach(sub=>{
     if(!sub.links.length)return;
     cont.innerHTML+=`<div class="sub-title">${sub.name}</div><div class="links"></div>`;
@@ -398,30 +373,42 @@ function showCategory(cat){
   document.getElementById('logo').classList.add('return-mode');
   closeSidebarOnMobile();
 }
-
-// ==== 热搜榜 4 板块加载 ====
+// ==== 新增：模仿 Addog.vip 的 4 个跨平台热搜榜（动态获取） ====
 function loadHotSearchBoards(){
   const boards = [
-    {id:'hot-today', api:'/api/hot/today'},
-    {id:'hot-yesterday', api:'/api/hot/yesterday'},
-    {id:'hot-week', api:'/api/hot/week'},
-    {id:'hot-month', api:'/api/hot/month'}
+    {id:'hot-zhihu', api:'https://api.98dou.cn/doc/hotlist.html?type=zhihu', platform: 'zhihu'},  // 知乎热榜
+    {id:'hot-baidu', api:'https://api.98dou.cn/doc/hotlist.html?type=baidu', platform: 'baidu'},   // 百度热点
+    {id:'hot-bilibili', api:'https://api.98dou.cn/doc/hotlist.html?type=bilihot', platform: 'bilihot'},  // B站热搜
+    {id:'hot-weibo', api:'https://api.98dou.cn/doc/hotlist.html?type=weibo', platform: 'weibo'}   // 微博热搜
   ];
   boards.forEach(b=>{
-    fetch(b.api).then(r=>r.json()).then(list=>{
-      const container=document.querySelector('#'+b.id+' .hot-list');
-      container.innerHTML='';
-      list.forEach(item=>{
-        const div=document.createElement('div');
-        div.className='hot-item';
-        div.textContent=item;
-        div.onclick=()=>{document.getElementById('q').value=item; go();}
-        container.appendChild(div);
+    fetch(b.api)
+      .then(r=>r.json())
+      .then(json=>{
+        let list = [];
+        if (json.data && Array.isArray(json.data)) {
+          list = json.data.slice(0, 20).map(item => item.title || item.name || item);  // 不同API结构统一取标题
+        } else if (json.list && Array.isArray(json.list)) {
+          list = json.list.slice(0, 20).map(item => item.title || item);
+        } else if (Array.isArray(json)) {
+          list = json.slice(0, 20);
+        }
+        const container=document.querySelector('#'+b.id+' .hot-list');
+        container.innerHTML='';
+        list.forEach(item=>{
+          const div=document.createElement('div');
+          div.className='hot-item';
+          div.textContent=item;
+          div.onclick=()=>{document.getElementById('q').value=item; go();};
+          container.appendChild(div);
+        });
+      })
+      .catch(err=>{console.error('加载热搜失败',b.id,err);
+        const container=document.querySelector('#'+b.id+' .hot-list');
+        container.innerHTML='<div style="color:#999;padding:8px;">加载失败</div>';
       });
-    }).catch(err=>{console.error('加载热搜失败',b.id,err);});
   });
 }
-
 function backToSearch(){
   document.getElementById('content').style.display='none';
   document.getElementById('search-page').style.display='flex';
@@ -429,18 +416,15 @@ function backToSearch(){
   document.querySelectorAll('.cat').forEach(c=>c.classList.remove('active'));
   closeSidebarOnMobile();
 }
-
 function go(){
   const q=document.getElementById('q').value.trim();
   if(q) window.open(engine+encodeURIComponent(q),'_blank');
 }
-
 function setEngine(btn,url){
   engine=url;
   document.querySelectorAll('#engines button').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
 }
-
 function loadExternal(url){
   document.getElementById('search-page').style.display='none';
   const cont=document.getElementById('content');
@@ -450,12 +434,10 @@ function loadExternal(url){
   document.querySelectorAll('.cat').forEach(c=>c.classList.remove('active'));
   closeSidebarOnMobile();
 }
-
 function toggleSidebar(){
   document.getElementById('sidebar').classList.toggle('visible');
   document.body.classList.toggle('sidebar-open');
 }
-
 function closeSidebarOnMobile(){
   if(window.innerWidth<=868){
     document.getElementById('sidebar').classList.remove('visible');
