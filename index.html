@@ -79,7 +79,11 @@ body {
   transition: opacity 0.2s;
 }
 #logo.return-mode:hover::after { opacity: 1; }
-#cats { flex: 1; overflow-y: auto; padding: 8px 0; }
+#cats { 
+  flex: 1; 
+  overflow-y: auto; 
+  padding: 8px 0; 
+}
 .cat {
   padding: 14px 24px;
   cursor: pointer;
@@ -138,7 +142,7 @@ body {
 }
 /* ===== 主内容区 ===== */
 #content { flex: 1; overflow: auto; padding: 28px; background: var(--bg); display: none; }
-/* ===== 新搜索首页（替换原 #search-page） ===== */
+/* ===== 新搜索首页 ===== */
 #search-page {
   flex: 1;
   display: flex;
@@ -146,14 +150,11 @@ body {
   align-items: center;
   padding: 40px 20px;
 }
-
-/* 新搜索区域 */
 .s-search {
   width:100%;
   max-width:960px;
   text-align:center;
 }
-/* 顶部分类标签 */
 .s-type-list {
   display:flex;
   justify-content:center;
@@ -187,7 +188,6 @@ body {
   border-radius:2px;
   box-shadow:0 0 12px var(--primary-glow);
 }
-/* 胶囊形搜索框 */
 .super-search-fm {
   position:relative;
   display:flex;
@@ -226,7 +226,6 @@ body {
 .super-search-fm .submit:hover {
   color:#333;
 }
-/* 二级选项指示三角形 */
 .indicator {
   width:0;
   height:0;
@@ -241,7 +240,6 @@ body {
 .indicator.active {
   opacity:1;
 }
-/* 子引擎选项栏 - 强制单行 */
 .search-type-wrapper {
   position:relative;
   margin-top:40px;
@@ -290,7 +288,6 @@ body {
   box-shadow:0 0 16px var(--primary-glow);
   font-weight:600;
 }
-/* 滚动条美化 */
 .search-type-wrapper::-webkit-scrollbar {
   height:6px;
 }
@@ -298,8 +295,7 @@ body {
   background:rgba(26,115,232,0.4);
   border-radius:3px;
 }
-
-/* ===== 分类页面及卡片（保持原样） ===== */
+/* ===== 分类页面及卡片 ===== */
 .category-title { font-size: 32px; font-weight: 600; margin-bottom: 16px; }
 .sub-title {
   font-size: 20px;
@@ -377,10 +373,9 @@ iframe#external-frame { flex: 1; width: 100%; border: none; }
       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
 
-    <!-- 新高级搜索首页（完全替换原搜索部分） -->
+    <!-- 新高级搜索首页 -->
     <div id="search-page">
       <div class="s-search">
-        <!-- 顶部一级标签 -->
         <div class="s-type-list">
           <label class="active" data-id="group-a">常用</label>
           <label data-id="group-b">搜索</label>
@@ -390,7 +385,6 @@ iframe#external-frame { flex: 1; width: 100%; border: none; }
           <label data-id="group-f">求职</label>
         </div>
 
-        <!-- 搜索框 -->
         <form class="super-search-fm" onsubmit="event.preventDefault(); doSearch();">
           <input type="text" id="search-text" placeholder="百度一下，你就知道" autocomplete="off">
           <button class="submit" type="button">
@@ -401,10 +395,8 @@ iframe#external-frame { flex: 1; width: 100%; border: none; }
           </button>
         </form>
 
-        <!-- 三角形指示器 -->
         <div class="indicator" id="indicator"></div>
 
-        <!-- 二级引擎选项（强制单行滚动） -->
         <div class="search-type-wrapper">
           <div class="search-group group-a active">
             <div class="search-type">
@@ -500,13 +492,13 @@ fetch(API)
       }))
     }))
   }));
-  renderCats();
+  renderCats();               // 关键：确保在数据加载后立即渲染左侧分类
   backToSearch();
 });
 
 function renderCats(){
   const box=document.getElementById('cats');
-  box.innerHTML='';
+  box.innerHTML='';           // 清空后再填充，保证显示
   data.forEach((cat,idx)=>{
     const el=document.createElement('div');
     el.className='cat';
@@ -600,7 +592,7 @@ function closeSidebarOnMobile(){
   }
 }
 
-/* ==================== 隐藏的 radio 输入（完整保留所有搜索引擎） ==================== */
+/* ==================== 隐藏的 radio 输入 ==================== */
 document.body.insertAdjacentHTML('beforeend', `
 <div style="display:none;">
   <input hidden type="radio" name="type" checked id="type-baidu" value="https://www.baidu.com/s?wd=" data-placeholder="百度一下，你就知道">
@@ -651,7 +643,7 @@ document.querySelectorAll('input[name="type"]').forEach(radio=>{
   });
 });
 
-/* 搜索功能（回车 + 点击放大镜） */
+/* 搜索功能 */
 function doSearch(){
   const kw = document.getElementById("search-text").value.trim();
   if(!kw) return;
@@ -667,7 +659,7 @@ document.getElementById("search-text").addEventListener("keydown",e=>{
 
 document.querySelector(".super-search-fm .submit").addEventListener("click", doSearch);
 
-/* 顶部一级标签切换 */
+/* 一级标签切换 */
 document.querySelectorAll('.s-type-list label').forEach(label => {
   label.addEventListener('click', () => {
     document.querySelectorAll('.s-type-list label').forEach(l => l.classList.remove('active'));
@@ -724,7 +716,6 @@ function updateIndicator(label) {
   indicator.classList.add('active');
 }
 
-// 初始化指示器位置
 window.addEventListener('load', () => {
   const firstLabel = document.querySelector('.search-group.group-a .search-type label:first-child');
   if (firstLabel) updateIndicator(firstLabel);
