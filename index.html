@@ -355,7 +355,12 @@ iframe#external-frame { flex: 1; width: 100%; border: none; }
 <div id="layout">
   <div id="sidebar">
     <div id="logo" onclick="backToSearch()">导　航</div>
-    <div id="cats"></div>
+    <div id="cats">
+      <!-- 数据加载失败时的备用提示 -->
+      <div style="padding:20px;text-align:center;color:#999;font-size:14px;">
+        加载中...
+      </div>
+    </div>
     <div id="side-bottom">
       <div onclick="loadExternal('/submit.html')">网站提交</div>
       <div onclick="loadExternal('/privacy.html')">隐私政策</div>
@@ -462,99 +467,119 @@ iframe#external-frame { flex: 1; width: 100%; border: none; }
 </div>
 
 <script>
-const API='/api/data';
-const DEF_ICON='/icons/gray.png';
+const API = '/api/data';
+const DEF_ICON = '/icons/gray.png';
 let currentEngine = "https://www.baidu.com/s?wd=";
-let data=[];
-let xmlDoc=null;
-const categoryCache=new Map();
+let data = [];
+let xmlDoc = null;
+const categoryCache = new Map();
 
-function getDomain(url){
-  try{
-    const h=new URL(url).hostname;
-    return h.startsWith('www.')?h.slice(4):h;
-  }catch{return 'example.com';}
+function getDomain(url) {
+  try {
+    const h = new URL(url).hostname;
+    return h.startsWith('www.') ? h.slice(4) : h;
+  } catch {
+    return 'example.com';
+  }
 }
 
-fetch(API)
-.then(r=>r.text())
-.then(text=>{
-  xmlDoc=new DOMParser().parseFromString(text,'text/xml');
-  data=[...xmlDoc.querySelectorAll('category')].map(c=>({
-    name:c.getAttribute('name'),
-    subs:[...c.querySelectorAll('subcategory')].map(s=({
-      name:s.getAttribute('name'),
-      links:[...s.querySelectorAll('link')].map(l=({
-        name:l.getAttribute('name'),
-        url:l.getAttribute('url'),
-        desc:l.getAttribute('desc')||'',
-        icon:l.getAttribute('icon')||''
-      }))
-    }))
-  }));
-  renderCats();               // 关键：确保在数据加载后立即渲染左侧分类
-  backToSearch();
-});
+/* 立即显示“加载中...”提示，避免空白 */
+document.getElementById('cats').innerHTML = '<div style="padding:20px;text-align:center;color:#999;font-size:14px;">加载中...</div>';
 
-function renderCats(){
-  const box=document.getElementById('cats');
-  box.innerHTML='';           // 清空后再填充，保证显示
-  data.forEach((cat,idx)=>{
-    const el=document.createElement('div');
-    el.className='cat';
-    el.textContent=cat.name;
-    el.onclick=()=>{ 
-      document.querySelectorAll('.cat').forEach(c=>c.classList.remove('active')); 
-      el.classList.add('active'); 
+/* 加载数据并渲染左侧分类 */
+fetch(API)
+  .then(r => {
+    if (!r.ok) throw new Error('Network error');
+    return r.text();
+  })
+  .then(text => {
+    xmlDoc = new DOMParser().parseFromString(text, 'text/xml');
+    data = [...xmlDoc.querySelectorAll('category')].map(c => ({
+      name: c.getAttribute('name'),
+      subs: [...c.querySelectorAll('subcategory')].map(s => ({
+        name: s.getAttribute('name'),
+        links: [...s.querySelectorAll('link')].map(l => ({
+          name: l.getAttribute('name'),
+          url: l.getAttribute('url'),
+          desc: l.getAttribute('desc') || '',
+          icon: l.getAttribute('icon') || ''
+        }))
+      }))
+    }));
+    renderCats();
+    backToSearch(); // 数据加载成功后显示搜索首页
+  })
+  .catch(err => {
+    console.error('加载分类失败:', err);
+    document.getElementById('cats').innerHTML = '<div style="padding:20px;text-align:center;color:#c00;font-size:14px;">加载失败，请检查 /api/data 是否可用</div>';
+  });
+
+function renderCats() {
+  const box = document.getElementById('cats');
+  box.innerHTML = '';
+  if (data.length === 0) {
+    box.innerHTML = '<div style="padding:20px;text-align:center;color:#999;">暂无分类</div>';
+    return;
+  }
+  data.forEach((cat, idx) => {
+    const el = document.createElement('div');
+    el.className = 'cat';
+    el.textContent = cat.name;
+    el.onclick = () => {
+      document.querySelectorAll('.cat').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
       loadCategory(idx);
     };
     box.appendChild(el);
   });
 }
 
-function loadCategory(idx){
-  if(categoryCache.has(idx)){ showCategory(categoryCache.get(idx)); return; }
-  const node=xmlDoc.querySelectorAll('category')[idx];
-  const catData={ 
-    name:node.getAttribute('name'), 
-    subs:[...node.querySelectorAll('subcategory')].map(s=({ 
-      name:s.getAttribute('name'), 
-      links:[...s.querySelectorAll('link')].map(l=({ 
-        name:l.getAttribute('name'), 
-        url:l.getAttribute('url'), 
-        desc:l.getAttribute('desc')||'', 
-        icon:l.getAttribute('icon')||'' 
-      })) 
-    })) 
+function loadCategory(idx) {
+  if (categoryCache.has(idx)) {
+    showCategory(categoryCache.get(idx));
+    return;
+  }
+  const node = xmlDoc.querySelectorAll('category')[idx];
+  const catData = {
+    name: node.getAttribute('name'),
+    subs: [...node.querySelectorAll('subcategory')].map(s => ({
+      name: s.getAttribute('name'),
+      links: [...s.querySelectorAll('link')].map(l => ({
+        name: l.getAttribute('name'),
+        url: l.getAttribute('url'),
+        desc: l.getAttribute('desc') || '',
+        icon: l.getAttribute('icon') || ''
+      }))
+    }))
   };
-  categoryCache.set(idx,catData);
+  categoryCache.set(idx, catData);
   showCategory(catData);
 }
 
-function showCategory(cat){
-  document.getElementById('search-page').style.display='none';
-  const cont=document.getElementById('content');
-  cont.style.display='block';
-  cont.innerHTML=`<div class="category-title">${cat.name}</div>
+function showCategory(cat) {
+  document.getElementById('search-page').style.display = 'none';
+  const cont = document.getElementById('content');
+  cont.style.display = 'block';
+  cont.innerHTML = `<div class="category-title">${cat.name}</div>
   <div class="ad-box"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9474229114991789" data-ad-slot="9876543210" data-ad-format="auto"></ins></div>`;
-  (adsbygoogle=window.adsbygoogle||[]).push({});
-  cat.subs.forEach(sub=>{
-    if(!sub.links.length)return;
-    cont.innerHTML+=`<div class="sub-title">${sub.name}</div><div class="links"></div>`;
-    const linksBox=cont.lastElementChild;
-    sub.links.forEach(link=>{
-      const a=document.createElement('a'); 
-      a.className='card'; 
-      a.href=link.url; 
-      a.target='_blank';
-      const img=document.createElement('img');
-      const favicon=link.icon.trim()||`https://www.google.com/s2/favicons?sz=64&domain=${getDomain(link.url)}`;
-      img.src=favicon; 
-      img.onerror=()=>{img.src=DEF_ICON;};
-      const textDiv=document.createElement('div'); 
-      textDiv.className='text';
-      textDiv.innerHTML=`<div class="name">${link.name}</div><div class="desc">${link.desc}</div>`;
-      a.append(img,textDiv); 
+  (adsbygoogle = window.adsbygoogle || []).push({});
+  cat.subs.forEach(sub => {
+    if (!sub.links.length) return;
+    cont.innerHTML += `<div class="sub-title">${sub.name}</div><div class="links"></div>`;
+    const linksBox = cont.lastElementChild;
+    sub.links.forEach(link => {
+      const a = document.createElement('a');
+      a.className = 'card';
+      a.href = link.url;
+      a.target = '_blank';
+      const img = document.createElement('img');
+      const favicon = link.icon.trim() || `https://www.google.com/s2/favicons?sz=64&domain=${getDomain(link.url)}`;
+      img.src = favicon;
+      img.onerror = () => { img.src = DEF_ICON; };
+      const textDiv = document.createElement('div');
+      textDiv.className = 'text';
+      textDiv.innerHTML = `<div class="name">${link.name}</div><div class="desc">${link.desc}</div>`;
+      a.append(img, textDiv);
       linksBox.appendChild(a);
     });
   });
@@ -562,31 +587,31 @@ function showCategory(cat){
   closeSidebarOnMobile();
 }
 
-function backToSearch(){
-  document.getElementById('content').style.display='none';
-  document.getElementById('search-page').style.display='flex';
+function backToSearch() {
+  document.getElementById('content').style.display = 'none';
+  document.getElementById('search-page').style.display = 'flex';
   document.getElementById('logo').classList.remove('return-mode');
-  document.querySelectorAll('.cat').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('.cat').forEach(c => c.classList.remove('active'));
   closeSidebarOnMobile();
 }
 
-function loadExternal(url){
-  document.getElementById('search-page').style.display='none';
-  const cont=document.getElementById('content');
-  cont.innerHTML='<iframe id="external-frame" src="'+url+'" style="width:100%;height:100%;border:none;"></iframe>';
-  cont.style.display='flex';
+function loadExternal(url) {
+  document.getElementById('search-page').style.display = 'none';
+  const cont = document.getElementById('content');
+  cont.innerHTML = '<iframe id="external-frame" src="' + url + '" style="width:100%;height:100%;border:none;"></iframe>';
+  cont.style.display = 'flex';
   document.getElementById('logo').classList.add('return-mode');
-  document.querySelectorAll('.cat').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('.cat').forEach(c => c.classList.remove('active'));
   closeSidebarOnMobile();
 }
 
-function toggleSidebar(){
+function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('visible');
   document.body.classList.toggle('sidebar-open');
 }
 
-function closeSidebarOnMobile(){
-  if(window.innerWidth<=868){
+function closeSidebarOnMobile() {
+  if (window.innerWidth <= 868) {
     document.getElementById('sidebar').classList.remove('visible');
     document.body.classList.remove('sidebar-open');
   }
@@ -635,8 +660,8 @@ document.body.insertAdjacentHTML('beforeend', `
 `);
 
 /* 搜索引擎切换与 placeholder 更新 */
-document.querySelectorAll('input[name="type"]').forEach(radio=>{
-  radio.addEventListener("change",()=>{
+document.querySelectorAll('input[name="type"]').forEach(radio => {
+  radio.addEventListener("change", () => {
     currentEngine = radio.value;
     const ph = radio.getAttribute("data-placeholder") || "输入关键字搜索";
     document.getElementById("search-text").placeholder = ph;
@@ -644,14 +669,14 @@ document.querySelectorAll('input[name="type"]').forEach(radio=>{
 });
 
 /* 搜索功能 */
-function doSearch(){
+function doSearch() {
   const kw = document.getElementById("search-text").value.trim();
-  if(!kw) return;
+  if (!kw) return;
   window.open(currentEngine + encodeURIComponent(kw), "_blank");
 }
 
-document.getElementById("search-text").addEventListener("keydown",e=>{
-  if(e.key==="Enter"){
+document.getElementById("search-text").addEventListener("keydown", e => {
+  if (e.key === "Enter") {
     e.preventDefault();
     doSearch();
   }
