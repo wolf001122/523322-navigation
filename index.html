@@ -9,10 +9,11 @@
   --primary: #00ffbb;               /* 青绿色高亮 */
   --primary-glow: rgba(0, 255, 187, 0.6);
   --text-normal: #cccccc;
-  --text-muted: #88d4b0;
+  --text-muted: #a0e8d0;            /* 优化：更亮的文字颜色，提高可读性 */
   --input-bg: rgba(255, 255, 255, 0.95);
-  --card-bg: rgba(255, 255, 255, 0.08);
-  --border: rgba(0, 255, 187, 0.3);
+  --card-bg: rgba(30, 30, 40, 0.6); /* 优化：更深的底色，避免与背景融合 */
+  --card-hover-bg: rgba(0, 255, 187, 0.25); /* hover 时更明显的青绿色 */
+  --border: rgba(0, 255, 187, 0.5);  /* 边框更明显 */
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -22,13 +23,12 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  /* 背景后续由首页决定，这里不设置任何背景 */
 }
 
 /* 搜索区域 */
 .s-search {
   width:100%;
-  max-width:960px;   /* 适当加宽以容纳更多按钮 */
+  max-width:960px;
   text-align:center;
   padding: 40px 20px;
 }
@@ -124,13 +124,13 @@ body {
   opacity:1;
 }
 
-/* 子引擎选项栏 - 强制单行显示 */
+/* 子引擎选项栏 - 强制单行 */
 .search-type-wrapper {
   position:relative;
   margin-top:40px;
-  overflow-x:auto;                    /* 超宽时允许横向滚动 */
-  -webkit-overflow-scrolling:touch;   /* 移动端流畅滚动 */
-  padding-bottom:10px;                /* 留出滚动条空间 */
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  padding-bottom:10px;
 }
 .search-group {
   display:none;
@@ -141,15 +141,15 @@ body {
 .search-type {
   display:flex;
   justify-content:center;
-  flex-wrap:nowrap;         /* 关键：禁止换行 */
-  gap:20px;                 /* 只水平间距 */
-  min-width:min-content;    /* 收缩到内容宽度 */
-  padding:0 20px;           /* 两侧留白，便于滚动 */
-  white-space:nowrap;       /* 保险措施 */
+  flex-wrap:nowrap;
+  gap:20px;
+  min-width:min-content;
+  padding:0 20px;
+  white-space:nowrap;
 }
 .search-type label {
   cursor:pointer;
-  padding:10px 26px;        /* 略微减小内边距以节省空间 */
+  padding:10px 26px;
   background:var(--card-bg);
   border:1px solid var(--border);
   border-radius:30px;
@@ -158,22 +158,22 @@ body {
   font-weight:500;
   transition:all 0.3s ease;
   backdrop-filter:blur(12px);
-  flex-shrink:0;            /* 防止被压缩变形 */
+  flex-shrink:0;
 }
 .search-type label:hover {
-  background:rgba(0,255,187,0.2);
-  color:#fff;
+  background:var(--card-hover-bg);
+  color:#ffffff;                    /* hover 时文字变为纯白，更清晰 */
   border-color:var(--primary);
   box-shadow:0 0 16px var(--primary-glow);
 }
 .search-type label.selected {
-  background:rgba(0,255,187,0.3);
-  color:#fff;
+  background:var(--card-hover-bg);
+  color:#ffffff;
   border-color:var(--primary);
   box-shadow:0 0 16px var(--primary-glow);
 }
 
-/* 隐藏滚动条美化（可选） */
+/* 隐藏滚动条美化 */
 .search-type-wrapper::-webkit-scrollbar {
   height:6px;
 }
@@ -273,7 +273,7 @@ body {
 <script>
 let currentEngine = "https://www.baidu.com/s?wd=";
 
-/* ==================== 隐藏的 radio 输入（完整保留所有搜索引擎） ==================== */
+/* 隐藏的 radio 输入（完整保留所有搜索引擎） */
 document.body.insertAdjacentHTML('beforeend', `
 <div style="display:none;">
   <input hidden type="radio" name="type" checked id="type-baidu" value="https://www.baidu.com/s?wd=" data-placeholder="百度一下，你就知道">
@@ -350,10 +350,8 @@ document.querySelectorAll('.s-type-list label').forEach(label => {
     document.querySelectorAll('.search-group').forEach(g => g.classList.remove('active'));
     document.querySelector(`.search-group.${groupId}`).classList.add('active');
 
-    // 清空输入框内容
     document.getElementById('search-text').value = '';
 
-    // 选中该组第一个二级选项
     const firstLabel = document.querySelector(`.search-group.${groupId} .search-type label:first-child`);
     if (firstLabel) {
       document.querySelectorAll('.search-type label').forEach(l => l.classList.remove('selected'));
