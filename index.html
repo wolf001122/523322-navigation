@@ -283,21 +283,6 @@ iframe#external-frame { flex: 1; width: 100%; border: none; }
       <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9474229114991789" data-ad-slot="1234567890" data-ad-format="auto" data-full-width-responsive="true"></ins>
       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
-/* ===== 原搜索部分代码 
-    <div id="search-page">
-      <div id="search-box">
-        <input id="q" placeholder="搜索…" onkeydown="if(event.key==='Enter')go()">
-        <button onclick="go()">搜索</button>
-      </div>
-      <div id="engines">
-        <button onclick="setEngine(this,'https://www.google.com/search?q=')">Google</button>
-        <button class="active" onclick="setEngine(this,'https://www.baidu.com/s?wd=')">百度</button>
-        <button onclick="setEngine(this,'https://www.bing.com/search?q=')">Bing</button>
-      </div>
-    </div>
-===== */
-
-
 
 <div class="header-big  post-top css-color mb-4" id="search-bg" style="">
     <div class="s-search">
@@ -664,9 +649,45 @@ function closeSidebarOnMobile(){
     document.body.classList.remove('sidebar-open');
   }
 }
+
+
+let currentEngine = "https://www.baidu.com/s?wd=";
+
+// 绑定单选搜索引擎
+document.querySelectorAll('input[name="type"]').forEach(radio=>{
+    radio.addEventListener("change",()=>{
+        currentEngine = radio.value;
+        const input = document.getElementById("search-text");
+        const ph = radio.getAttribute("data-placeholder");
+        if(ph) input.placeholder = ph;
+    });
+});
+
+// 回车搜索
+document.getElementById("search-text").addEventListener("keydown",e=>{
+    if(e.key==="Enter"){
+        e.preventDefault();
+        doSearch();
+    }
+});
+
+// 表单搜索
+document.querySelector(".super-search-fm").addEventListener("submit",e=>{
+    e.preventDefault();
+    doSearch();
+});
+
+function doSearch(){
+    const kw = document.getElementById("search-text").value.trim();
+    if(!kw) return;
+    window.open(currentEngine + encodeURIComponent(kw), "_blank");
+}
+
+	
 </script>
 </body>
 </html>
+
 
 
 
