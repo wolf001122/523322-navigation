@@ -97,18 +97,21 @@ body {
   color: #fff;
   font-weight: 600;
 }
+/* ===== 底部链接优化：与上方分类完全一致的样式 ===== */
 #side-bottom {
   border-top: 1px solid var(--border);
-  padding: 20px 24px;
-  font-size: 14px;
-  color: var(--text-light);
+  padding: 8px 0; /* 与 #cats 一致 */
 }
 #side-bottom div {
-  margin-bottom: 14px;
+  padding: 14px 24px;           /* 与 .cat 完全相同的内边距 */
   cursor: pointer;
-  transition: color 0.2s;
+  font-size: 15px;              /* 与 .cat 相同的字号 */
+  color: var(--text);           /* 与 .cat 相同的文字颜色 */
+  transition: var(--transition);
 }
-#side-bottom div:hover { color: var(--primary); }
+#side-bottom div:hover {
+  background: #f1f3f4;          /* 与 .cat:hover 相同的背景 */
+}
 /* ===== 移动端 ===== */
 #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 199; }
 #hamburger {
@@ -483,7 +486,7 @@ function getDomain(url) {
   }
 }
 
-/* 立即显示“加载中...”提示，避免空白 */
+/* 立即显示“加载中...”提示 */
 document.getElementById('cats').innerHTML = '<div style="padding:20px;text-align:center;color:#999;font-size:14px;">加载中...</div>';
 
 /* 加载数据并渲染左侧分类 */
@@ -507,7 +510,7 @@ fetch(API)
       }))
     }));
     renderCats();
-    backToSearch(); // 数据加载成功后显示搜索首页
+    backToSearch();
   })
   .catch(err => {
     console.error('加载分类失败:', err);
