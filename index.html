@@ -31,7 +31,7 @@ body {
   overflow: hidden;
 }
 
-/* =============== 新增：搜索区高级视觉风格 =============== */
+/* =============== 首页搜索高级视觉风格（GitApp 级质感） =============== */
 
 #search-bg{
   width:100%;
@@ -40,96 +40,114 @@ body {
   justify-content:center;
   align-items:center;
   background:
-    radial-gradient(circle at 20% 10%, rgba(26,115,232,.18), transparent 40%),
-    radial-gradient(circle at 80% 20%, rgba(0,180,255,.15), transparent 40%),
-    linear-gradient(180deg,#f8fbff,#eef3f9);
+    radial-gradient(1200px circle at 10% 10%, rgba(26,115,232,.25), transparent 40%),
+    radial-gradient(800px circle at 90% 20%, rgba(0,180,255,.18), transparent 35%),
+    radial-gradient(600px circle at 50% 80%, rgba(120,200,255,.12), transparent 40%),
+    linear-gradient(180deg,#f5f9ff,#eaf0f7);
 }
 
 .s-search{
   width:100%;
-  max-width:900px;
-  padding:60px 40px;
-  border-radius:28px;
-  background:rgba(255,255,255,.75);
-  backdrop-filter: blur(12px);
-  box-shadow:0 20px 60px rgba(0,0,0,.12);
-  animation:fadeUp .8s ease;
+  max-width:960px;
+  padding:64px 48px;
+  border-radius:30px;
+  background:rgba(255,255,255,.78);
+  backdrop-filter: blur(18px) saturate(130%);
+  box-shadow:
+    0 40px 120px rgba(0,0,0,.18),
+    0 12px 40px rgba(0,0,0,.12),
+    inset 0 1px 0 rgba(255,255,255,.4);
+  animation:fadeUp .9s cubic-bezier(.16,1,.3,1);
 }
 
 @keyframes fadeUp{
-  from{opacity:0;transform:translateY(30px)}
+  from{opacity:0;transform:translateY(40px) scale(.98)}
   to{opacity:1;transform:none}
 }
 
 .super-search-fm{
-  margin-top:28px;
+  margin-top:34px;
   display:flex;
   align-items:center;
-  border-radius:40px;
+  border-radius:44px;
   overflow:hidden;
-  box-shadow:0 8px 28px rgba(0,0,0,.18);
+  box-shadow:
+    0 14px 40px rgba(0,0,0,.25),
+    inset 0 1px 0 rgba(255,255,255,.5);
 }
 
 .super-search-fm input{
   flex:1;
-  padding:22px 28px;
-  font-size:20px;
+  padding:24px 30px;
+  font-size:21px;
   border:none;
   outline:none;
+  background:rgba(255,255,255,.9);
+}
+
+.super-search-fm input::placeholder{
+  color:#8b98a9;
 }
 
 .super-search-fm .submit{
-  width:86px;
-  background:var(--primary);
+  width:92px;
+  background:linear-gradient(135deg,#1a73e8,#4d9cff);
   color:#fff;
   border:none;
-  font-size:20px;
+  font-size:22px;
   cursor:pointer;
-  transition:.25s;
+  transition:.3s;
 }
 
-.super-search-fm .submit:hover{background:var(--primary-hover)}
+.super-search-fm .submit:hover{
+  filter:brightness(1.08);
+  transform:translateY(-1px);
+}
 
 .s-type-list{
   display:flex;
   justify-content:center;
-  gap:28px;
-  font-size:16px;
-  margin-bottom:18px;
+  gap:32px;
+  font-size:17px;
+  margin-bottom:22px;
 }
 
 .s-type-list label{
   cursor:pointer;
-  color:#555;
-  padding:6px 10px;
-  border-radius:8px;
-  transition:.2s;
+  color:#4c5a70;
+  padding:8px 14px;
+  border-radius:12px;
+  transition:.25s;
 }
 
-.s-type-list label:hover{background:#e8f0fe;color:var(--primary)}
+.s-type-list label:hover{
+  background:rgba(26,115,232,.12);
+  color:#1a73e8;
+}
 
 .search-type{
   display:flex;
   justify-content:center;
   flex-wrap:wrap;
-  gap:12px;
-  margin-top:22px;
+  gap:14px;
+  margin-top:26px;
 }
 
 .search-type label{
-  padding:8px 16px;
-  border-radius:20px;
-  border:1px solid #ddd;
-  background:#fff;
+  padding:9px 18px;
+  border-radius:22px;
+  border:1px solid rgba(0,0,0,.08);
+  background:rgba(255,255,255,.85);
   cursor:pointer;
-  transition:.2s;
+  transition:.25s;
+  box-shadow:0 4px 10px rgba(0,0,0,.08);
 }
 
 .search-type label:hover{
-  border-color:var(--primary);
-  color:var(--primary);
+  border-color:#1a73e8;
+  color:#1a73e8;
+  transform:translateY(-2px);
 }
-
 	
 
 /* ===== 布局 ===== */
@@ -787,6 +805,7 @@ function doSearch(){
 </script>
 </body>
 </html>
+
 
 
 
