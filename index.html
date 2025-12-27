@@ -24,7 +24,7 @@ body {
   height: 100vh;
   overflow: hidden;
   background: #000;
-  background-image: url('https://img.alicdn.com/imgextra/i3/O1CN01vO0n3p1uZ6Y9wZ9YJ_!!6000000006032-2-tps-3840-2160.jpg'); /* 可替换为更匹配的深色科技背景 */
+  background-image: url('https://img.alicdn.com/imgextra/i3/O1CN01vO0n3p1uZ6Y9wZ9YJ_!!6000000006032-2-tps-3840-2160.jpg'); /* 可替换为喜欢的深色科技背景 */
   background-size: cover;
   background-position: center;
 }
@@ -125,7 +125,7 @@ body {
   background:transparent;
   border:none;
   cursor:pointer;
-  font-size:30px;
+  font-size:32px;
   color:#777;
   transition:all 0.3s;
 }
@@ -133,7 +133,7 @@ body {
   color:#333;
 }
 
-/* 输入框右侧向下箭头 */
+/* 输入框右侧向下小箭头 */
 .super-search-fm::after {
   content:'▼';
   position:absolute;
@@ -145,8 +145,25 @@ body {
   pointer-events:none;
 }
 
+/* 二级选项指示三角形 */
+.indicator {
+  width:0;
+  height:0;
+  border-left:10px solid transparent;
+  border-right:10px solid transparent;
+  border-bottom:12px solid var(--primary);
+  margin:20px auto 0;
+  opacity:0;
+  transition:opacity 0.3s;
+  pointer-events:none;
+}
+.indicator.active {
+  opacity:1;
+}
+
 /* 子引擎选项栏 */
 .search-type-wrapper {
+  position:relative;
   margin-top:40px;
 }
 .search-group {
@@ -172,6 +189,7 @@ body {
   font-weight:500;
   transition:all 0.3s ease;
   backdrop-filter:blur(12px);
+  position:relative;
 }
 .search-type label:hover {
   background:rgba(0,255,187,0.2);
@@ -179,8 +197,14 @@ body {
   border-color:var(--primary);
   box-shadow:0 0 16px var(--primary-glow);
 }
+.search-type label.selected {
+  background:rgba(0,255,187,0.3);
+  color:#fff;
+  border-color:var(--primary);
+  box-shadow:0 0 16px var(--primary-glow);
+}
 
-/* 侧边栏、卡片等适配深色主题 */
+/* 侧边栏、卡片等深色适配 */
 #sidebar {
   width:220px;
   background:rgba(20,20,30,0.95);
@@ -260,7 +284,7 @@ body {
       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
 
-    <!-- 搜索首页（完全按照上传图片风格） -->
+    <!-- 搜索首页 -->
     <div id="search-bg">
       <div class="s-search">
         <!-- 顶部标签 -->
@@ -276,14 +300,17 @@ body {
         <!-- 搜索框 -->
         <form class="super-search-fm" onsubmit="event.preventDefault(); doSearch();">
           <input type="text" id="search-text" placeholder="知乎" autocomplete="off">
-          <button class="submit" type="submit">Q</button>
+          <button class="submit" type="submit"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
         </form>
+
+        <!-- 三角形指示器 -->
+        <div class="indicator" id="indicator"></div>
 
         <!-- 子引擎选项 -->
         <div class="search-type-wrapper">
           <div class="search-group group-a active">
             <div class="search-type">
-              <label for="type-baidu">百度</label>
+              <label for="type-baidu" class="selected">百度</label>
               <label for="type-bing">必应</label>
               <label for="type-google">谷歌</label>
               <label for="type-anaconda">软件</label>
@@ -292,7 +319,7 @@ body {
           </div>
           <div class="search-group group-b">
             <div class="search-type">
-              <label for="type-baidu1">百度</label>
+              <label for="type-baidu1" class="selected">百度</label>
               <label for="type-google1">谷歌</label>
               <label for="type-360">360</label>
               <label for="type-sogo">搜狗</label>
@@ -302,7 +329,7 @@ body {
           </div>
           <div class="search-group group-c">
             <div class="search-type">
-              <label for="type-br">权重查询</label>
+              <label for="type-br" class="selected">权重查询</label>
               <label for="type-links">友链检测</label>
               <label for="type-whois">域名信息查询</label>
               <label for="type-ping">PING 检测</label>
@@ -312,7 +339,7 @@ body {
           </div>
           <div class="search-group group-d">
             <div class="search-type">
-              <label for="type-zhihu">知乎</label>
+              <label for="type-zhihu" class="selected">知乎</label>
               <label for="type-wechat">微信</label>
               <label for="type-weibo">微博</label>
               <label for="type-douban">豆瓣</label>
@@ -320,7 +347,7 @@ body {
           </div>
           <div class="search-group group-e">
             <div class="search-type">
-              <label for="type-taobao1">淘宝</label>
+              <label for="type-taobao1" class="selected">淘宝</label>
               <label for="type-jd">京东</label>
               <label for="type-xiachufang">下厨房</label>
               <label for="type-xiangha">香哈菜谱</label>
@@ -330,7 +357,7 @@ body {
           </div>
           <div class="search-group group-f">
             <div class="search-type">
-              <label for="type-zhaopin">智联招聘</label>
+              <label for="type-zhaopin" class="selected">智联招聘</label>
               <label for="type-51job">前程无忧</label>
               <label for="type-lagou">拉钩网</label>
               <label for="type-liepin">猎聘网</label>
@@ -365,9 +392,9 @@ fetch(API)
   xmlDoc=new DOMParser().parseFromString(text,'text/xml');
   data=[...xmlDoc.querySelectorAll('category')].map(c=>({
     name:c.getAttribute('name'),
-    subs:[...c.querySelectorAll('subcategory')].map(s=>({
+    subs:[...c.querySelectorAll('subcategory')].map(s=({
       name:s.getAttribute('name'),
-      links:[...s.querySelectorAll('link')].map(l=>({
+      links:[...s.querySelectorAll('link')].map(l=({
         name:l.getAttribute('name'),
         url:l.getAttribute('url'),
         desc:l.getAttribute('desc')||'',
@@ -379,6 +406,7 @@ fetch(API)
   backToSearch();
 });
 
+/* 分类导航等函数保持不变 */
 function renderCats(){
   const box=document.getElementById('cats');
   box.innerHTML='';
@@ -400,7 +428,7 @@ function loadCategory(idx){
   const node=xmlDoc.querySelectorAll('category')[idx];
   const catData={ 
     name:node.getAttribute('name'), 
-    subs:[...node.querySelectorAll('subcategory')].map(s=>({ 
+    subs:[...node.querySelectorAll('subcategory')].map(s=({ 
       name:s.getAttribute('name'), 
       links:[...s.querySelectorAll('link')].map(l=({ 
         name:l.getAttribute('name'), 
@@ -477,18 +505,15 @@ function closeSidebarOnMobile(){
   }
 }
 
-/* ==================== 搜索引擎完整 radio 定义（隐藏） ==================== */
-const searchGroups = document.querySelector('.search-type-wrapper');
-searchGroups.insertAdjacentHTML('beforeend', `
+/* ==================== 隐藏的 radio 输入（完整保留所有搜索引擎） ==================== */
+document.body.insertAdjacentHTML('beforeend', `
 <div style="display:none;">
-  <!-- group-a 常用 -->
   <input hidden type="radio" name="type" checked id="type-baidu" value="https://www.baidu.com/s?wd=" data-placeholder="百度一下，你就知道">
   <input hidden type="radio" name="type" id="type-bing" value="https://cn.bing.com/search?q=" data-placeholder="微软 Bing 搜索">
   <input hidden type="radio" name="type" id="type-google" value="https://www.google.com/search?q=" data-placeholder="谷歌搜索">
   <input hidden type="radio" name="type" id="type-anaconda" value="https://anaconda.org/search?q=" data-placeholder="Anaconda 软件搜索">
   <input hidden type="radio" name="type" id="type-pubmed" value="https://pubmed.ncbi.nlm.nih.gov/?term=" data-placeholder="PubMed 搜索/文章标题/关键字">
 
-  <!-- group-b 搜索 -->
   <input hidden type="radio" name="type" id="type-baidu1" value="https://www.baidu.com/s?wd=" data-placeholder="百度一下，你就知道">
   <input hidden type="radio" name="type" id="type-google1" value="https://www.google.com/search?q=" data-placeholder="谷歌搜索">
   <input hidden type="radio" name="type" id="type-360" value="https://www.so.com/s?q=" data-placeholder="360 好搜">
@@ -496,7 +521,6 @@ searchGroups.insertAdjacentHTML('beforeend', `
   <input hidden type="radio" name="type" id="type-bing1" value="https://cn.bing.com/search?q=" data-placeholder="微软 Bing 搜索">
   <input hidden type="radio" name="type" id="type-sm" value="https://yz.m.sm.cn/s?q=" data-placeholder="UC 移动端搜索">
 
-  <!-- group-c 工具 -->
   <input hidden type="radio" name="type" id="type-br" value="https://rank.chinaz.com/all/" data-placeholder="请输入网址(不带 https://)">
   <input hidden type="radio" name="type" id="type-links" value="https://link.chinaz.com/" data-placeholder="请输入网址(不带 https://)">
   <input hidden type="radio" name="type" id="type-whois" value="https://who.is/whois/" data-placeholder="请输入网址(不带 https://)">
@@ -504,13 +528,11 @@ searchGroups.insertAdjacentHTML('beforeend', `
   <input hidden type="radio" name="type" id="type-404" value="https://tool.chinaz.com/Links/?DAddress=" data-placeholder="请输入网址(不带https://)">
   <input hidden type="radio" name="type" id="type-ciku" value="https://www.ciku5.com/s?wd=" data-placeholder="请输入关键词">
 
-  <!-- group-d 社区 -->
   <input hidden type="radio" name="type" id="type-zhihu" value="https://www.zhihu.com/search?type=content&q=" data-placeholder="知乎">
   <input hidden type="radio" name="type" id="type-wechat" value="https://weixin.sogou.com/weixin?type=2&query=" data-placeholder="微信">
   <input hidden type="radio" name="type" id="type-weibo" value="https://s.weibo.com/weibo/" data-placeholder="微博">
   <input hidden type="radio" name="type" id="type-douban" value="https://www.douban.com/search?q=" data-placeholder="豆瓣">
 
-  <!-- group-e 生活 -->
   <input hidden type="radio" name="type" id="type-taobao1" value="https://s.taobao.com/search?q=" data-placeholder="淘宝">
   <input hidden type="radio" name="type" id="type-jd" value="https://search.jd.com/Search?keyword=" data-placeholder="京东">
   <input hidden type="radio" name="type" id="type-xiachufang" value="https://www.xiachufang.com/search/?keyword=" data-placeholder="下厨房">
@@ -518,7 +540,6 @@ searchGroups.insertAdjacentHTML('beforeend', `
   <input hidden type="radio" name="type" id="type-12306" value="https://www.12306.cn/?" data-placeholder="12306">
   <input hidden type="radio" name="type" id="type-qunar" value="https://www.qunar.com/?" data-placeholder="去哪儿">
 
-  <!-- group-f 求职 -->
   <input hidden type="radio" name="type" id="type-zhaopin" value="https://sou.zhaopin.com/jobs/searchresult.ashx?kw=" data-placeholder="智联招聘">
   <input hidden type="radio" name="type" id="type-51job" value="https://search.51job.com/?" data-placeholder="前程无忧">
   <input hidden type="radio" name="type" id="type-lagou" value="https://www.lagou.com/jobs/list_" data-placeholder="拉钩网">
@@ -526,7 +547,7 @@ searchGroups.insertAdjacentHTML('beforeend', `
 </div>
 `);
 
-/* 搜索引擎切换逻辑 */
+/* 搜索引擎切换与 placeholder 更新 */
 document.querySelectorAll('input[name="type"]').forEach(radio=>{
   radio.addEventListener("change",()=>{
     currentEngine = radio.value;
@@ -535,7 +556,7 @@ document.querySelectorAll('input[name="type"]').forEach(radio=>{
   });
 });
 
-/* 回车或点击搜索按钮 */
+/* 搜索功能 */
 document.getElementById("search-text").addEventListener("keydown",e=>{
   if(e.key==="Enter"){
     e.preventDefault();
@@ -548,9 +569,10 @@ function doSearch(){
   window.open(currentEngine + encodeURIComponent(kw), "_blank");
 }
 
-/* 顶部标签点击切换 */
+/* 顶部一级标签切换 */
 document.querySelectorAll('.s-type-list label').forEach(label => {
   label.addEventListener('click', () => {
+    // 高亮切换
     document.querySelectorAll('.s-type-list label').forEach(l => l.classList.remove('active'));
     label.classList.add('active');
 
@@ -558,32 +580,62 @@ document.querySelectorAll('.s-type-list label').forEach(label => {
     document.querySelectorAll('.search-group').forEach(g => g.classList.remove('active'));
     document.querySelector(`.search-group.${groupId}`).classList.add('active');
 
-    const firstRadio = document.querySelector(`#type-${groupId.split('-')[1] || 'baidu'}`);
-    if (firstRadio) {
-      firstRadio.checked = true;
-      currentEngine = firstRadio.value;
-      const ph = firstRadio.getAttribute("data-placeholder") || "输入关键字搜索";
-      document.getElementById("search-text").placeholder = ph;
+    // 清空输入框内容
+    document.getElementById('search-text').value = '';
+
+    // 选中该组第一个选项（默认）
+    const firstLabel = document.querySelector(`.search-group.${groupId} .search-type label:first-child`);
+    if (firstLabel) {
+      document.querySelectorAll('.search-type label').forEach(l => l.classList.remove('selected'));
+      firstLabel.classList.add('selected');
+
+      const radioId = firstLabel.getAttribute('for');
+      const radio = document.getElementById(radioId);
+      if (radio) {
+        radio.checked = true;
+        currentEngine = radio.value;
+        document.getElementById('search-text').placeholder = radio.getAttribute("data-placeholder") || "输入关键字搜索";
+      }
+
+      // 三角形指示器定位到第一个选项下方
+      const indicator = document.getElementById('indicator');
+      indicator.style.marginLeft = `${firstLabel.offsetLeft + firstLabel.offsetWidth / 2}px`;
+      indicator.classList.add('active');
     }
   });
 });
 
-/* 子选项点击选中对应 radio */
+/* 二级选项点击 */
 document.querySelectorAll('.search-type label').forEach(label => {
   label.addEventListener('click', () => {
-    const forId = label.getAttribute('for');
-    const radio = document.getElementById(forId);
+    // 高亮当前选中
+    document.querySelectorAll('.search-type label').forEach(l => l.classList.remove('selected'));
+    label.classList.add('selected');
+
+    const radioId = label.getAttribute('for');
+    const radio = document.getElementById(radioId);
     if (radio) {
       radio.checked = true;
       currentEngine = radio.value;
-      const ph = radio.getAttribute("data-placeholder") || "输入关键字搜索";
-      document.getElementById("search-text").placeholder = ph;
+      document.getElementById('search-text').placeholder = radio.getAttribute("data-placeholder") || "输入关键字搜索";
     }
+
+    // 移动三角形指示器
+    const indicator = document.getElementById('indicator');
+    indicator.style.marginLeft = `${label.offsetLeft + label.offsetWidth / 2}px`;
+    indicator.classList.add('active');
   });
 });
 
-// 默认激活“常用”组第一个引擎
-document.querySelector('#type-baidu').checked = true;
+// 初始化：默认“常用”组第一个选项有指示器
+window.addEventListener('load', () => {
+  const firstLabel = document.querySelector('.search-group.group-a .search-type label:first-child');
+  if (firstLabel) {
+    const indicator = document.getElementById('indicator');
+    indicator.style.marginLeft = `${firstLabel.offsetLeft + firstLabel.offsetWidth / 2}px`;
+    indicator.classList.add('active');
+  }
+});
 </script>
 </body>
 </html>
