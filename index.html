@@ -2,11 +2,8 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>导航</title>
+<title>搜索首页</title>
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="description" content="在线网址导航, 各类开发工具、电商购物、AI、人工智能、新闻资讯、教育与学习、生活服务等" />
-<link rel="icon" href="/favicon.ico" type="image/x-icon">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9474229114991789" crossorigin="anonymous"></script>
 <style>
 :root {
   --primary: #00ffbb;               /* 青绿色高亮 */
@@ -22,36 +19,14 @@ body {
   font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   color: #fff;
   height: 100vh;
-  overflow: hidden;
-  background: #000;
-  background-image: url('https://img.alicdn.com/imgextra/i3/O1CN01vO0n3p1uZ6Y9wZ9YJ_!!6000000006032-2-tps-3840-2160.jpg'); /* 可替换为喜欢的深色科技背景 */
-  background-size: cover;
-  background-position: center;
-}
-#layout { display: flex; height: 100vh; width: 100vw; }
-#main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-
-/* 搜索首页整体容器 */
-#search-bg {
-  width:100%;
-  height:100%;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  position:relative;
-}
-#search-bg::before {
-  content:'';
-  position:absolute;
-  inset:0;
-  background: rgba(0,0,0,0.45);
-  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* 背景后续由首页决定，这里不设置任何背景 */
 }
 
 /* 搜索区域 */
 .s-search {
-  position:relative;
-  z-index:1;
   width:100%;
   max-width:900px;
   text-align:center;
@@ -133,17 +108,7 @@ body {
   color:#333;
 }
 
-/* 输入框右侧向下小箭头 */
-.super-search-fm::after {
-  content:'▼';
-  position:absolute;
-  right:100px;
-  top:50%;
-  transform:translateY(-50%);
-  font-size:20px;
-  color:#888;
-  pointer-events:none;
-}
+/* 已去除输入框右侧小箭头 */
 
 /* 二级选项指示三角形 */
 .indicator {
@@ -175,8 +140,11 @@ body {
 .search-type {
   display:flex;
   justify-content:center;
-  flex-wrap:wrap;
-  gap:18px;
+  flex-wrap:wrap;     /* 允许换行，但控制间距避免破坏布局 */
+  gap:20px 28px;      /* 垂直20px，水平28px，更紧凑 */
+  row-gap:20px;
+  max-width:780px;
+  margin:0 auto;
 }
 .search-type label {
   cursor:pointer;
@@ -190,6 +158,7 @@ body {
   transition:all 0.3s ease;
   backdrop-filter:blur(12px);
   position:relative;
+  min-width:120px;    /* 防止文字太短导致布局晃动 */
 }
 .search-type label:hover {
   background:rgba(0,255,187,0.2);
@@ -203,307 +172,97 @@ body {
   border-color:var(--primary);
   box-shadow:0 0 16px var(--primary-glow);
 }
-
-/* 侧边栏、卡片等深色适配 */
-#sidebar {
-  width:220px;
-  background:rgba(20,20,30,0.95);
-  backdrop-filter:blur(16px);
-  border-right:1px solid rgba(100,100,100,0.2);
-  box-shadow:0 12px 36px rgba(0,0,0,0.6);
-}
-#logo {
-  padding:28px 20px;
-  font-size:26px;
-  font-weight:700;
-  text-align:center;
-  color:var(--primary);
-  border-bottom:1px solid rgba(100,100,100,0.2);
-}
-.cat { color:#ddd; }
-.cat:hover { background:rgba(255,255,255,0.1); }
-.cat.active { background:var(--primary); color:#000; }
-#side-bottom div { color:#aaa; }
-#side-bottom div:hover { color:var(--primary); }
-
-#ad-top {
-  background:rgba(20,20,30,0.8);
-  border-bottom:1px solid rgba(100,100,100,0.2);
-}
-#content {
-  flex:1;
-  overflow:auto;
-  padding:28px;
-  background:rgba(0,0,0,0.4);
-  display:none;
-}
-.card {
-  background:var(--card-bg);
-  backdrop-filter:blur(12px);
-  box-shadow:0 10px 26px rgba(0,0,0,0.5);
-  color:#fff;
-}
-.card:hover {
-  transform:translateY(-4px);
-  box-shadow:0 18px 40px rgba(0,255,187,0.4);
-}
-.name { color:#fff; }
-.desc { color:#bbb; }
-
-/* 移动端 */
-#overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:199; }
-#hamburger { display:none; position:fixed; top:18px; left:18px; width:32px; height:24px; cursor:pointer; flex-direction:column; justify-content:space-between; z-index:201; }
-#hamburger span { height:4px; background:#fff; border-radius:2px; transition:all .25s; }
-@media (max-width:868px) {
-  #sidebar { position:fixed; top:0; left:0; height:100%; transform:translateX(-100%); width:260px; }
-  #sidebar.visible { transform:translateX(0); }
-  #hamburger { display:flex; }
-  body.sidebar-open #overlay { display:block; }
-}
 </style>
 </head>
 <body>
-<div id="layout">
-  <div id="sidebar">
-    <div id="logo" onclick="backToSearch()">导　航</div>
-    <div id="cats"></div>
-    <div id="side-bottom">
-      <div onclick="loadExternal('/submit.html')">网站提交</div>
-      <div onclick="loadExternal('/privacy.html')">隐私政策</div>
-      <div onclick="loadExternal('/links.html')">友情链接</div>
-      <div onclick="loadExternal('/about.html')">关于导航</div>
-    </div>
+
+<div class="s-search">
+  <!-- 顶部标签 -->
+  <div class="s-type-list">
+    <label class="active" data-id="group-a">常用</label>
+    <label data-id="group-b">搜索</label>
+    <label data-id="group-c">工具</label>
+    <label data-id="group-d">社区</label>
+    <label data-id="group-e">生活</label>
+    <label data-id="group-f">求职</label>
   </div>
-  <div id="main">
-    <div id="overlay" onclick="toggleSidebar()"></div>
-    <div id="hamburger" onclick="toggleSidebar()">
-      <span></span><span></span><span></span>
-    </div>
-    <div id="ad-top">
-      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9474229114991789" data-ad-slot="1234567890" data-ad-format="auto" data-full-width-responsive="true"></ins>
-      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    </div>
 
-    <!-- 搜索首页 -->
-    <div id="search-bg">
-      <div class="s-search">
-        <!-- 顶部标签 -->
-        <div class="s-type-list">
-          <label class="active" data-id="group-a">常用</label>
-          <label data-id="group-b">搜索</label>
-          <label data-id="group-c">工具</label>
-          <label data-id="group-d">社区</label>
-          <label data-id="group-e">生活</label>
-          <label data-id="group-f">求职</label>
-        </div>
+  <!-- 搜索框 -->
+  <form class="super-search-fm" onsubmit="event.preventDefault(); doSearch();">
+    <input type="text" id="search-text" placeholder="百度一下，你就知道" autocomplete="off">
+    <button class="submit" type="button">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+    </button>
+  </form>
 
-        <!-- 搜索框 -->
-        <form class="super-search-fm" onsubmit="event.preventDefault(); doSearch();">
-          <input type="text" id="search-text" placeholder="知乎" autocomplete="off">
-          <button class="submit" type="submit"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
-        </form>
+  <!-- 三角形指示器 -->
+  <div class="indicator" id="indicator"></div>
 
-        <!-- 三角形指示器 -->
-        <div class="indicator" id="indicator"></div>
-
-        <!-- 子引擎选项 -->
-        <div class="search-type-wrapper">
-          <div class="search-group group-a active">
-            <div class="search-type">
-              <label for="type-baidu" class="selected">百度</label>
-              <label for="type-bing">必应</label>
-              <label for="type-google">谷歌</label>
-              <label for="type-anaconda">软件</label>
-              <label for="type-pubmed">文献</label>
-            </div>
-          </div>
-          <div class="search-group group-b">
-            <div class="search-type">
-              <label for="type-baidu1" class="selected">百度</label>
-              <label for="type-google1">谷歌</label>
-              <label for="type-360">360</label>
-              <label for="type-sogo">搜狗</label>
-              <label for="type-bing1">必应</label>
-              <label for="type-sm">神马</label>
-            </div>
-          </div>
-          <div class="search-group group-c">
-            <div class="search-type">
-              <label for="type-br" class="selected">权重查询</label>
-              <label for="type-links">友链检测</label>
-              <label for="type-whois">域名信息查询</label>
-              <label for="type-ping">PING 检测</label>
-              <label for="type-404">死链检测</label>
-              <label for="type-ciku">关键词挖掘</label>
-            </div>
-          </div>
-          <div class="search-group group-d">
-            <div class="search-type">
-              <label for="type-zhihu" class="selected">知乎</label>
-              <label for="type-wechat">微信</label>
-              <label for="type-weibo">微博</label>
-              <label for="type-douban">豆瓣</label>
-            </div>
-          </div>
-          <div class="search-group group-e">
-            <div class="search-type">
-              <label for="type-taobao1" class="selected">淘宝</label>
-              <label for="type-jd">京东</label>
-              <label for="type-xiachufang">下厨房</label>
-              <label for="type-xiangha">香哈菜谱</label>
-              <label for="type-12306">12306</label>
-              <label for="type-qunar">去哪儿</label>
-            </div>
-          </div>
-          <div class="search-group group-f">
-            <div class="search-type">
-              <label for="type-zhaopin" class="selected">智联招聘</label>
-              <label for="type-51job">前程无忧</label>
-              <label for="type-lagou">拉钩网</label>
-              <label for="type-liepin">猎聘网</label>
-            </div>
-          </div>
-        </div>
+  <!-- 子引擎选项 -->
+  <div class="search-type-wrapper">
+    <div class="search-group group-a active">
+      <div class="search-type">
+        <label for="type-baidu" class="selected">百度</label>
+        <label for="type-bing">必应</label>
+        <label for="type-google">谷歌</label>
+        <label for="type-anaconda">软件</label>
+        <label for="type-pubmed">文献</label>
       </div>
     </div>
-
-    <div id="content"></div>
+    <div class="search-group group-b">
+      <div class="search-type">
+        <label for="type-baidu1" class="selected">百度</label>
+        <label for="type-google1">谷歌</label>
+        <label for="type-360">360</label>
+        <label for="type-sogo">搜狗</label>
+        <label for="type-bing1">必应</label>
+        <label for="type-sm">神马</label>
+      </div>
+    </div>
+    <div class="search-group group-c">
+      <div class="search-type">
+        <label for="type-br" class="selected">权重查询</label>
+        <label for="type-links">友链检测</label>
+        <label for="type-whois">域名信息查询</label>
+        <label for="type-ping">PING 检测</label>
+        <label for="type-404">死链检测</label>
+        <label for="type-ciku">关键词挖掘</label>
+      </div>
+    </div>
+    <div class="search-group group-d">
+      <div class="search-type">
+        <label for="type-zhihu" class="selected">知乎</label>
+        <label for="type-wechat">微信</label>
+        <label for="type-weibo">微博</label>
+        <label for="type-douban">豆瓣</label>
+      </div>
+    </div>
+    <div class="search-group group-e">
+      <div class="search-type">
+        <label for="type-taobao1" class="selected">淘宝</label>
+        <label for="type-jd">京东</label>
+        <label for="type-xiachufang">下厨房</label>
+        <label for="type-xiangha">香哈菜谱</label>
+        <label for="type-12306">12306</label>
+        <label for="type-qunar">去哪儿</label>
+      </div>
+    </div>
+    <div class="search-group group-f">
+      <div class="search-type">
+        <label for="type-zhaopin" class="selected">智联招聘</label>
+        <label for="type-51job">前程无忧</label>
+        <label for="type-lagou">拉钩网</label>
+        <label for="type-liepin">猎聘网</label>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
-const API='/api/data';
-const DEF_ICON='/icons/gray.png';
 let currentEngine = "https://www.baidu.com/s?wd=";
-let data=[];
-let xmlDoc=null;
-const categoryCache=new Map();
-
-function getDomain(url){
-  try{
-    const h=new URL(url).hostname;
-    return h.startsWith('www.')?h.slice(4):h;
-  }catch{return 'example.com';}
-}
-
-fetch(API)
-.then(r=>r.text())
-.then(text=>{
-  xmlDoc=new DOMParser().parseFromString(text,'text/xml');
-  data=[...xmlDoc.querySelectorAll('category')].map(c=>({
-    name:c.getAttribute('name'),
-    subs:[...c.querySelectorAll('subcategory')].map(s=({
-      name:s.getAttribute('name'),
-      links:[...s.querySelectorAll('link')].map(l=({
-        name:l.getAttribute('name'),
-        url:l.getAttribute('url'),
-        desc:l.getAttribute('desc')||'',
-        icon:l.getAttribute('icon')||''
-      }))
-    }))
-  }));
-  renderCats();
-  backToSearch();
-});
-
-/* 分类导航等函数保持不变 */
-function renderCats(){
-  const box=document.getElementById('cats');
-  box.innerHTML='';
-  data.forEach((cat,idx)=>{
-    const el=document.createElement('div');
-    el.className='cat';
-    el.textContent=cat.name;
-    el.onclick=()=>{ 
-      document.querySelectorAll('.cat').forEach(c=>c.classList.remove('active')); 
-      el.classList.add('active'); 
-      loadCategory(idx);
-    };
-    box.appendChild(el);
-  });
-}
-
-function loadCategory(idx){
-  if(categoryCache.has(idx)){ showCategory(categoryCache.get(idx)); return; }
-  const node=xmlDoc.querySelectorAll('category')[idx];
-  const catData={ 
-    name:node.getAttribute('name'), 
-    subs:[...node.querySelectorAll('subcategory')].map(s=({ 
-      name:s.getAttribute('name'), 
-      links:[...s.querySelectorAll('link')].map(l=({ 
-        name:l.getAttribute('name'), 
-        url:l.getAttribute('url'), 
-        desc:l.getAttribute('desc')||'', 
-        icon:l.getAttribute('icon')||'' 
-      })) 
-    })) 
-  };
-  categoryCache.set(idx,catData);
-  showCategory(catData);
-}
-
-function showCategory(cat){
-  document.getElementById('search-bg').style.display='none';
-  const cont=document.getElementById('content');
-  cont.style.display='block';
-  cont.innerHTML=`<div class="category-title" style="font-size:32px;font-weight:600;margin-bottom:16px;color:#fff;">${cat.name}</div>
-  <div class="ad-box" style="margin:40px 0;padding:24px;background:rgba(255,255,255,0.1);border-radius:14px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
-    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9474229114991789" data-ad-slot="9876543210" data-ad-format="auto"></ins>
-  </div>`;
-  (adsbygoogle=window.adsbygoogle||[]).push({});
-  cat.subs.forEach(sub=>{
-    if(!sub.links.length)return;
-    cont.innerHTML+=`<div class="sub-title" style="font-size:20px;color:var(--primary);margin:36px 0 14px;padding-bottom:6px;border-bottom:2px solid var(--primary);">${sub.name}</div><div class="links"></div>`;
-    const linksBox=cont.lastElementChild;
-    sub.links.forEach(link=>{
-      const a=document.createElement('a'); 
-      a.className='card'; 
-      a.href=link.url; 
-      a.target='_blank';
-      const img=document.createElement('img');
-      const favicon=link.icon.trim()||`https://www.google.com/s2/favicons?sz=64&domain=${getDomain(link.url)}`;
-      img.src=favicon; 
-      img.onerror=()=>{img.src=DEF_ICON;};
-      const textDiv=document.createElement('div'); 
-      textDiv.className='text';
-      textDiv.innerHTML=`<div class="name">${link.name}</div><div class="desc">${link.desc}</div>`;
-      a.append(img,textDiv); 
-      linksBox.appendChild(a);
-    });
-  });
-  document.getElementById('logo').classList.add('return-mode');
-  closeSidebarOnMobile();
-}
-
-function backToSearch(){
-  document.getElementById('content').style.display='none';
-  document.getElementById('search-bg').style.display='flex';
-  document.getElementById('logo').classList.remove('return-mode');
-  document.querySelectorAll('.cat').forEach(c=>c.classList.remove('active'));
-  closeSidebarOnMobile();
-}
-
-function loadExternal(url){
-  document.getElementById('search-bg').style.display='none';
-  const cont=document.getElementById('content');
-  cont.innerHTML='<iframe id="external-frame" src="'+url+'" style="width:100%;height:100%;border:none;"></iframe>';
-  cont.style.display='flex';
-  document.getElementById('logo').classList.add('return-mode');
-  document.querySelectorAll('.cat').forEach(c=>c.classList.remove('active'));
-  closeSidebarOnMobile();
-}
-
-function toggleSidebar(){
-  document.getElementById('sidebar').classList.toggle('visible');
-  document.body.classList.toggle('sidebar-open');
-}
-
-function closeSidebarOnMobile(){
-  if(window.innerWidth<=868){
-    document.getElementById('sidebar').classList.remove('visible');
-    document.body.classList.remove('sidebar-open');
-  }
-}
 
 /* ==================== 隐藏的 radio 输入（完整保留所有搜索引擎） ==================== */
 document.body.insertAdjacentHTML('beforeend', `
@@ -556,23 +315,25 @@ document.querySelectorAll('input[name="type"]').forEach(radio=>{
   });
 });
 
-/* 搜索功能 */
-document.getElementById("search-text").addEventListener("keydown",e=>{
-  if(e.key==="Enter"){
-    e.preventDefault();
-    doSearch();
-  }
-});
+/* 搜索功能（回车 + 点击放大镜） */
 function doSearch(){
   const kw = document.getElementById("search-text").value.trim();
   if(!kw) return;
   window.open(currentEngine + encodeURIComponent(kw), "_blank");
 }
 
+document.getElementById("search-text").addEventListener("keydown",e=>{
+  if(e.key==="Enter"){
+    e.preventDefault();
+    doSearch();
+  }
+});
+
+document.querySelector(".super-search-fm .submit").addEventListener("click", doSearch);
+
 /* 顶部一级标签切换 */
 document.querySelectorAll('.s-type-list label').forEach(label => {
   label.addEventListener('click', () => {
-    // 高亮切换
     document.querySelectorAll('.s-type-list label').forEach(l => l.classList.remove('active'));
     label.classList.add('active');
 
@@ -583,7 +344,7 @@ document.querySelectorAll('.s-type-list label').forEach(label => {
     // 清空输入框内容
     document.getElementById('search-text').value = '';
 
-    // 选中该组第一个选项（默认）
+    // 选中该组第一个二级选项
     const firstLabel = document.querySelector(`.search-group.${groupId} .search-type label:first-child`);
     if (firstLabel) {
       document.querySelectorAll('.search-type label').forEach(l => l.classList.remove('selected'));
@@ -597,10 +358,8 @@ document.querySelectorAll('.s-type-list label').forEach(label => {
         document.getElementById('search-text').placeholder = radio.getAttribute("data-placeholder") || "输入关键字搜索";
       }
 
-      // 三角形指示器定位到第一个选项下方
-      const indicator = document.getElementById('indicator');
-      indicator.style.marginLeft = `${firstLabel.offsetLeft + firstLabel.offsetWidth / 2}px`;
-      indicator.classList.add('active');
+      // 移动三角形指示器
+      updateIndicator(firstLabel);
     }
   });
 });
@@ -608,7 +367,6 @@ document.querySelectorAll('.s-type-list label').forEach(label => {
 /* 二级选项点击 */
 document.querySelectorAll('.search-type label').forEach(label => {
   label.addEventListener('click', () => {
-    // 高亮当前选中
     document.querySelectorAll('.search-type label').forEach(l => l.classList.remove('selected'));
     label.classList.add('selected');
 
@@ -620,21 +378,23 @@ document.querySelectorAll('.search-type label').forEach(label => {
       document.getElementById('search-text').placeholder = radio.getAttribute("data-placeholder") || "输入关键字搜索";
     }
 
-    // 移动三角形指示器
-    const indicator = document.getElementById('indicator');
-    indicator.style.marginLeft = `${label.offsetLeft + label.offsetWidth / 2}px`;
-    indicator.classList.add('active');
+    updateIndicator(label);
   });
 });
 
-// 初始化：默认“常用”组第一个选项有指示器
+function updateIndicator(label) {
+  const indicator = document.getElementById('indicator');
+  const rect = label.getBoundingClientRect();
+  const wrapperRect = document.querySelector('.search-type-wrapper').getBoundingClientRect();
+  const offsetLeft = rect.left + rect.width / 2 - wrapperRect.left;
+  indicator.style.marginLeft = `${offsetLeft}px`;
+  indicator.classList.add('active');
+}
+
+// 初始化指示器位置
 window.addEventListener('load', () => {
   const firstLabel = document.querySelector('.search-group.group-a .search-type label:first-child');
-  if (firstLabel) {
-    const indicator = document.getElementById('indicator');
-    indicator.style.marginLeft = `${firstLabel.offsetLeft + firstLabel.offsetWidth / 2}px`;
-    indicator.classList.add('active');
-  }
+  if (firstLabel) updateIndicator(firstLabel);
 });
 </script>
 </body>
