@@ -20,7 +20,6 @@
   --shadow-sm: 0 1px 2px rgba(60,64,67,.3), 0 1px 3px rgba(60,64,67,.15);
   --shadow: 0 6px 18px rgba(0,0,0,.08);
   --transition: all .25s ease;
-
   /* 新搜索部分统一配色变量（适配浅色主题） */
   --search-primary: #1a73e8;
   --search-text-normal: #5f6368;
@@ -79,10 +78,10 @@ body {
   transition: opacity 0.2s;
 }
 #logo.return-mode:hover::after { opacity: 1; }
-#cats { 
-  flex: 1; 
-  overflow-y: auto; 
-  padding: 8px 0; 
+#cats {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
 }
 .cat {
   padding: 14px 24px;
@@ -103,14 +102,14 @@ body {
   padding: 8px 0; /* 与 #cats 一致 */
 }
 #side-bottom div {
-  padding: 14px 24px;           /* 与 .cat 完全相同的内边距 */
+  padding: 14px 24px; /* 与 .cat 完全相同的内边距 */
   cursor: pointer;
-  font-size: 15px;              /* 与 .cat 相同的字号 */
-  color: var(--text);           /* 与 .cat 相同的文字颜色 */
+  font-size: 15px; /* 与 .cat 相同的字号 */
+  color: var(--text); /* 与 .cat 相同的文字颜色 */
   transition: var(--transition);
 }
 #side-bottom div:hover {
-  background: #f1f3f4;          /* 与 .cat:hover 相同的背景 */
+  background: #f1f3f4; /* 与 .cat:hover 相同的背景 */
 }
 /* ===== 移动端 ===== */
 #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 199; }
@@ -380,7 +379,6 @@ iframe#external-frame { flex: 1; width: 100%; border: none; }
       <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9474229114991789" data-ad-slot="1234567890" data-ad-format="auto" data-full-width-responsive="true"></ins>
       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
-
     <!-- 新高级搜索首页 -->
     <div id="search-page">
       <div class="s-search">
@@ -392,7 +390,6 @@ iframe#external-frame { flex: 1; width: 100%; border: none; }
           <label data-id="group-e">生活</label>
           <label data-id="group-f">求职</label>
         </div>
-
         <form class="super-search-fm" onsubmit="event.preventDefault(); doSearch();">
           <input type="text" id="search-text" placeholder="百度一下，你就知道" autocomplete="off">
           <button class="submit" type="button">
@@ -402,9 +399,7 @@ iframe#external-frame { flex: 1; width: 100%; border: none; }
             </svg>
           </button>
         </form>
-
         <div class="indicator" id="indicator"></div>
-
         <div class="search-type-wrapper">
           <div class="search-group group-a active">
             <div class="search-type">
@@ -464,11 +459,9 @@ iframe#external-frame { flex: 1; width: 100%; border: none; }
         </div>
       </div>
     </div>
-
     <div id="content"></div>
   </div>
 </div>
-
 <script>
 const API = '/api/data';
 const DEF_ICON = '/icons/gray.png';
@@ -476,7 +469,6 @@ let currentEngine = "https://www.baidu.com/s?wd=";
 let data = [];
 let xmlDoc = null;
 const categoryCache = new Map();
-
 function getDomain(url) {
   try {
     const h = new URL(url).hostname;
@@ -485,10 +477,8 @@ function getDomain(url) {
     return 'example.com';
   }
 }
-
 /* 立即显示“加载中...”提示 */
 document.getElementById('cats').innerHTML = '<div style="padding:20px;text-align:center;color:#999;font-size:14px;">加载中...</div>';
-
 /* 加载数据并渲染左侧分类 */
 fetch(API)
   .then(r => {
@@ -516,7 +506,6 @@ fetch(API)
     console.error('加载分类失败:', err);
     document.getElementById('cats').innerHTML = '<div style="padding:20px;text-align:center;color:#c00;font-size:14px;">加载失败，请检查 /api/data 是否可用</div>';
   });
-
 function renderCats() {
   const box = document.getElementById('cats');
   box.innerHTML = '';
@@ -536,7 +525,6 @@ function renderCats() {
     box.appendChild(el);
   });
 }
-
 function loadCategory(idx) {
   if (categoryCache.has(idx)) {
     showCategory(categoryCache.get(idx));
@@ -558,7 +546,6 @@ function loadCategory(idx) {
   categoryCache.set(idx, catData);
   showCategory(catData);
 }
-
 function showCategory(cat) {
   document.getElementById('search-page').style.display = 'none';
   const cont = document.getElementById('content');
@@ -567,7 +554,7 @@ function showCategory(cat) {
   <div class="ad-box"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9474229114991789" data-ad-slot="9876543210" data-ad-format="auto"></ins></div>`;
   (adsbygoogle = window.adsbygoogle || []).push({});
   cat.subs.forEach(sub => {
-    if (!sub.links.length) return;
+    if (!sub.links.length) return;  // 关键修改：先判断，再生成任何 HTML
     cont.innerHTML += `<div class="sub-title">${sub.name}</div><div class="links"></div>`;
     const linksBox = cont.lastElementChild;
     sub.links.forEach(link => {
@@ -589,7 +576,6 @@ function showCategory(cat) {
   document.getElementById('logo').classList.add('return-mode');
   closeSidebarOnMobile();
 }
-
 function backToSearch() {
   document.getElementById('content').style.display = 'none';
   document.getElementById('search-page').style.display = 'flex';
@@ -597,7 +583,6 @@ function backToSearch() {
   document.querySelectorAll('.cat').forEach(c => c.classList.remove('active'));
   closeSidebarOnMobile();
 }
-
 function loadExternal(url) {
   document.getElementById('search-page').style.display = 'none';
   const cont = document.getElementById('content');
@@ -607,19 +592,16 @@ function loadExternal(url) {
   document.querySelectorAll('.cat').forEach(c => c.classList.remove('active'));
   closeSidebarOnMobile();
 }
-
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('visible');
   document.body.classList.toggle('sidebar-open');
 }
-
 function closeSidebarOnMobile() {
   if (window.innerWidth <= 868) {
     document.getElementById('sidebar').classList.remove('visible');
     document.body.classList.remove('sidebar-open');
   }
 }
-
 /* ==================== 隐藏的 radio 输入 ==================== */
 document.body.insertAdjacentHTML('beforeend', `
 <div style="display:none;">
@@ -628,40 +610,34 @@ document.body.insertAdjacentHTML('beforeend', `
   <input hidden type="radio" name="type" id="type-google" value="https://www.google.com/search?q=" data-placeholder="谷歌搜索">
   <input hidden type="radio" name="type" id="type-anaconda" value="https://anaconda.org/search?q=" data-placeholder="Anaconda 软件搜索">
   <input hidden type="radio" name="type" id="type-pubmed" value="https://pubmed.ncbi.nlm.nih.gov/?term=" data-placeholder="PubMed 搜索/文章标题/关键字">
-
   <input hidden type="radio" name="type" id="type-baidu1" value="https://www.baidu.com/s?wd=" data-placeholder="百度一下，你就知道">
   <input hidden type="radio" name="type" id="type-google1" value="https://www.google.com/search?q=" data-placeholder="谷歌搜索">
   <input hidden type="radio" name="type" id="type-360" value="https://www.so.com/s?q=" data-placeholder="360 好搜">
   <input hidden type="radio" name="type" id="type-sogo" value="https://www.sogou.com/web?query=" data-placeholder="搜狗搜索">
   <input hidden type="radio" name="type" id="type-bing1" value="https://cn.bing.com/search?q=" data-placeholder="微软 Bing 搜索">
   <input hidden type="radio" name="type" id="type-sm" value="https://yz.m.sm.cn/s?q=" data-placeholder="UC 移动端搜索">
-
   <input hidden type="radio" name="type" id="type-br" value="https://rank.chinaz.com/all/" data-placeholder="请输入网址(不带 https://)">
   <input hidden type="radio" name="type" id="type-links" value="https://link.chinaz.com/" data-placeholder="请输入网址(不带 https://)">
   <input hidden type="radio" name="type" id="type-whois" value="https://who.is/whois/" data-placeholder="请输入网址(不带 https://)">
   <input hidden type="radio" name="type" id="type-ping" value="https://ping.chinaz.com/" data-placeholder="请输入网址(不带 https://)">
   <input hidden type="radio" name="type" id="type-404" value="https://tool.chinaz.com/Links/?DAddress=" data-placeholder="请输入网址(不带https://)">
   <input hidden type="radio" name="type" id="type-ciku" value="https://www.ciku5.com/s?wd=" data-placeholder="请输入关键词">
-
   <input hidden type="radio" name="type" id="type-zhihu" value="https://www.zhihu.com/search?type=content&q=" data-placeholder="知乎">
   <input hidden type="radio" name="type" id="type-wechat" value="https://weixin.sogou.com/weixin?type=2&query=" data-placeholder="微信">
   <input hidden type="radio" name="type" id="type-weibo" value="https://s.weibo.com/weibo/" data-placeholder="微博">
   <input hidden type="radio" name="type" id="type-douban" value="https://www.douban.com/search?q=" data-placeholder="豆瓣">
-
   <input hidden type="radio" name="type" id="type-taobao1" value="https://s.taobao.com/search?q=" data-placeholder="淘宝">
   <input hidden type="radio" name="type" id="type-jd" value="https://search.jd.com/Search?keyword=" data-placeholder="京东">
   <input hidden type="radio" name="type" id="type-xiachufang" value="https://www.xiachufang.com/search/?keyword=" data-placeholder="下厨房">
   <input hidden type="radio" name="type" id="type-xiangha" value="https://www.xiangha.com/so/?q=caipu&s=" data-placeholder="香哈菜谱">
   <input hidden type="radio" name="type" id="type-12306" value="https://www.12306.cn/?" data-placeholder="12306">
   <input hidden type="radio" name="type" id="type-qunar" value="https://www.qunar.com/?" data-placeholder="去哪儿">
-
   <input hidden type="radio" name="type" id="type-zhaopin" value="https://sou.zhaopin.com/jobs/searchresult.ashx?kw=" data-placeholder="智联招聘">
   <input hidden type="radio" name="type" id="type-51job" value="https://search.51job.com/?" data-placeholder="前程无忧">
   <input hidden type="radio" name="type" id="type-lagou" value="https://www.lagou.com/jobs/list_" data-placeholder="拉钩网">
   <input hidden type="radio" name="type" id="type-liepin" value="https://www.liepin.com/zhaopin/?key=" data-placeholder="猎聘网">
 </div>
 `);
-
 /* 搜索引擎切换与 placeholder 更新 */
 document.querySelectorAll('input[name="type"]').forEach(radio => {
   radio.addEventListener("change", () => {
@@ -670,40 +646,32 @@ document.querySelectorAll('input[name="type"]').forEach(radio => {
     document.getElementById("search-text").placeholder = ph;
   });
 });
-
 /* 搜索功能 */
 function doSearch() {
   const kw = document.getElementById("search-text").value.trim();
   if (!kw) return;
   window.open(currentEngine + encodeURIComponent(kw), "_blank");
 }
-
 document.getElementById("search-text").addEventListener("keydown", e => {
   if (e.key === "Enter") {
     e.preventDefault();
     doSearch();
   }
 });
-
 document.querySelector(".super-search-fm .submit").addEventListener("click", doSearch);
-
 /* 一级标签切换 */
 document.querySelectorAll('.s-type-list label').forEach(label => {
   label.addEventListener('click', () => {
     document.querySelectorAll('.s-type-list label').forEach(l => l.classList.remove('active'));
     label.classList.add('active');
-
     const groupId = label.getAttribute('data-id');
     document.querySelectorAll('.search-group').forEach(g => g.classList.remove('active'));
     document.querySelector(`.search-group.${groupId}`).classList.add('active');
-
     document.getElementById('search-text').value = '';
-
     const firstLabel = document.querySelector(`.search-group.${groupId} .search-type label:first-child`);
     if (firstLabel) {
       document.querySelectorAll('.search-type label').forEach(l => l.classList.remove('selected'));
       firstLabel.classList.add('selected');
-
       const radioId = firstLabel.getAttribute('for');
       const radio = document.getElementById(radioId);
       if (radio) {
@@ -711,18 +679,15 @@ document.querySelectorAll('.s-type-list label').forEach(label => {
         currentEngine = radio.value;
         document.getElementById('search-text').placeholder = radio.getAttribute("data-placeholder") || "输入关键字搜索";
       }
-
       updateIndicator(firstLabel);
     }
   });
 });
-
 /* 二级选项点击 */
 document.querySelectorAll('.search-type label').forEach(label => {
   label.addEventListener('click', () => {
     document.querySelectorAll('.search-type label').forEach(l => l.classList.remove('selected'));
     label.classList.add('selected');
-
     const radioId = label.getAttribute('for');
     const radio = document.getElementById(radioId);
     if (radio) {
@@ -730,11 +695,9 @@ document.querySelectorAll('.search-type label').forEach(label => {
       currentEngine = radio.value;
       document.getElementById('search-text').placeholder = radio.getAttribute("data-placeholder") || "输入关键字搜索";
     }
-
     updateIndicator(label);
   });
 });
-
 function updateIndicator(label) {
   const indicator = document.getElementById('indicator');
   const rect = label.getBoundingClientRect();
@@ -743,7 +706,6 @@ function updateIndicator(label) {
   indicator.style.marginLeft = `${offsetLeft}px`;
   indicator.classList.add('active');
 }
-
 window.addEventListener('load', () => {
   const firstLabel = document.querySelector('.search-group.group-a .search-type label:first-child');
   if (firstLabel) updateIndicator(firstLabel);
@@ -751,5 +713,3 @@ window.addEventListener('load', () => {
 </script>
 </body>
 </html>
-
-
