@@ -20,7 +20,6 @@
   --shadow-sm: 0 1px 2px rgba(60,64,67,.3), 0 1px 3px rgba(60,64,67,.15);
   --shadow: 0 6px 18px rgba(0,0,0,.08);
   --transition: all .25s ease;
-  /* 新搜索部分统一配色变量（适配浅色主题） */
   --search-primary: #1a73e8;
   --search-text-normal: #5f6368;
   --search-text-muted: #3c4043;
@@ -37,10 +36,8 @@ body {
   height: 100vh;
   overflow: hidden;
 }
-/* ===== 布局 ===== */
 #layout { display: flex; height: 100vh; width: 100vw; }
 #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-/* ===== 侧边栏 ===== */
 #sidebar {
   width: 220px;
   background: var(--card-bg);
@@ -96,22 +93,20 @@ body {
   color: #fff;
   font-weight: 600;
 }
-/* ===== 底部链接优化：与上方分类完全一致的样式 ===== */
 #side-bottom {
   border-top: 1px solid var(--border);
-  padding: 8px 0; /* 与 #cats 一致 */
+  padding: 8px 0;
 }
 #side-bottom div {
-  padding: 10px 24px; /* 与 .cat 完全相同的内边距 */
+  padding: 10px 24px;
   cursor: pointer;
-  font-size: 15px; /* 与 .cat 相同的字号 */
-  color: var(--text); /* 与 .cat 相同的文字颜色 */
+  font-size: 15px;
+  color: var(--text);
   transition: var(--transition);
 }
 #side-bottom div:hover {
-  background: #f1f3f4; /* 与 .cat:hover 相同的背景 */
+  background: #f1f3f4;
 }
-/* ===== 移动端 ===== */
 #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 199; }
 #hamburger {
   display: none;
@@ -133,7 +128,6 @@ body {
   body.sidebar-open #overlay { display: block; }
   #ad-top { padding-left: 64px; }
 }
-/* ===== 顶部广告栏 ===== */
 #ad-top {
   background: var(--card-bg);
   border-bottom: 1px solid var(--border);
@@ -142,9 +136,7 @@ body {
   box-shadow: var(--shadow-sm);
   min-height: 70px;
 }
-/* ===== 主内容区 ===== */
 #content { flex: 1; overflow: auto; padding: 28px; background: var(--bg); display: none; }
-/* ===== 新搜索首页 ===== */
 #search-page {
   flex: 1;
   display: flex;
@@ -190,23 +182,25 @@ body {
   border-radius:2px;
   box-shadow:0 0 12px var(--primary-glow);
 }
+/* ===== 关键修改：搜索框不再是多余卡片 ===== */
 .super-search-fm {
   position:relative;
   display:flex;
   align-items:center;
   width:100%;
   max-width:760px;
-  height:68px;
+  height:56px;              /* 原68px */
   margin:0 auto;
-  background:var(--search-input-bg);
-  border-radius:50px;
+  background:#fff;          /* 更纯白 */
+  border-radius:12px;       /* 原50px */
   overflow:hidden;
-  box-shadow:0 12px 40px rgba(0,0,0,0.15);
+  box-shadow: var(--shadow-sm);  /* 只用轻微阴影，原很重 */
+  border:1px solid var(--border);
 }
 .super-search-fm input {
   flex:1;
-  padding:0 36px;
-  font-size:21px;
+  padding:0 28px;           /* 原36px */
+  font-size:19px;           /* 原21px */
   border:none;
   outline:none;
   background:transparent;
@@ -216,18 +210,19 @@ body {
   color:#aaa;
 }
 .super-search-fm .submit {
-  width:80px;
+  width:68px;               /* 原80px */
   height:100%;
   background:transparent;
   border:none;
   cursor:pointer;
-  font-size:32px;
+  font-size:28px;           /* 原32px */
   color:#777;
   transition:all 0.3s;
 }
 .super-search-fm .submit:hover {
   color:#333;
 }
+/* ===== 其余样式保持不变 ===== */
 .indicator {
   width:0;
   height:0;
@@ -297,7 +292,6 @@ body {
   background:rgba(26,115,232,0.4);
   border-radius:3px;
 }
-/* ===== 分类页面及卡片 ===== */
 .category-title { font-size: 32px; font-weight: 600; margin-bottom: 16px; }
 .sub-title {
   font-size: 20px;
@@ -358,10 +352,7 @@ iframe#external-frame { flex: 1; width: 100%; border: none; }
   <div id="sidebar">
     <div id="logo" onclick="backToSearch()">导　航</div>
     <div id="cats">
-      <!-- 数据加载失败时的备用提示 -->
-      <div style="padding:20px;text-align:center;color:#999;font-size:14px;">
-        加载中...
-      </div>
+      <div style="padding:20px;text-align:center;color:#999;font-size:14px;">加载中...</div>
     </div>
     <div id="side-bottom">
       <div onclick="loadExternal('/submit.html')">网站提交</div>
@@ -379,7 +370,6 @@ iframe#external-frame { flex: 1; width: 100%; border: none; }
       <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9474229114991789" data-ad-slot="1234567890" data-ad-format="auto" data-full-width-responsive="true"></ins>
       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
-    <!-- 新高级搜索首页 -->
     <div id="search-page">
       <div class="s-search">
         <div class="s-type-list">
@@ -477,9 +467,7 @@ function getDomain(url) {
     return 'example.com';
   }
 }
-/* 立即显示“加载中...”提示 */
 document.getElementById('cats').innerHTML = '<div style="padding:20px;text-align:center;color:#999;font-size:14px;">加载中...</div>';
-/* 加载数据并渲染左侧分类 */
 fetch(API)
   .then(r => {
     if (!r.ok) throw new Error('Network error');
@@ -554,7 +542,7 @@ function showCategory(cat) {
   <div class="ad-box"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9474229114991789" data-ad-slot="9876543210" data-ad-format="auto"></ins></div>`;
   (adsbygoogle = window.adsbygoogle || []).push({});
   cat.subs.forEach(sub => {
-    if (!sub.links.length) return;  // 关键修改：先判断，再生成任何 HTML
+    if (!sub.links.length) return;
     cont.innerHTML += `<div class="sub-title">${sub.name}</div><div class="links"></div>`;
     const linksBox = cont.lastElementChild;
     sub.links.forEach(link => {
@@ -602,7 +590,6 @@ function closeSidebarOnMobile() {
     document.body.classList.remove('sidebar-open');
   }
 }
-/* ==================== 隐藏的 radio 输入 ==================== */
 document.body.insertAdjacentHTML('beforeend', `
 <div style="display:none;">
   <input hidden type="radio" name="type" checked id="type-baidu" value="https://www.baidu.com/s?wd=" data-placeholder="百度一下，你就知道">
@@ -638,7 +625,6 @@ document.body.insertAdjacentHTML('beforeend', `
   <input hidden type="radio" name="type" id="type-liepin" value="https://www.liepin.com/zhaopin/?key=" data-placeholder="猎聘网">
 </div>
 `);
-/* 搜索引擎切换与 placeholder 更新 */
 document.querySelectorAll('input[name="type"]').forEach(radio => {
   radio.addEventListener("change", () => {
     currentEngine = radio.value;
@@ -646,7 +632,6 @@ document.querySelectorAll('input[name="type"]').forEach(radio => {
     document.getElementById("search-text").placeholder = ph;
   });
 });
-/* 搜索功能 */
 function doSearch() {
   const kw = document.getElementById("search-text").value.trim();
   if (!kw) return;
@@ -659,7 +644,6 @@ document.getElementById("search-text").addEventListener("keydown", e => {
   }
 });
 document.querySelector(".super-search-fm .submit").addEventListener("click", doSearch);
-/* 一级标签切换 */
 document.querySelectorAll('.s-type-list label').forEach(label => {
   label.addEventListener('click', () => {
     document.querySelectorAll('.s-type-list label').forEach(l => l.classList.remove('active'));
@@ -683,7 +667,6 @@ document.querySelectorAll('.s-type-list label').forEach(label => {
     }
   });
 });
-/* 二级选项点击 */
 document.querySelectorAll('.search-type label').forEach(label => {
   label.addEventListener('click', () => {
     document.querySelectorAll('.search-type label').forEach(l => l.classList.remove('selected'));
@@ -713,4 +696,3 @@ window.addEventListener('load', () => {
 </script>
 </body>
 </html>
-
