@@ -555,9 +555,13 @@ function showCategory(cat) {
       a.href = link.url;
       a.target = '_blank';
       const img = document.createElement('img');
-      const favicon = link.icon.trim() || `https://www.google.com/s2/favicons?sz=64&domain=${getDomain(link.url)}`;
+      const domain = getDomain(link.url);
+      const favicon = link.icon.trim() || `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
       img.src = favicon;
-      img.onerror = () => { img.src = DEF_ICON; };
+      img.onerror = () => {
+        img.src = `https://${domain}/favicon.ico`;
+        img.onerror = () => { img.src = DEF_ICON; };
+      };
       const textDiv = document.createElement('div');
       textDiv.className = 'text';
       textDiv.innerHTML = `<div class="name">${link.name}</div><div class="desc">${link.desc}</div>`;
@@ -572,7 +576,7 @@ function showCategory(cat) {
 function backToSearch() {
   const content = document.getElementById('content');
   content.style.display = 'none';
-  content.innerHTML = '';  // ← 关键修复：清空内容，彻底移除残留的广告卡片
+  content.innerHTML = '';
   document.getElementById('search-page').style.display = 'flex';
   document.getElementById('logo').classList.remove('return-mode');
   document.querySelectorAll('.cat').forEach(c => c.classList.remove('active'));
