@@ -182,25 +182,24 @@ body {
   border-radius:2px;
   box-shadow:0 0 12px var(--primary-glow);
 }
-/* ===== 关键修改：搜索框不再是多余卡片 ===== */
 .super-search-fm {
   position:relative;
   display:flex;
   align-items:center;
   width:100%;
   max-width:760px;
-  height:56px;              /* 原68px */
+  height:56px;
   margin:0 auto;
-  background:#fff;          /* 更纯白 */
-  border-radius:12px;       /* 原50px */
+  background:#fff;
+  border-radius:12px;
   overflow:hidden;
-  box-shadow: var(--shadow-sm);  /* 只用轻微阴影，原很重 */
+  box-shadow: var(--shadow-sm);
   border:1px solid var(--border);
 }
 .super-search-fm input {
   flex:1;
-  padding:0 28px;           /* 原36px */
-  font-size:19px;           /* 原21px */
+  padding:0 28px;
+  font-size:19px;
   border:none;
   outline:none;
   background:transparent;
@@ -210,19 +209,18 @@ body {
   color:#aaa;
 }
 .super-search-fm .submit {
-  width:68px;               /* 原80px */
+  width:68px;
   height:100%;
   background:transparent;
   border:none;
   cursor:pointer;
-  font-size:28px;           /* 原32px */
+  font-size:28px;
   color:#777;
   transition:all 0.3s;
 }
 .super-search-fm .submit:hover {
   color:#333;
 }
-/* ===== 其余样式保持不变 ===== */
 .indicator {
   width:0;
   height:0;
@@ -459,6 +457,7 @@ let currentEngine = "https://www.baidu.com/s?wd=";
 let data = [];
 let xmlDoc = null;
 const categoryCache = new Map();
+
 function getDomain(url) {
   try {
     const h = new URL(url).hostname;
@@ -467,7 +466,9 @@ function getDomain(url) {
     return 'example.com';
   }
 }
+
 document.getElementById('cats').innerHTML = '<div style="padding:20px;text-align:center;color:#999;font-size:14px;">加载中...</div>';
+
 fetch(API)
   .then(r => {
     if (!r.ok) throw new Error('Network error');
@@ -494,6 +495,7 @@ fetch(API)
     console.error('加载分类失败:', err);
     document.getElementById('cats').innerHTML = '<div style="padding:20px;text-align:center;color:#c00;font-size:14px;">加载失败，请检查 /api/data 是否可用</div>';
   });
+
 function renderCats() {
   const box = document.getElementById('cats');
   box.innerHTML = '';
@@ -513,6 +515,7 @@ function renderCats() {
     box.appendChild(el);
   });
 }
+
 function loadCategory(idx) {
   if (categoryCache.has(idx)) {
     showCategory(categoryCache.get(idx));
@@ -534,6 +537,7 @@ function loadCategory(idx) {
   categoryCache.set(idx, catData);
   showCategory(catData);
 }
+
 function showCategory(cat) {
   document.getElementById('search-page').style.display = 'none';
   const cont = document.getElementById('content');
@@ -564,13 +568,17 @@ function showCategory(cat) {
   document.getElementById('logo').classList.add('return-mode');
   closeSidebarOnMobile();
 }
+
 function backToSearch() {
-  document.getElementById('content').style.display = 'none';
+  const content = document.getElementById('content');
+  content.style.display = 'none';
+  content.innerHTML = '';  // ← 关键修复：清空内容，彻底移除残留的广告卡片
   document.getElementById('search-page').style.display = 'flex';
   document.getElementById('logo').classList.remove('return-mode');
   document.querySelectorAll('.cat').forEach(c => c.classList.remove('active'));
   closeSidebarOnMobile();
 }
+
 function loadExternal(url) {
   document.getElementById('search-page').style.display = 'none';
   const cont = document.getElementById('content');
@@ -580,16 +588,19 @@ function loadExternal(url) {
   document.querySelectorAll('.cat').forEach(c => c.classList.remove('active'));
   closeSidebarOnMobile();
 }
+
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('visible');
   document.body.classList.toggle('sidebar-open');
 }
+
 function closeSidebarOnMobile() {
   if (window.innerWidth <= 868) {
     document.getElementById('sidebar').classList.remove('visible');
     document.body.classList.remove('sidebar-open');
   }
 }
+
 document.body.insertAdjacentHTML('beforeend', `
 <div style="display:none;">
   <input hidden type="radio" name="type" checked id="type-baidu" value="https://www.baidu.com/s?wd=" data-placeholder="百度一下，你就知道">
@@ -625,6 +636,7 @@ document.body.insertAdjacentHTML('beforeend', `
   <input hidden type="radio" name="type" id="type-liepin" value="https://www.liepin.com/zhaopin/?key=" data-placeholder="猎聘网">
 </div>
 `);
+
 document.querySelectorAll('input[name="type"]').forEach(radio => {
   radio.addEventListener("change", () => {
     currentEngine = radio.value;
@@ -632,18 +644,22 @@ document.querySelectorAll('input[name="type"]').forEach(radio => {
     document.getElementById("search-text").placeholder = ph;
   });
 });
+
 function doSearch() {
   const kw = document.getElementById("search-text").value.trim();
   if (!kw) return;
   window.open(currentEngine + encodeURIComponent(kw), "_blank");
 }
+
 document.getElementById("search-text").addEventListener("keydown", e => {
   if (e.key === "Enter") {
     e.preventDefault();
     doSearch();
   }
 });
+
 document.querySelector(".super-search-fm .submit").addEventListener("click", doSearch);
+
 document.querySelectorAll('.s-type-list label').forEach(label => {
   label.addEventListener('click', () => {
     document.querySelectorAll('.s-type-list label').forEach(l => l.classList.remove('active'));
@@ -667,6 +683,7 @@ document.querySelectorAll('.s-type-list label').forEach(label => {
     }
   });
 });
+
 document.querySelectorAll('.search-type label').forEach(label => {
   label.addEventListener('click', () => {
     document.querySelectorAll('.search-type label').forEach(l => l.classList.remove('selected'));
@@ -681,6 +698,7 @@ document.querySelectorAll('.search-type label').forEach(label => {
     updateIndicator(label);
   });
 });
+
 function updateIndicator(label) {
   const indicator = document.getElementById('indicator');
   const rect = label.getBoundingClientRect();
@@ -689,6 +707,7 @@ function updateIndicator(label) {
   indicator.style.marginLeft = `${offsetLeft}px`;
   indicator.classList.add('active');
 }
+
 window.addEventListener('load', () => {
   const firstLabel = document.querySelector('.search-group.group-a .search-type label:first-child');
   if (firstLabel) updateIndicator(firstLabel);
